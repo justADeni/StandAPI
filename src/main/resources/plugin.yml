@@ -1,0 +1,4 @@
+name: StandAPI
+version: '${project.version}'
+main: com.github.justadeni.standapi.StandAPI
+api-version: '1.20'
