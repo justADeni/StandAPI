@@ -14,7 +14,7 @@ import org.joml.Vector3f
 import java.util.*
 
 
-class Stand(var location: Location) {
+class PacketStand(var location: Location) {
 
     val id = Misc.getID()
     val uuid = UUID.randomUUID()
@@ -76,9 +76,9 @@ class Stand(var location: Location) {
         val serializer = WrappedDataWatcher.Registry.get(Vector3f::class.java)
 
         val eulerAngle = EulerAngle(
-            Math.toRadians(yaw.toDouble()), Math.toRadians(pitch.toDouble()), Math.toRadians(
-                roll.toDouble()
-            )
+            Math.toRadians(yaw.toDouble()),
+            Math.toRadians(pitch.toDouble()),
+            Math.toRadians(roll.toDouble())
         )
         val vector3f = Vector3f(
             Math.toDegrees(eulerAngle.x).toFloat(),
