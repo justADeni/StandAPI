@@ -4,23 +4,16 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.events.PacketContainer
 import com.comphenix.protocol.wrappers.EnumWrappers
 import com.comphenix.protocol.wrappers.WrappedDataWatcher
-import com.github.justadeni.standapi.Misc.sendTo
 import org.bukkit.Location
 import org.bukkit.entity.EntityType
-import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.EulerAngle
 import org.joml.Vector3f
 import java.util.*
 
+class PacketGenerator(val id: Int, val uuid: UUID){
 
-class PacketStand(var location: Location) {
-
-    val id = Misc.getID()
-    val uuid = UUID.randomUUID()
-    val players: HashSet<Player> = HashSet()
-
-    private fun birth(deltaP: List<Player>){
+    fun create(location: Location): PacketContainer{
         val packet = PacketContainer(PacketType.Play.Server.SPAWN_ENTITY)
 
         packet.integers.write(0,id)
@@ -44,42 +37,42 @@ class PacketStand(var location: Location) {
         // Set object data
         packet.integers.write(7, 0)
 
-        packet.sendTo(deltaP)
+        return packet
     }
 
-    private fun death(deltaP: List<Player>){
+    fun destroy(): PacketContainer{
         val packet = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY)
 
         packet.integers.write(0, 1)
         packet.integerArrays.write(0,intArrayOf(id))
 
-        packet.sendTo(deltaP)
+        return packet
     }
 
-    fun headEquipment(item: ItemStack){
+    fun equipment(itemStack: ItemStack): PacketContainer{
         val packet = PacketContainer(PacketType.Play.Server.ENTITY_EQUIPMENT)
 
         packet.integers.write(0, id)
         packet.itemSlots.write(0, EnumWrappers.ItemSlot.HEAD)
-        packet.itemModifier.write(0, item)
+        packet.itemModifier.write(0, itemStack)
 
-        packet.sendTo(players.toList())
+        return packet
     }
 
-    //TODO: Rework this mess
-    fun headRotation(yaw: Float, pitch: Float, roll: Float){
+    fun headrotation(eulerAngle: EulerAngle): PacketContainer{
         val packet = PacketContainer(PacketType.Play.Server.ENTITY_METADATA)
 
         packet.modifier.writeDefaults()
         packet.integers.write(0, id)
         val dataWatcher = WrappedDataWatcher(packet.watchableCollectionModifier.read(0))
         val serializer = WrappedDataWatcher.Registry.get(Vector3f::class.java)
-
+        /*
         val eulerAngle = EulerAngle(
             Math.toRadians(yaw.toDouble()),
             Math.toRadians(pitch.toDouble()),
             Math.toRadians(roll.toDouble())
         )
+        */
         val vector3f = Vector3f(
             Math.toDegrees(eulerAngle.x).toFloat(),
             Math.toDegrees(eulerAngle.y).toFloat(),
@@ -95,11 +88,19 @@ class PacketStand(var location: Location) {
 
         packet.watchableCollectionModifier.write(0, dataWatcher.watchableObjects)
 
-        packet.sendTo(players.toList())
+        return packet
     }
 
-    fun teleport(deltaL: Location){
-        location = deltaL
+    //just in case function
+    fun setLook(yaw: Float): PacketContainer {
+        val packet = PacketContainer(PacketType.Play.Server.ENTITY_HEAD_ROTATION)
+        packet.modifier.writeDefaults()
+        packet.integers.write(0, id)
+        packet.bytes.write(0, (yaw*256f / 360f).toInt().toByte())
+        return packet
+    }
+    /*
+    fun location(id: Int, location: Location): PacketContainer{
         val packet = PacketContainer(PacketType.Play.Server.ENTITY_TELEPORT)
 
         packet.integers.write(0,id)
@@ -116,16 +117,7 @@ class PacketStand(var location: Location) {
         //On Ground
         packet.booleans.write(0,false)
 
-        packet.sendTo(players.toList())
+        return packet
     }
-
-    fun addSeeing(deltaP: List<Player>){
-        birth(deltaP)
-        players.addAll(deltaP)
-    }
-
-    fun removeSeeing(deltaP: List<Player>){
-        death(deltaP)
-        players.removeAll(deltaP.toSet())
-    }
+    */
 }

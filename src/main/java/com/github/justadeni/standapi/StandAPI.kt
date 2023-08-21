@@ -27,6 +27,6 @@ class StandAPI : JavaPlugin() {
     }
 
     override fun onDisable() {
-        plugin = null
+        //plugin = null
     }
 }
