@@ -2,6 +2,8 @@ package com.github.justadeni.standapi
 
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.ProtocolManager
+import org.bukkit.command.Command
+import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
 
 class StandAPI : JavaPlugin() {
@@ -24,6 +26,7 @@ class StandAPI : JavaPlugin() {
     override fun onLoad() {
         plugin = this
         manager = ProtocolLibrary.getProtocolManager()
+        getCommand("standapi")!!.setExecutor(this)
     }
 
     override fun onDisable() {

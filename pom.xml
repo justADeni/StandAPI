@@ -12,7 +12,7 @@
     <name>StandAPI</name>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.version>1.9.0</kotlin.version>
         <mcversion>1.19.4-R0.1-SNAPSHOT</mcversion>

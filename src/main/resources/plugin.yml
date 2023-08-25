@@ -3,3 +3,7 @@ version: '${project.version}'
 main: com.github.justadeni.standapi.StandAPI
 api-version: '1.19'
 depend: [ProtocolLib]
+commands:
+  standapi:
+    usage: /standapi <name of test>
+    description: Used for testing the plugin.
