@@ -5,5 +5,4 @@ api-version: '1.19'
 depend: [ProtocolLib]
 commands:
   standapi:
-    usage: /standapi <name of test>
-    description: Used for testing the plugin.
+    description: command used to test functionality of API

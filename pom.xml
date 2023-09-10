@@ -167,5 +167,15 @@
             <version>5.1.0</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.shynixn.mccoroutine</groupId>
+            <artifactId>mccoroutine-bukkit-api</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.shynixn.mccoroutine</groupId>
+            <artifactId>mccoroutine-bukkit-core</artifactId>
+            <version>2.4.0</version>
+        </dependency>
     </dependencies>
 </project>

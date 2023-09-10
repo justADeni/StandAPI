@@ -26,7 +26,10 @@ class StandAPI : JavaPlugin() {
     override fun onLoad() {
         plugin = this
         manager = ProtocolLibrary.getProtocolManager()
-        getCommand("standapi")!!.setExecutor(this)
+    }
+
+    override fun onEnable() {
+        getCommand("standapi")!!.setExecutor(com.github.justadeni.standapi.testing.Command())
     }
 
     override fun onDisable() {
