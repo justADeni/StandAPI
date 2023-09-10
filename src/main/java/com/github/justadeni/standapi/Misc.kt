@@ -19,4 +19,11 @@ object Misc {
         }
     }
 
+    fun PacketContainer.sendTo(players: Set<Player>){
+        val manager = StandAPI.getManager()
+        for (player in players){
+            manager.sendServerPacket(player, this)
+        }
+    }
+
 }
