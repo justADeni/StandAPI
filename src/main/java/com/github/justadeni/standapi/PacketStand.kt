@@ -1,14 +1,14 @@
 package com.github.justadeni.standapi
 
-import com.comphenix.protocol.events.PacketContainer
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot
 import com.comphenix.protocol.wrappers.Pair
 import com.github.justadeni.standapi.Misc.sendTo
+import com.github.shynixn.mccoroutine.bukkit.asyncDispatcher
 import com.github.shynixn.mccoroutine.bukkit.launch
 import com.github.shynixn.mccoroutine.bukkit.ticks
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import net.minecraft.core.Rotations
-import net.minecraft.server.packs.repository.Pack
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -52,8 +52,6 @@ class PacketStand(location: Location) {
         Ranger.add(this)
     }
 
-
-
     internal fun eligiblePlayers(): List<Player> = location.world!!.players.asSequence()
         .filter { it.location.distanceSquared(location) <= renderDistance2 }
         .filterNot { excludedPlayers.contains(it.uniqueId.hashCode()) }
@@ -72,11 +70,11 @@ class PacketStand(location: Location) {
     }
 
     fun setRenderDistance(chunks: Int){
-        renderDistance2 = (chunks*16)*(chunks*16)
+        renderDistance2 = (chunks * 16)*(chunks * 16)
     }
 
     fun getRenderDistance(): Int {
-        return (sqrt(renderDistance2.toDouble()) / 16).toInt() //can be optimised a tiny bit
+        return sqrt((renderDistance2 / 16).toDouble()).toInt()
     }
 
     fun setEquipment(slot: ItemSlot, item: ItemStack){
@@ -156,7 +154,14 @@ class PacketStand(location: Location) {
 
     fun setLocation(loc: Location){
         packetBundle[0] = packetGen.create(loc)
-        if (loc.distanceSquared(location) > 64){
+
+        if (loc.world != location.world){
+            Ranger.remove(this)
+            destroyPacket.sendTo(eligiblePlayers())
+            location = loc
+            Ranger.add(this)
+            packetBundle.sendTo(eligiblePlayers())
+        } else if (loc.distanceSquared(location) > 64){
             packetGen.teleport(loc).sendTo(eligiblePlayers())
         } else {
             packetGen.move(location, loc)
@@ -172,8 +177,10 @@ class PacketStand(location: Location) {
         destroyPacket.sendTo(location.world!!.players)
 
         StandAPI.getPlugin().launch {
-            delay(120.ticks)
-            destroyPacket.sendTo(location.world!!.players)
+            withContext(StandAPI.getPlugin().asyncDispatcher) {
+                delay(120.ticks)
+                destroyPacket.sendTo(location.world!!.players)
+            }
         }
     }
 }
