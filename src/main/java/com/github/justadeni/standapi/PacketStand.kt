@@ -4,6 +4,9 @@ import com.comphenix.protocol.events.PacketContainer
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot
 import com.comphenix.protocol.wrappers.Pair
 import com.github.justadeni.standapi.Misc.sendTo
+import com.github.shynixn.mccoroutine.bukkit.launch
+import com.github.shynixn.mccoroutine.bukkit.ticks
+import kotlinx.coroutines.delay
 import net.minecraft.core.Rotations
 import net.minecraft.server.packs.repository.Pack
 import org.bukkit.Location
@@ -20,18 +23,18 @@ class PacketStand(location: Location) {
 
     private var location = location
     private var renderDistance2 = 9216 //6 chunks
-    private val excludedPlayers = mutableSetOf<UUID>()
+    private val excludedPlayers = mutableListOf<Int>()
     private val equipment = mutableListOf<Pair<ItemSlot, ItemStack>>()
 
-    private var isInvisible = false //0, 0x20
-    private var hasGlowingEffect = false //0, 0x40
+    private var isInvisible = 0x00 //0, 0x20
+    private var hasGlowingEffect = 0x00 //0, 0x40
 
     private var customName = "" //2, String
     private var isCustomNameVisible = false //3, false
 
-    private var isSmall = false //15, 0x01
-    private var hasArms = false //15, 0x04
-    private var hasNoBaseplate = false //15, 0x08
+    private var isSmall = 0x00 //15, 0x01
+    private var hasArms = 0x00 //15, 0x04
+    private var hasNoBaseplate = 0x00 //15, 0x08
 
     private var rotations = listOf(
         Rotations(0f, 0f, 0f), //head 16
@@ -42,25 +45,29 @@ class PacketStand(location: Location) {
         Rotations(1f, 0f, 1f) //right leg 21
     )
 
-    private var packetBundle = hashMapOf(kotlin.Pair(0,packetGen.create(location)))
-    private var destroyPacket = packetGen.destroy()
+    internal var packetBundle = hashMapOf(kotlin.Pair(0,packetGen.create(location)))
+    internal var destroyPacket = packetGen.destroy()
+
+    init {
+        Ranger.add(this)
+    }
 
 
 
-
-
-    private fun eligiblePlayers(): Set<Player> = location.world!!.players.asSequence()
+    internal fun eligiblePlayers(): List<Player> = location.world!!.players.asSequence()
         .filter { it.location.distanceSquared(location) <= renderDistance2 }
-        .filterNot { excludedPlayers.contains(it.uniqueId) }
-        .toSet()
+        .filterNot { excludedPlayers.contains(it.uniqueId.hashCode()) }
+        .toList()
 
     fun excludePlayer(player: Player){
-        excludedPlayers.add(player.uniqueId)
-        //Send Death Packet
+        if (!excludedPlayers.contains(player.uniqueId.hashCode()))
+            excludedPlayers.add(player.uniqueId.hashCode())
+
+        destroyPacket.sendTo(listOf(player))
     }
 
     fun unexcludePlayer(player: Player){
-        excludedPlayers.remove(player.uniqueId)
+        excludedPlayers.remove(player.uniqueId.hashCode())
         //Send All Packets
     }
 
@@ -69,11 +76,10 @@ class PacketStand(location: Location) {
     }
 
     fun getRenderDistance(): Int {
-        return (sqrt(renderDistance2.toDouble()) / 16).toInt()
+        return (sqrt(renderDistance2.toDouble()) / 16).toInt() //can be optimised a tiny bit
     }
 
     fun setEquipment(slot: ItemSlot, item: ItemStack){
-
         val duplicateChecked = equipment.asSequence()
             .onEach {
                 if (it.first == slot)
@@ -88,7 +94,11 @@ class PacketStand(location: Location) {
     }
 
     private fun updateMetadata(){
-
+        packetBundle[2] = packetGen.metadata(mapOf(
+            kotlin.Pair(0, isInvisible or hasGlowingEffect),
+            kotlin.Pair(2, customName),
+            kotlin.Pair(3, isCustomNameVisible),
+            kotlin.Pair(15, isSmall or hasArms or hasNoBaseplate)))
     }
 
     fun getEquipment(slot: ItemSlot): ItemStack? {
@@ -96,29 +106,20 @@ class PacketStand(location: Location) {
     }
 
     fun setInvisible(value: Boolean){
-        if (value == isInvisible)
-            return
-
-        isInvisible = value
+        isInvisible = if (value) 0x20 else 0x00
         updateMetadata()
     }
 
-    fun isInvisible(): Boolean = isInvisible
+    fun isInvisible(): Boolean = isInvisible > 0
 
     fun setGlowingEffect(value: Boolean){
-        if (value == hasGlowingEffect)
-            return
-
-        hasGlowingEffect = value
+        hasGlowingEffect = if (value) 0x40 else 0x00
         updateMetadata()
     }
 
-    fun hasGlowingEffect(): Boolean = isInvisible
+    fun hasGlowingEffect(): Boolean = hasGlowingEffect > 0
 
     fun setCustomName(value: String){
-        if (value == customName)
-            return
-
         customName = value
         updateMetadata()
     }
@@ -126,42 +127,53 @@ class PacketStand(location: Location) {
     fun getCustomName(): String = customName
 
     fun setCustomNameVisible(value: Boolean){
-        if (value == isCustomNameVisible)
-            return
-
-        isInvisible = value
+        isCustomNameVisible = value
         updateMetadata()
     }
 
     fun isCustomNameVisible(): Boolean = isCustomNameVisible
 
     fun setSmall(value: Boolean){
-        if (value == isSmall)
-            return
-
-        isSmall = value
+        isSmall = if (value) 0x01 else 0x00
         updateMetadata()
     }
 
-    fun isSmall(): Boolean = isSmall
+    fun isSmall(): Boolean = isSmall > 0
 
     fun setArms(value: Boolean){
-        if (value == hasArms)
-            return
-
-        hasArms = value
+        hasArms = if (value) 0x04 else 0x00
         updateMetadata()
     }
 
-    fun hasArms(): Boolean = hasArms
+    fun hasArms(): Boolean = hasArms > 0
 
     fun setNoBaseplate(value: Boolean){
-        if (value == hasNoBaseplate)
-            return
-
-        hasNoBaseplate = value
+        hasNoBaseplate = if (value) 0x08 else 0x00
         updateMetadata()
     }
 
-    fun hasNoBaseplate(): Boolean = hasNoBaseplate
+    fun hasNoBaseplate(): Boolean = hasNoBaseplate > 0
+
+    fun setLocation(loc: Location){
+        packetBundle[0] = packetGen.create(loc)
+        if (loc.distanceSquared(location) > 64){
+            packetGen.teleport(loc).sendTo(eligiblePlayers())
+        } else {
+            packetGen.move(location, loc)
+        }
+
+        location = loc
+    }
+
+    fun getLocation(): Location = location
+
+    fun remove(){
+        Ranger.remove(this)
+        destroyPacket.sendTo(location.world!!.players)
+
+        StandAPI.getPlugin().launch {
+            delay(120.ticks)
+            destroyPacket.sendTo(location.world!!.players)
+        }
+    }
 }

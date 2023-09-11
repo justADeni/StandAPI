@@ -19,11 +19,10 @@ object Misc {
         }
     }
 
-    fun PacketContainer.sendTo(players: Set<Player>){
+    fun HashMap<Int, PacketContainer>.sendTo(players: List<Player>){
         val manager = StandAPI.getManager()
         for (player in players){
-            manager.sendServerPacket(player, this)
+            this.values.forEach { manager.sendServerPacket(player, it) }
         }
     }
-
 }

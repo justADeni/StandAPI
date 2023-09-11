@@ -8,12 +8,10 @@ import com.comphenix.protocol.wrappers.WrappedDataValue
 import com.comphenix.protocol.wrappers.WrappedDataWatcher
 import com.comphenix.protocol.wrappers.WrappedDataWatcher.WrappedDataWatcherObject
 import com.google.common.collect.Lists
-import it.unimi.dsi.fastutil.Hash
 import org.bukkit.Location
 import org.bukkit.entity.EntityType
 import org.bukkit.inventory.ItemStack
 import java.util.*
-import kotlin.collections.HashMap
 
 
 class PacketGenerator(val id: Int, val uuid: UUID){
@@ -90,7 +88,7 @@ class PacketGenerator(val id: Int, val uuid: UUID){
     }
     */
 
-    fun metadata(properties: Map<Int, Any>){
+    fun metadata(properties: Map<Int, Any>): PacketContainer{
         val packet = PacketContainer(PacketType.Play.Server.ENTITY_METADATA)
         packet.integers.write(0, id)
         val dataWatcher = watcher.deepClone()
@@ -99,19 +97,25 @@ class PacketGenerator(val id: Int, val uuid: UUID){
         for (index in properties.keys) {
             val info = properties[index]
 
-            if (info is String) {
-                val chatSerializer: WrappedDataWatcher.Serializer =
-                    WrappedDataWatcher.Registry.getChatComponentSerializer(true)
-                val optChatFieldWatcher = WrappedDataWatcherObject(2, chatSerializer)
-                val optChatField = Optional.of(WrappedChatComponent.fromChatMessage(info)[0].handle)
+            when (info) {
+                is String -> {
+                    val chatSerializer: WrappedDataWatcher.Serializer =
+                        WrappedDataWatcher.Registry.getChatComponentSerializer(true)
+                    val optChatFieldWatcher = WrappedDataWatcherObject(index, chatSerializer)
+                    val optChatField = Optional.of(WrappedChatComponent.fromChatMessage(info)[0].handle)
+                    dataWatcher.setObject(optChatFieldWatcher, optChatField)
+                }
 
-                dataWatcher.setObject(optChatFieldWatcher, optChatField)
-            }
-            else if (info is Boolean) {
-                dataWatcher.setObject(index, info)
-            }
-            else if (info is Byte) {
-                dataWatcher.setObject(index, info)
+                is Boolean -> {
+                    val setBool = WrappedDataWatcherObject(index, WrappedDataWatcher.Registry.get(Boolean::class.java))
+                    dataWatcher.setObject(setBool, info as Boolean)
+                }
+
+                is Byte -> {
+                    val setByte = WrappedDataWatcherObject(index, WrappedDataWatcher.Registry.get(Byte::class.java))
+                    dataWatcher.setObject(setByte, info.toByte())
+                    //dataWatcher.setObject(index, info)
+                }
             }
         }
 
@@ -123,5 +127,27 @@ class PacketGenerator(val id: Int, val uuid: UUID){
             wrappedDataValueList.add(WrappedDataValue(dataWatcherObject.index, dataWatcherObject.serializer, entry.rawValue))
         }
         packet.dataValueCollectionModifier.write(0, wrappedDataValueList)
+
+        return packet
+    }
+
+    fun teleport(newLocation: Location): PacketContainer{
+        val packet = PacketContainer(PacketType.Play.Server.ENTITY_TELEPORT)
+        packet.integers.write(0, id)
+        packet.doubles.write(0, newLocation.x)
+        packet.doubles.write(1, newLocation.y)
+        packet.doubles.write(2, newLocation.z)
+
+        return packet
+    }
+
+    fun move(oldLocation: Location, newLocation: Location): PacketContainer{
+        val packet = PacketContainer(PacketType.Play.Server.REL_ENTITY_MOVE)
+        packet.integers.write(0, id)
+        packet.shorts.write(0, ((newLocation.x * 32 - oldLocation.x * 32)*128).toInt().toShort())
+        packet.shorts.write(1, ((newLocation.y * 32 - oldLocation.y * 32)*128).toInt().toShort())
+        packet.shorts.write(2, ((newLocation.z * 32 - oldLocation.z * 32)*128).toInt().toShort())
+
+        return packet
     }
 }

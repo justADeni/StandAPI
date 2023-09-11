@@ -2,11 +2,11 @@ package com.github.justadeni.standapi
 
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.ProtocolManager
-import org.bukkit.command.Command
-import org.bukkit.command.CommandSender
+import com.github.shynixn.mccoroutine.bukkit.SuspendingJavaPlugin
+import com.github.shynixn.mccoroutine.bukkit.launch
 import org.bukkit.plugin.java.JavaPlugin
 
-class StandAPI : JavaPlugin() {
+class StandAPI : SuspendingJavaPlugin() {
 
     companion object {
 
@@ -23,16 +23,18 @@ class StandAPI : JavaPlugin() {
         }
     }
 
-    override fun onLoad() {
+    override suspend fun onLoadAsync() {
         plugin = this
         manager = ProtocolLibrary.getProtocolManager()
     }
 
-    override fun onEnable() {
+    override suspend fun onEnableAsync() {
         getCommand("standapi")!!.setExecutor(com.github.justadeni.standapi.testing.Command())
+        launch { Ranger.tick() }
     }
 
-    override fun onDisable() {
-        //plugin = null
+
+    override suspend fun onDisableAsync() {
+
     }
 }
