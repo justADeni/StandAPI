@@ -7,10 +7,11 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent
 import com.comphenix.protocol.wrappers.WrappedDataValue
 import com.comphenix.protocol.wrappers.WrappedDataWatcher
 import com.comphenix.protocol.wrappers.WrappedDataWatcher.WrappedDataWatcherObject
-import com.google.common.collect.Lists
+import net.minecraft.core.Rotations
 import org.bukkit.Location
 import org.bukkit.entity.EntityType
 import org.bukkit.inventory.ItemStack
+import org.bukkit.util.Vector
 import java.util.*
 
 
@@ -88,6 +89,7 @@ class PacketGenerator(val id: Int, val uuid: UUID){
     }
     */
 
+    /*
     fun metadata(properties: Map<Int, Any>): PacketContainer{
         val packet = PacketContainer(PacketType.Play.Server.ENTITY_METADATA)
         packet.integers.write(0, id)
@@ -95,20 +97,13 @@ class PacketGenerator(val id: Int, val uuid: UUID){
         packet.watchableCollectionModifier.write(0, dataWatcher.watchableObjects)
 
         for (index in properties.keys) {
-            val info = properties[index]
-
-            when (info) {
+            when (val info = properties[index]) {
                 is String -> {
                     val chatSerializer: WrappedDataWatcher.Serializer =
                         WrappedDataWatcher.Registry.getChatComponentSerializer(true)
                     val optChatFieldWatcher = WrappedDataWatcherObject(index, chatSerializer)
                     val optChatField = Optional.of(WrappedChatComponent.fromChatMessage(info)[0].handle)
                     dataWatcher.setObject(optChatFieldWatcher, optChatField)
-                }
-
-                is Boolean -> {
-                    val setBool = WrappedDataWatcherObject(index, WrappedDataWatcher.Registry.get(Boolean::class.java))
-                    dataWatcher.setObject(setBool, info as Boolean)
                 }
 
                 is Byte -> {
@@ -126,6 +121,34 @@ class PacketGenerator(val id: Int, val uuid: UUID){
             val dataWatcherObject: WrappedDataWatcherObject = entry.watcherObject
             wrappedDataValueList.add(WrappedDataValue(dataWatcherObject.index, dataWatcherObject.serializer, entry.rawValue))
         }
+        packet.dataValueCollectionModifier.write(0, wrappedDataValueList)
+
+        return packet
+    }
+    */
+
+    fun metadata(bytes: Pair<Byte, Byte>, isCustomNameVisible: Boolean, customName: String, rotations: List<Rotations>): PacketContainer{
+        val packet = PacketContainer(PacketType.Play.Server.ENTITY_METADATA)
+        packet.integers.write(0, id)
+        val dataWatcher = watcher.deepClone()
+
+        dataWatcher.setObject(WrappedDataWatcherObject(0, WrappedDataWatcher.Registry.get(java.lang.Byte::class.java)), bytes.first)
+        dataWatcher.setObject(WrappedDataWatcherObject(15, WrappedDataWatcher.Registry.get(java.lang.Byte::class.java)), bytes.second)
+        dataWatcher.setObject(WrappedDataWatcherObject(3, WrappedDataWatcher.Registry.get(java.lang.Boolean::class.java)), isCustomNameVisible)
+        dataWatcher.setObject(WrappedDataWatcherObject(2, WrappedDataWatcher.Registry.getChatComponentSerializer(true)), Optional.of(WrappedChatComponent.fromChatMessage(customName)[0].handle))
+
+        for (index in 16..21){
+            dataWatcher.setObject(WrappedDataWatcherObject(index, WrappedDataWatcher.Registry.get(Rotations::class.java)), rotations[index-16])
+        }
+
+        val wrappedDataValueList: MutableList<WrappedDataValue> = ArrayList()
+
+        for (entry in dataWatcher.watchableObjects) {
+            if (entry == null) continue
+            val watcherObject = entry.watcherObject
+            wrappedDataValueList.add(WrappedDataValue(watcherObject.index, watcherObject.serializer, entry.rawValue))
+        }
+
         packet.dataValueCollectionModifier.write(0, wrappedDataValueList)
 
         return packet

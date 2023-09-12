@@ -2,8 +2,10 @@ package com.github.justadeni.standapi
 
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.ProtocolManager
+import com.github.justadeni.standapi.testing.TestCommand
 import com.github.shynixn.mccoroutine.bukkit.SuspendingJavaPlugin
 import com.github.shynixn.mccoroutine.bukkit.launch
+import com.github.shynixn.mccoroutine.bukkit.setSuspendingExecutor
 import org.bukkit.plugin.java.JavaPlugin
 
 class StandAPI : SuspendingJavaPlugin() {
@@ -29,7 +31,7 @@ class StandAPI : SuspendingJavaPlugin() {
     }
 
     override suspend fun onEnableAsync() {
-        getCommand("standapi")!!.setExecutor(com.github.justadeni.standapi.testing.Command())
+        getCommand("standapi")!!.setSuspendingExecutor(TestCommand())
         launch { Ranger.tick() }
     }
 

@@ -35,9 +35,10 @@ class PacketStand(location: Location) {
     private var isSmall = 0x00 //15, 0x01
     private var hasArms = 0x00 //15, 0x04
     private var hasNoBaseplate = 0x00 //15, 0x08
+    private var isMarker = 0x00 //15, 0x10
 
     private var rotations = listOf(
-        Rotations(0f, 0f, 0f), //head 16
+        Rotations(70f, 0f, 0f), //head 16
         Rotations(0f, 0f, 0f), //body 17
         Rotations(-10f, 0f, -10f), //left arm 18
         Rotations(-15f, 0f, 10f), //right arm 19
@@ -92,11 +93,11 @@ class PacketStand(location: Location) {
     }
 
     private fun updateMetadata(){
-        packetBundle[2] = packetGen.metadata(mapOf(
-            kotlin.Pair(0, isInvisible or hasGlowingEffect),
-            kotlin.Pair(2, customName),
-            kotlin.Pair(3, isCustomNameVisible),
-            kotlin.Pair(15, isSmall or hasArms or hasNoBaseplate)))
+        packetBundle[2] = packetGen.metadata(
+            kotlin.Pair((isInvisible or hasGlowingEffect).toByte(), (isSmall or hasArms or hasNoBaseplate).toByte()),
+            isCustomNameVisible,
+            customName,
+            rotations)
     }
 
     fun getEquipment(slot: ItemSlot): ItemStack? {
@@ -151,6 +152,13 @@ class PacketStand(location: Location) {
     }
 
     fun hasNoBaseplate(): Boolean = hasNoBaseplate > 0
+
+    fun setMarker(value: Boolean){
+        isMarker = if (value) 0x10 else 0x00
+        updateMetadata()
+    }
+
+    fun isMarker(): Boolean = isMarker > 0
 
     fun setLocation(loc: Location){
         packetBundle[0] = packetGen.create(loc)
