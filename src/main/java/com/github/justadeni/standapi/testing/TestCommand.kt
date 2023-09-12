@@ -2,7 +2,11 @@ package com.github.justadeni.standapi.testing
 
 import com.comphenix.protocol.wrappers.EnumWrappers
 import com.github.justadeni.standapi.PacketStand
+import com.github.justadeni.standapi.StandAPI
 import com.github.shynixn.mccoroutine.bukkit.SuspendingCommandExecutor
+import com.github.shynixn.mccoroutine.bukkit.launch
+import com.github.shynixn.mccoroutine.bukkit.ticks
+import kotlinx.coroutines.delay
 import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -53,7 +57,13 @@ class TestCommand: SuspendingCommandExecutor {
                 testStand!!.remove()
             }
             "rotatehead" -> {
-                //TODO: add test case
+                sender.sendMessage("stand head rotating")
+                StandAPI.getPlugin().launch {
+                    for (i in 0..360){
+                        //testStand!!.
+                        delay(5.ticks)
+                    }
+                }
             }
         }
 

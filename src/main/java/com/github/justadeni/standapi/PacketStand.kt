@@ -40,7 +40,7 @@ class PacketStand(location: Location) {
     private var isMarker = 0x00 //15, 0x10
 
     private var rotations = listOf(
-        Rotations(70f, 0f, 0f), //head 16
+        Rotations(0f, 0f, 0f), //head 16
         Rotations(0f, 0f, 0f), //body 17
         Rotations(-10f, 0f, -10f), //left arm 18
         Rotations(-15f, 0f, 10f), //right arm 19
@@ -180,8 +180,15 @@ class PacketStand(location: Location) {
             location = loc
             Ranger.add(this)
             packetBundle.sendTo(eligiblePlayers())
+
         } else if (loc.distanceSquared(location) > 64){
-            packetGen.teleport(loc).sendTo(eligiblePlayers())
+
+            for (player in eligiblePlayers())
+                if (player.location.distanceSquared(location) > renderDistance2)
+                    packetBundle.sendTo(listOf(player))
+                else
+                    packetGen.teleport(loc).sendTo(eligiblePlayers())
+
         } else {
             packetGen.move(location, loc).sendTo(eligiblePlayers())
         }

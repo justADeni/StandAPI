@@ -41,11 +41,10 @@ object Ranger {
         while (true) {
 
             val snapshotMap = ticking.toMap()
+
             for (world in snapshotMap.keys){
+                for (stand in snapshotMap[world]!!){
 
-                val stands = snapshotMap[world]!!
-
-                for (stand in stands){
                     val possiblePlayers = world.players.toMutableList().also { it.removeAll(stand.excludedPlayers()) }
                     val eligiblePlayers = stand.eligiblePlayers()
                     val includedPlayers = stand.includedPlayers
