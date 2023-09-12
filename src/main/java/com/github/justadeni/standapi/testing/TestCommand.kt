@@ -24,6 +24,7 @@ class TestCommand: SuspendingCommandExecutor {
             "spawn" -> {
                 sender.sendMessage("stand spawned!")
                 testStand = PacketStand(sender.location)
+                testStand!!.setRenderDistance(1)
             }
             "equipment" -> {
                 sender.sendMessage("stand equipped")
@@ -52,7 +53,7 @@ class TestCommand: SuspendingCommandExecutor {
                 testStand!!.remove()
             }
             "rotatehead" -> {
-
+                //TODO: add test case
             }
         }
 

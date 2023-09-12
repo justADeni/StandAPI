@@ -23,7 +23,9 @@ class PacketStand(location: Location) {
 
     private var location = location
     private var renderDistance2 = 9216 //6 chunks
-    private val excludedPlayers = mutableListOf<Int>()
+    internal val includedPlayers = mutableListOf<Player?>()
+    private var excludedPlayers = mutableListOf<Player?>()
+
     private val equipment = mutableListOf<Pair<ItemSlot, ItemStack>>()
 
     private var isInvisible = 0x00 //0, 0x20
@@ -51,23 +53,32 @@ class PacketStand(location: Location) {
 
     init {
         Ranger.add(this)
+        packetBundle.sendTo(eligiblePlayers())
+        includedPlayers.addAll(eligiblePlayers())
     }
 
     internal fun eligiblePlayers(): List<Player> = location.world!!.players.asSequence()
         .filter { it.location.distanceSquared(location) <= renderDistance2 }
-        .filterNot { excludedPlayers.contains(it.uniqueId.hashCode()) }
+        .filterNot { excludedPlayers.contains(it) }
         .toList()
 
     fun excludePlayer(player: Player){
-        if (!excludedPlayers.contains(player.uniqueId.hashCode()))
-            excludedPlayers.add(player.uniqueId.hashCode())
+        if (!excludedPlayers.contains(player))
+            excludedPlayers.add(player)
 
         destroyPacket.sendTo(listOf(player))
     }
 
     fun unexcludePlayer(player: Player){
-        excludedPlayers.remove(player.uniqueId.hashCode())
+        excludedPlayers.remove(player)
         //Send All Packets
+        if (eligiblePlayers().contains(player))
+            packetBundle.sendTo(listOf(player))
+    }
+
+    fun excludedPlayers(): List<Player?> {
+        excludedPlayers = excludedPlayers.filterNotNull().toMutableList()
+        return excludedPlayers
     }
 
     fun setRenderDistance(chunks: Int){
@@ -89,15 +100,15 @@ class PacketStand(location: Location) {
         if (duplicateChecked == equipment)
             duplicateChecked.add(Pair(slot, item))
 
-        packetBundle[1] = packetGen.equipment(duplicateChecked)
+        packetBundle[1] = packetGen.equipment(duplicateChecked).also { it.sendTo(eligiblePlayers()) }
     }
 
     private fun updateMetadata(){
         packetBundle[2] = packetGen.metadata(
-            kotlin.Pair((isInvisible or hasGlowingEffect).toByte(), (isSmall or hasArms or hasNoBaseplate).toByte()),
+            kotlin.Pair((isInvisible or hasGlowingEffect).toByte(), (isSmall or hasArms or hasNoBaseplate or isMarker).toByte()),
             isCustomNameVisible,
             customName,
-            rotations)
+            rotations).also { it.sendTo(eligiblePlayers()) }
     }
 
     fun getEquipment(slot: ItemSlot): ItemStack? {
@@ -172,7 +183,7 @@ class PacketStand(location: Location) {
         } else if (loc.distanceSquared(location) > 64){
             packetGen.teleport(loc).sendTo(eligiblePlayers())
         } else {
-            packetGen.move(location, loc)
+            packetGen.move(location, loc).sendTo(eligiblePlayers())
         }
 
         location = loc

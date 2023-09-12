@@ -35,7 +35,6 @@ class StandAPI : SuspendingJavaPlugin() {
         launch { Ranger.tick() }
     }
 
-
     override suspend fun onDisableAsync() {
 
     }
