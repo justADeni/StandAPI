@@ -7,6 +7,8 @@ object Misc {
 
     private var id = 9999
 
+    fun currentID() = id
+
     fun getID(): Int {
         id += 1
         return id

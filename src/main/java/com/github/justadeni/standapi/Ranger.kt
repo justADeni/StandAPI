@@ -5,6 +5,7 @@ import com.github.shynixn.mccoroutine.bukkit.asyncDispatcher
 import com.github.shynixn.mccoroutine.bukkit.ticks
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import net.minecraft.network.PacketListener
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -12,6 +13,15 @@ import org.bukkit.entity.Player
 object Ranger {
 
     private val ticking = hashMapOf<World, MutableList<PacketStand>>()
+
+    fun find(id: Int): PacketStand? {
+        for (list in ticking.values)
+            for (stand in list)
+                if (stand.id == id)
+                    return stand
+
+        return null
+    }
 
     fun add(stand: PacketStand){
         val w = stand.getLocation().world!!
@@ -26,26 +36,6 @@ object Ranger {
         val w = stand.getLocation().world!!
         ticking[w]?.remove(stand)
     }
-
-    /*
-    suspend fun tick(){
-        withContext(StandAPI.getPlugin().asyncDispatcher) {
-            while (true){
-                val snapshotMap = ticking.toMap()
-                for (world in snapshotMap.keys){
-                    val stands = snapshotMap[world]!!
-                    for (stand in stands){
-                        val eligiblePlayers = stand.eligiblePlayers()
-                        stand.packetBundle.sendTo(eligiblePlayers)
-                        stand.destroyPacket.sendTo(world.players.toMutableList().also { it.removeAll(eligiblePlayers) })
-                    }
-                }
-
-                delay(100.ticks) //5 seconds
-            }
-        }
-    }
-    */
 
     suspend fun tick() = withContext(StandAPI.getPlugin().asyncDispatcher){
         while (true) {
