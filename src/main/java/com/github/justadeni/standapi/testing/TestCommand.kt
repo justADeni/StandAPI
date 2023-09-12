@@ -7,6 +7,7 @@ import com.github.shynixn.mccoroutine.bukkit.SuspendingCommandExecutor
 import com.github.shynixn.mccoroutine.bukkit.launch
 import com.github.shynixn.mccoroutine.bukkit.ticks
 import kotlinx.coroutines.delay
+import net.minecraft.core.Rotations
 import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -60,7 +61,7 @@ class TestCommand: SuspendingCommandExecutor {
                 sender.sendMessage("stand head rotating")
                 StandAPI.getPlugin().launch {
                     for (i in 0..360){
-                        //testStand!!.
+                        testStand!!.setHeadPose(Rotations(i.toFloat(), 0f, 0f))
                         delay(5.ticks)
                     }
                 }

@@ -39,7 +39,7 @@ class PacketStand(location: Location) {
     private var hasNoBaseplate = 0x00 //15, 0x08
     private var isMarker = 0x00 //15, 0x10
 
-    private var rotations = listOf(
+    private val rotations = mutableListOf(
         Rotations(0f, 0f, 0f), //head 16
         Rotations(0f, 0f, 0f), //body 17
         Rotations(-10f, 0f, -10f), //left arm 18
@@ -197,6 +197,48 @@ class PacketStand(location: Location) {
     }
 
     fun getLocation(): Location = location
+
+    fun setHeadPose(rotation: Rotations){
+        rotations[0] = rotation
+        updateMetadata()
+    }
+
+    fun getHeadPose() = rotations[0]
+
+    fun setBodyPose(rotation: Rotations){
+        rotations[1] = rotation
+        updateMetadata()
+    }
+
+    fun getBodyPose() = rotations[1]
+
+    fun setLeftArmPose(rotation: Rotations){
+        rotations[2] = rotation
+        updateMetadata()
+    }
+
+    fun getLeftArmPose() = rotations[2]
+
+    fun setRightArmPose(rotation: Rotations){
+        rotations[3] = rotation
+        updateMetadata()
+    }
+
+    fun getRightArmPose() = rotations[3]
+
+    fun setLeftLegPose(rotation: Rotations){
+        rotations[4] = rotation
+        updateMetadata()
+    }
+
+    fun getLeftLegPose() = rotations[4]
+
+    fun setRightlegPose(rotation: Rotations){
+        rotations[5] = rotation
+        updateMetadata()
+    }
+
+    fun getRightLegPose() = rotations[5]
 
     fun remove(){
         Ranger.remove(this)
