@@ -91,6 +91,9 @@
                 </executions>
                 <configuration>
                     <jvmTarget>17</jvmTarget>
+                    <compilerPlugins>
+                        <plugin>kotlinx-serialization</plugin>
+                    </compilerPlugins>
                 </configuration>
             </plugin>
             <plugin>
@@ -182,6 +185,22 @@
             <artifactId>kotlinx-coroutines-core</artifactId>
             <version>1.7.3</version>
             <type>pom</type>
+        </dependency>
+        <!--dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-serialization</artifactId>
+            <version>1.9.20-Beta</version>
+        </dependency-->
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-serialization-json-jvm</artifactId>
+            <version>1.6.0</version>
+            <!--scope>compile</scope-->
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>31.1-jre</version>
         </dependency>
     </dependencies>
 </project>

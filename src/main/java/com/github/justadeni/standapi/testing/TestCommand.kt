@@ -62,7 +62,7 @@ class TestCommand: SuspendingCommandExecutor {
                 StandAPI.getPlugin().launch {
                     for (i in 0..360){
                         testStand!!.setHeadPose(Rotations(i.toFloat(), 0f, 0f))
-                        delay(5.ticks)
+                        delay(1.ticks)
                     }
                 }
             }
