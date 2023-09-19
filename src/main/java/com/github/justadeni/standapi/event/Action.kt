@@ -1,6 +1,6 @@
-package com.github.justadeni.standapi.event;
+package com.github.justadeni.standapi.event
 
-public enum Action {
+enum class Action {
     RIGHT_CLICK,
     LEFT_CLICK
 }
