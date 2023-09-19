@@ -22,34 +22,41 @@ import java.io.ByteArrayOutputStream
 
 class PairSerializer(override val descriptor: SerialDescriptor) : KSerializer<HashMap<ItemSlot, ItemStack>> {
 
-//TODO: rewrite dis
     override fun serialize(encoder: Encoder, value: HashMap<ItemSlot, ItemStack>) {
-        TODO("Not yet implemented")
+        var string = ""
+        value.forEach { (t, u) ->
+            string += t.name + ","
+
+            val outputStream = ByteArrayOutputStream()
+            val dataOutput = BukkitObjectOutputStream(outputStream)
+            dataOutput.writeObject(u)
+            dataOutput.close()
+
+            string += Base64Coder.encodeLines(outputStream.toByteArray()) + "|"
+        }
+        encoder.encodeString(string)
     }
 
-    override fun serialize(encoder: Encoder, value: Pair<ItemSlot, ItemStack>) {
-        val first = value.first.name
+    override fun deserialize(decoder: Decoder): HashMap<ItemSlot, ItemStack> {
 
-        val outputStream = ByteArrayOutputStream()
-        val dataOutput = BukkitObjectOutputStream(outputStream)
-        dataOutput.writeObject(value.second)
-        dataOutput.close()
+        val map = hashMapOf<ItemSlot, ItemStack>()
 
-        val second = Base64Coder.encodeLines(outputStream.toByteArray())
+        val mapParts = decoder.decodeString().split("|")
+        for (part in mapParts){
+            if (!part.contains(","))
+                continue
 
-        encoder.encodeString("$first|$second")
-    }
+            val pairParts = part.split(",")
 
-    override fun deserialize(decoder: Decoder): MutableMap<ItemSlot, ItemStack> {
-        val pair = decoder.decodeString().split("|", limit = 2)
-        val first = EnumWrappers.ItemSlot.valueOf(pair[0])
+            val slot = ItemSlot.valueOf(pairParts[0])
 
-        val inputStream = ByteArrayInputStream(Base64Coder.decodeLines(pair[1]))
-        val dataInput = BukkitObjectInputStream(inputStream)
+            val inputStream = ByteArrayInputStream(Base64Coder.decodeLines(pairParts[1]))
+            val dataInput = BukkitObjectInputStream(inputStream)
 
-        val second = dataInput.readObject() as ItemStack
-        dataInput.close()
+            val item = dataInput.readObject() as ItemStack
 
-        return Pair(first, second)
+            map[slot] = item
+        }
+        return map
     }
 }
