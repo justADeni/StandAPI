@@ -4,12 +4,14 @@ import com.github.justadeni.standapi.PacketStand
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializer
-import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import java.util.*
 
-class UUIDSerializer(override val descriptor: SerialDescriptor): KSerializer<UUID> {
+class UUIDSerializer(): KSerializer<UUID> {
+
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.github.justadeni.standapi.storage.UUIDSerializer", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: UUID) {
         encoder.encodeString(value.toString())

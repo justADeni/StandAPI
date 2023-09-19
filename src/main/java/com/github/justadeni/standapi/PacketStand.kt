@@ -17,7 +17,7 @@ import org.bukkit.inventory.ItemStack
 import java.util.*
 import kotlin.math.sqrt
 
-@Serializable
+ @Serializable
 class PacketStand(@Serializable(with = LocationSerializer::class) private var location: Location) {
 
     val id = Misc.getID()

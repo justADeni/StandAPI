@@ -2,11 +2,15 @@ package com.github.justadeni.standapi.storage
 
 import com.github.justadeni.standapi.datatype.Rotation
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-class ListRotationSerializer(override val descriptor: SerialDescriptor) : KSerializer<MutableList<Rotation>> {
+class ListRotationSerializer() : KSerializer<MutableList<Rotation>> {
+
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.github.justadeni.standapi.storage.ListRotationSerializer", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: MutableList<Rotation>) {
         var string = ""

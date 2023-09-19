@@ -8,6 +8,8 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializer
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
@@ -20,7 +22,9 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 
-class PairSerializer(override val descriptor: SerialDescriptor) : KSerializer<HashMap<ItemSlot, ItemStack>> {
+class PairSerializer() : KSerializer<HashMap<ItemSlot, ItemStack>> {
+
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.github.justadeni.standapi.storage.PairSerializer", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: HashMap<ItemSlot, ItemStack>) {
         var string = ""

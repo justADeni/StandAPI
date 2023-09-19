@@ -1,6 +1,8 @@
 package com.github.justadeni.standapi.storage
 
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
@@ -8,7 +10,10 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import java.util.UUID
 
-class LocationSerializer(override val descriptor: SerialDescriptor) : KSerializer<Location> {
+class LocationSerializer() : KSerializer<Location> {
+
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.github.justadeni.standapi.storage.LocationSerializer", PrimitiveKind.STRING)
+
     override fun serialize(encoder: Encoder, value: Location) {
         encoder.encodeString("${value.world!!.uid},${value.x},${value.y},${value.z}")
     }
