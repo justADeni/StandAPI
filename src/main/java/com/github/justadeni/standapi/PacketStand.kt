@@ -23,7 +23,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     val id = Misc.getID()
 
     @Serializable(with = UUIDSerializer::class)
-    val uuid = UUID.randomUUID()
+    val uuid: UUID = UUID.randomUUID()
     private val packetGen = PacketGenerator(id, uuid)
 
     //private var location = location
@@ -58,7 +58,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     )
 
     @Transient
-    internal val packetBundle = hashMapOf(kotlin.Pair(0,packetGen.create(location)))
+    internal val packetBundle = hashMapOf(Pair(0,packetGen.create(location)))
     @Transient
     internal val destroyPacket = packetGen.destroy()
 
@@ -107,7 +107,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
 
     private fun updateMetadata(){
         packetBundle[2] = packetGen.metadata(
-            kotlin.Pair((isInvisible or hasGlowingEffect).toByte(), (isSmall or hasArms or hasNoBaseplate or isMarker).toByte()),
+            Pair((isInvisible or hasGlowingEffect).toByte(), (isSmall or hasArms or hasNoBaseplate or isMarker).toByte()),
             isCustomNameVisible,
             customName,
             rotations).also { it.sendTo(eligiblePlayers()) }

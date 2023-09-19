@@ -3,10 +3,14 @@ package com.github.justadeni.standapi.testing
 import com.comphenix.protocol.wrappers.EnumWrappers
 import com.github.justadeni.standapi.PacketStand
 import com.github.justadeni.standapi.StandAPI
+import com.github.justadeni.standapi.datatype.Rotation
 import com.github.shynixn.mccoroutine.bukkit.SuspendingCommandExecutor
 import com.github.shynixn.mccoroutine.bukkit.launch
 import com.github.shynixn.mccoroutine.bukkit.ticks
 import kotlinx.coroutines.delay
+import kotlinx.serialization.SerializationStrategy
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import net.minecraft.core.Rotations
 import org.bukkit.Material
 import org.bukkit.command.Command
@@ -18,6 +22,7 @@ class TestCommand: SuspendingCommandExecutor {
 
     companion object {
         var testStand: PacketStand? = null
+        var serializedString: String = ""
     }
 
     override suspend fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
@@ -56,15 +61,27 @@ class TestCommand: SuspendingCommandExecutor {
             "destroy" -> {
                 sender.sendMessage("stand destroyed")
                 testStand!!.remove()
+                testStand = null
             }
             "rotatehead" -> {
                 sender.sendMessage("stand head rotating")
                 StandAPI.getPlugin().launch {
                     for (i in 0..360){
-                        testStand!!.setHeadPose(Rotations(i.toFloat(), 0f, 0f))
+                        testStand!!.setHeadPose(Rotation(i.toFloat(), 0f, 0f))
                         delay(1.ticks)
                     }
                 }
+            }
+            "serialize" -> {
+                sender.sendMessage("stand serializing")
+                serializedString = Json.encodeToString(testStand!!)
+                testStand!!.remove()
+                testStand = null
+            }
+            "deserialize" -> {
+                sender.sendMessage("stand deserializing")
+                testStand = Json.decodeFromString(serializedString)
+                serializedString = ""
             }
         }
 
