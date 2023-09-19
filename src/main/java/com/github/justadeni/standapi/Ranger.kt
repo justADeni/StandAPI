@@ -5,10 +5,7 @@ import com.github.shynixn.mccoroutine.bukkit.asyncDispatcher
 import com.github.shynixn.mccoroutine.bukkit.ticks
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import net.minecraft.network.PacketListener
-import org.bukkit.Bukkit
 import org.bukkit.World
-import org.bukkit.entity.Player
 
 object Ranger {
 

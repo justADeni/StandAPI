@@ -15,6 +15,7 @@ import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.internal.MapLikeSerializer
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.io.BukkitObjectInputStream
 import org.bukkit.util.io.BukkitObjectOutputStream
@@ -27,39 +28,20 @@ class PairSerializer() : KSerializer<HashMap<ItemSlot, ItemStack>> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.github.justadeni.standapi.storage.PairSerializer", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: HashMap<ItemSlot, ItemStack>) {
-        var string = ""
+        val itemConfig = YamlConfiguration()
         value.forEach { (t, u) ->
-            string += t.name + ","
-
-            val outputStream = ByteArrayOutputStream()
-            val dataOutput = BukkitObjectOutputStream(outputStream)
-            dataOutput.writeObject(u)
-            dataOutput.close()
-
-            string += Base64Coder.encodeLines(outputStream.toByteArray()) + "|"
+            itemConfig.set(t.name, u)
         }
-        encoder.encodeString(string)
+        val serialized: String = itemConfig.saveToString()
+        encoder.encodeString(serialized)
     }
 
     override fun deserialize(decoder: Decoder): HashMap<ItemSlot, ItemStack> {
-
         val map = hashMapOf<ItemSlot, ItemStack>()
-
-        val mapParts = decoder.decodeString().split("|")
-        for (part in mapParts){
-            if (!part.contains(","))
-                continue
-
-            val pairParts = part.split(",")
-
-            val slot = ItemSlot.valueOf(pairParts[0])
-
-            val inputStream = ByteArrayInputStream(Base64Coder.decodeLines(pairParts[1]))
-            val dataInput = BukkitObjectInputStream(inputStream)
-
-            val item = dataInput.readObject() as ItemStack
-
-            map[slot] = item
+        val restoreConfig = YamlConfiguration()
+        restoreConfig.loadFromString(decoder.decodeString())
+        restoreConfig.getKeys(false).forEach {
+            map[ItemSlot.valueOf(it)] = restoreConfig.getItemStack(it)!!
         }
         return map
     }
