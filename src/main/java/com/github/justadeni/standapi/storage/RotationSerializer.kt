@@ -1,8 +1,7 @@
 package com.github.justadeni.standapi.storage
 
-import kotlinx.serialization.ExperimentalSerializationApi
+import com.github.justadeni.standapi.datatype.Rotation
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
