@@ -4,32 +4,33 @@ import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot
 import com.github.justadeni.standapi.Misc.sendTo
 import com.github.justadeni.standapi.datatype.Rotation
 import com.github.justadeni.standapi.storage.*
-import com.github.shynixn.mccoroutine.bukkit.asyncDispatcher
-import com.github.shynixn.mccoroutine.bukkit.launch
-import com.github.shynixn.mccoroutine.bukkit.ticks
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.*
 import kotlin.math.sqrt
 
- @Serializable
+@Serializable
 class PacketStand(@Serializable(with = LocationSerializer::class) private var location: Location) {
 
     val id = Misc.getID()
 
     @Serializable(with = UUIDSerializer::class)
     val uuid: UUID = UUID.randomUUID()
+
+    @Transient
     private val packetGen = PacketGenerator(id, uuid)
 
     //private var location = location
     private var renderDistance2 = 9216 //6 chunks
+
+    @Transient
     internal val includedPlayers = mutableListOf<Player?>()
-    private var excludedPlayers = mutableListOf<Player?>()
+
+    private var excludedPlayers = mutableListOf<@Serializable(with = UUIDSerializer::class) UUID>()
 
     /*@Serializable(with = PairSerializer::class)
     private val equipment = mutableListOf<Pair<ItemSlot, ItemStack>>()*/
@@ -64,33 +65,40 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
 
     init {
         Ranger.add(this)
-        packetBundle.sendTo(eligiblePlayers())
-        includedPlayers.addAll(eligiblePlayers())
+
+        updateMetadata()
+
+        if (equipment.isNotEmpty())
+            packetBundle[1] = packetGen.equipment(equipment)
+
+        val eligiblePlayers = eligiblePlayers()
+        packetBundle.sendTo(eligiblePlayers)
+        includedPlayers.addAll(eligiblePlayers)
     }
 
     internal fun eligiblePlayers(): List<Player> = location.world!!.players.asSequence()
         .filter { it.location.distanceSquared(location) <= renderDistance2 }
-        .filterNot { excludedPlayers.contains(it) }
+        .filterNot { excludedPlayers.contains(it.uniqueId) }
         .toList()
 
     fun excludePlayer(player: Player){
-        if (!excludedPlayers.contains(player))
-            excludedPlayers.add(player)
+        if (!excludedPlayers.contains(player.uniqueId))
+            excludedPlayers.add(player.uniqueId)
 
         destroyPacket.sendTo(listOf(player))
     }
 
     fun unexcludePlayer(player: Player){
-        excludedPlayers.remove(player)
+        excludedPlayers.remove(player.uniqueId)
         //Send All Packets
         if (eligiblePlayers().contains(player))
             packetBundle.sendTo(listOf(player))
     }
 
-    fun excludedPlayers(): List<Player?> {
-        excludedPlayers = excludedPlayers.filterNotNull().toMutableList()
-        return excludedPlayers
-    }
+    fun excludedPlayers(): List<Player> = excludedPlayers.asSequence()
+            .map { Bukkit.getPlayer(it) }
+            .filterNotNull()
+            .toList()
 
     fun setRenderDistance(chunks: Int){
         renderDistance2 = (chunks * 16)*(chunks * 16)
@@ -245,12 +253,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     fun remove(){
         Ranger.remove(this)
         destroyPacket.sendTo(location.world!!.players)
-
+        /*
         StandAPI.getPlugin().launch {
             withContext(StandAPI.getPlugin().asyncDispatcher) {
                 delay(120.ticks)
                 destroyPacket.sendTo(location.world!!.players)
             }
         }
+        */
     }
 }

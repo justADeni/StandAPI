@@ -8,10 +8,9 @@ import com.github.shynixn.mccoroutine.bukkit.SuspendingCommandExecutor
 import com.github.shynixn.mccoroutine.bukkit.launch
 import com.github.shynixn.mccoroutine.bukkit.ticks
 import kotlinx.coroutines.delay
-import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import net.minecraft.core.Rotations
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -75,6 +74,7 @@ class TestCommand: SuspendingCommandExecutor {
             "serialize" -> {
                 sender.sendMessage("stand serializing")
                 serializedString = Json.encodeToString(testStand!!)
+                Bukkit.broadcastMessage(serializedString)
                 testStand!!.remove()
                 testStand = null
             }

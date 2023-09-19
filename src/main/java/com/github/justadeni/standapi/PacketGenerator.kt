@@ -13,12 +13,11 @@ import kotlinx.serialization.Transient
 import net.minecraft.core.Rotations
 import org.bukkit.Location
 import org.bukkit.entity.EntityType
-import org.bukkit.entity.Item
 import org.bukkit.inventory.ItemStack
 import java.util.*
 import kotlin.collections.HashMap
 
-@Serializable
+//@Serializable
 class PacketGenerator(private val id: Int,@Serializable(with = UUIDSerializer::class) private val uuid: UUID){
 
     @Transient
