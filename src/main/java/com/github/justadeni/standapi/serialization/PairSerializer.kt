@@ -1,27 +1,14 @@
-package com.github.justadeni.standapi.storage
+package com.github.justadeni.standapi.serialization
 
-import com.comphenix.protocol.wrappers.EnumWrappers
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot
-import com.google.common.io.BaseEncoding.base64
-import it.unimi.dsi.fastutil.Hash
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.internal.MapLikeSerializer
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.ItemStack
-import org.bukkit.util.io.BukkitObjectInputStream
-import org.bukkit.util.io.BukkitObjectOutputStream
-import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 
 class PairSerializer() : KSerializer<HashMap<ItemSlot, ItemStack>> {
 

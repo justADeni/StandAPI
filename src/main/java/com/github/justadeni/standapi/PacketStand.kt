@@ -2,8 +2,9 @@ package com.github.justadeni.standapi
 
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot
 import com.github.justadeni.standapi.Misc.sendTo
+import com.github.justadeni.standapi.config.Config
 import com.github.justadeni.standapi.datatype.Rotation
-import com.github.justadeni.standapi.storage.*
+import com.github.justadeni.standapi.serialization.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import org.bukkit.Bukkit
@@ -11,7 +12,6 @@ import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.*
-import kotlin.math.sqrt
 
 @Serializable
 class PacketStand(@Serializable(with = LocationSerializer::class) private var location: Location) {
@@ -23,9 +23,6 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
 
     @Transient
     private val packetGen = PacketGenerator(id, uuid)
-
-    //private var location = location
-    private var renderDistance2 = 9216 //6 chunks
 
     @Transient
     internal val includedPlayers = mutableListOf<Player?>()
@@ -77,7 +74,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     internal fun eligiblePlayers(): List<Player> = location.world!!.players.asSequence()
-        .filter { it.location.distanceSquared(location) <= renderDistance2 }
+        .filter { it.location.distanceSquared(location) <= Config.renderDistance2() }
         .filterNot { excludedPlayers.contains(it.uniqueId) }
         .toList()
 
@@ -100,6 +97,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
             .filterNotNull()
             .toList()
 
+    /*
     fun setRenderDistance(chunks: Int){
         renderDistance2 = (chunks * 16)*(chunks * 16)
     }
@@ -107,6 +105,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     fun getRenderDistance(): Int {
         return sqrt((renderDistance2 / 16).toDouble()).toInt()
     }
+    */
 
     fun setEquipment(slot: ItemSlot, item: ItemStack){
         equipment[slot] = item
@@ -194,7 +193,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
         } else if (loc.distanceSquared(location) > 64){
 
             for (player in eligiblePlayers())
-                if (player.location.distanceSquared(location) > renderDistance2)
+                if (player.location.distanceSquared(location) > Config.renderDistance2())
                     packetBundle.sendTo(listOf(player))
                 else
                     packetGen.teleport(loc).sendTo(eligiblePlayers())

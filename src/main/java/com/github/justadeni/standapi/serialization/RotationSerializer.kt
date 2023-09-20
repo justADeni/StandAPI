@@ -1,4 +1,4 @@
-package com.github.justadeni.standapi.storage
+package com.github.justadeni.standapi.serialization
 
 import com.github.justadeni.standapi.datatype.Rotation
 import kotlinx.serialization.KSerializer

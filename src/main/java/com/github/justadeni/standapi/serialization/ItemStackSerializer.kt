@@ -1,4 +1,4 @@
-package com.github.justadeni.standapi.storage
+package com.github.justadeni.standapi.serialization
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind

@@ -2,7 +2,7 @@ package com.github.justadeni.standapi
 
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.ProtocolManager
-import com.github.justadeni.standapi.event.Interceptor
+import com.github.justadeni.standapi.event.UseEntityInterceptor
 import com.github.justadeni.standapi.testing.TestCommand
 import com.github.shynixn.mccoroutine.bukkit.SuspendingJavaPlugin
 import com.github.shynixn.mccoroutine.bukkit.launch
@@ -29,11 +29,12 @@ class StandAPI : SuspendingJavaPlugin() {
     override suspend fun onLoadAsync() {
         plugin = this
         manager = ProtocolLibrary.getProtocolManager()
+        saveDefaultConfig()
     }
 
     override suspend fun onEnableAsync() {
         getCommand("standapi")!!.setSuspendingExecutor(TestCommand())
-        Interceptor()
+        UseEntityInterceptor()
         launch { Ranger.tick() }
     }
 

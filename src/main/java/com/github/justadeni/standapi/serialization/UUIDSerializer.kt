@@ -1,9 +1,6 @@
-package com.github.justadeni.standapi.storage
+package com.github.justadeni.standapi.serialization
 
-import com.github.justadeni.standapi.PacketStand
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializer
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder

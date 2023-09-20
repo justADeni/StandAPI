@@ -13,13 +13,17 @@ import com.github.justadeni.standapi.StandAPI.Companion.getPlugin
 import com.github.shynixn.mccoroutine.bukkit.launch
 import org.bukkit.Bukkit
 
-class Interceptor {
+class UseEntityInterceptor {
     init {
         getManager().addPacketListener(object : PacketAdapter(getPlugin(), ListenerPriority.NORMAL, PacketType.Play.Client.USE_ENTITY) {
             override fun onPacketReceiving(event: PacketEvent) {
                 val player = event.player
                 val packet = event.packet
                 val id = packet.integers.read(0)
+
+                if (id < 9999 || id > Misc.currentID())
+                    return
+
                 val stand = Ranger.find(id)
 
                 val action = when (packet.enumEntityUseActions.read(0).action){
@@ -28,8 +32,7 @@ class Interceptor {
                     EnumWrappers.EntityUseAction.INTERACT_AT -> Action.RIGHT_CLICK
                 }
 
-                if (id > 9999 && id <= Misc.currentID())
-                    StandAPI.getPlugin().launch { Bukkit.getPluginManager().callEvent(PacketStandEvent(player, id, stand, action)) }
+                StandAPI.getPlugin().launch { Bukkit.getPluginManager().callEvent(PacketStandEvent(player, id, stand, action)) }
             }
         })
     }
