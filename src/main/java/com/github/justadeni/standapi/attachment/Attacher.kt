@@ -8,6 +8,8 @@ object Attacher {
 
     private val attached = HashMap<Int, MutableList<Pair<Int, Offset>>>()
 
+    //TODO: send packets and teleport the stand
+
     fun PacketStand.attachTo(entity: Entity) {
         this.attachTo(entity, Offset.ZERO)
     }
