@@ -8,8 +8,6 @@ object Attacher {
 
     private val attached = HashMap<Int, MutableList<Pair<Int, Offset>>>()
 
-    //TODO: send packets and teleport the stand
-
     fun PacketStand.attachTo(entity: Entity) {
         this.attachTo(entity, Offset.ZERO)
     }
@@ -18,6 +16,8 @@ object Attacher {
         val key = entity.entityId
 
         remove(this.id)
+
+        this.setLocation(entity.location)
 
         if (!attached.containsKey(key)) {
             attached[key] = mutableListOf(Pair(this.id, offset))

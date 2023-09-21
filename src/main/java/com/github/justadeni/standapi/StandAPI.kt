@@ -2,6 +2,7 @@ package com.github.justadeni.standapi
 
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.ProtocolManager
+import com.github.justadeni.standapi.storage.Config
 import com.github.justadeni.standapi.event.UseEntityInterceptor
 import com.github.justadeni.standapi.testing.TestCommand
 import com.github.shynixn.mccoroutine.bukkit.SuspendingJavaPlugin
@@ -30,6 +31,7 @@ class StandAPI : SuspendingJavaPlugin() {
         plugin = this
         manager = ProtocolLibrary.getProtocolManager()
         saveDefaultConfig()
+        Config.reload()
     }
 
     override suspend fun onEnableAsync() {
