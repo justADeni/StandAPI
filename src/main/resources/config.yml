@@ -1,8 +1,8 @@
 # StandAPI configuration file
 
-#Distance over which PacketStands will be visible
+#Distance in blocks over which PacketStands will be visible
 #Doesn't affect performance
-RenderDistance: 9216
+RenderDistance: 192
 
 #Should plugin save stands and load them on startup?
 SavingEnabled: true

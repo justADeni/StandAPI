@@ -12,7 +12,7 @@ import java.util.UUID
 
 class LocationSerializer() : KSerializer<Location> {
 
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.github.justadeni.standapi.storage.LocationSerializer", PrimitiveKind.STRING)
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.github.justadeni.standapi.serialization.LocationSerializer", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: Location) {
         encoder.encodeString("${value.world!!.uid},${value.x},${value.y},${value.z}")

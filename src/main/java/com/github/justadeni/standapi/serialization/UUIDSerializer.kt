@@ -8,7 +8,7 @@ import java.util.*
 
 class UUIDSerializer(): KSerializer<UUID> {
 
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.github.justadeni.standapi.storage.UUIDSerializer", PrimitiveKind.STRING)
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.github.justadeni.standapi.serialization.UUIDSerializer", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: UUID) {
         encoder.encodeString(value.toString())

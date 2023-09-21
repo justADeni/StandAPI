@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack
 
 class PairSerializer() : KSerializer<HashMap<ItemSlot, ItemStack>> {
 
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.github.justadeni.standapi.storage.PairSerializer", PrimitiveKind.STRING)
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.github.justadeni.standapi.serialization.PairSerializer", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: HashMap<ItemSlot, ItemStack>) {
         val itemConfig = YamlConfiguration()

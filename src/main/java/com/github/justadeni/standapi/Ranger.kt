@@ -34,7 +34,6 @@ object Ranger {
         ticking[w]?.remove(stand)
     }
 
-    //TODO: Perhaps rework this part, make it player-centric not armorstand-centric
     suspend fun tick() = withContext(StandAPI.getPlugin().asyncDispatcher){
         while (true) {
 
@@ -71,7 +70,8 @@ object Ranger {
                 }
             }
 
-            delay(100.ticks)
+            delay(20.ticks)
         }
     }
+
 }

@@ -10,7 +10,7 @@ import kotlinx.serialization.encoding.Encoder
 
 class RotationSerializer(): KSerializer<Rotation> {
 
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.github.justadeni.standapi.storage.RotationSerializer", PrimitiveKind.STRING)
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.github.justadeni.standapi.serialization.RotationSerializer", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: Rotation) {
         encoder.encodeString("${value.pitch},${value.yaw},${value.roll}")

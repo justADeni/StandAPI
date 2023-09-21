@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack
 
 class ItemStackSerializer() : KSerializer<ItemStack> {
 
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.github.justadeni.standapi.storage.ItemStackSerializer", PrimitiveKind.STRING)
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.github.justadeni.standapi.serialization.ItemStackSerializer", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: ItemStack) {
         val itemConfig = YamlConfiguration()
