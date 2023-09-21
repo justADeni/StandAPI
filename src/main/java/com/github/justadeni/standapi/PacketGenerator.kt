@@ -7,9 +7,6 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent
 import com.comphenix.protocol.wrappers.WrappedDataValue
 import com.comphenix.protocol.wrappers.WrappedDataWatcher
 import com.comphenix.protocol.wrappers.WrappedDataWatcher.WrappedDataWatcherObject
-import com.github.justadeni.standapi.serialization.UUIDSerializer
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 import net.minecraft.core.Rotations
 import org.bukkit.Location
 import org.bukkit.entity.EntityType
@@ -17,10 +14,8 @@ import org.bukkit.inventory.ItemStack
 import java.util.*
 import kotlin.collections.HashMap
 
-//@Serializable
-class PacketGenerator(private val id: Int,@Serializable(with = UUIDSerializer::class) private val uuid: UUID){
+class PacketGenerator(private val id: Int, private val uuid: UUID){
 
-    @Transient
     private val watcher = WrappedDataWatcher()
 
     fun create(location: Location): PacketContainer{
