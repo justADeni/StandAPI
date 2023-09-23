@@ -11,7 +11,7 @@ import com.github.shynixn.mccoroutine.bukkit.launch
 class MoveInterceptor {
     init {
         StandAPI.getManager().addPacketListener(object : PacketAdapter(StandAPI.getPlugin(), ListenerPriority.NORMAL, PacketType.Play.Server.REL_ENTITY_MOVE) {
-            override fun onPacketReceiving(event: PacketEvent) {
+            override fun onPacketSending(event: PacketEvent) {
                 val player = event.player
                 val packet = event.packet
                 val id = packet.integers.read(0)
