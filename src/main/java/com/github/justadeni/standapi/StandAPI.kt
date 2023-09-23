@@ -4,14 +4,13 @@ import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.ProtocolManager
 import com.github.justadeni.standapi.attachment.EntityDeathListener
 import com.github.justadeni.standapi.attachment.MoveInterceptor
+import com.github.justadeni.standapi.attachment.RotMoveInterceptor
 import com.github.justadeni.standapi.attachment.TeleportInterceptor
 import com.github.justadeni.standapi.storage.Config
 import com.github.justadeni.standapi.event.UseEntityInterceptor
-import com.github.justadeni.standapi.testing.TestCommand
-import com.github.shynixn.mccoroutine.bukkit.SuspendingJavaPlugin
-import com.github.shynixn.mccoroutine.bukkit.launch
-import com.github.shynixn.mccoroutine.bukkit.registerSuspendingEvents
-import com.github.shynixn.mccoroutine.bukkit.setSuspendingExecutor
+import com.github.justadeni.standapi.testing.TabComplete
+import com.github.justadeni.standapi.testing.Command
+import com.github.shynixn.mccoroutine.bukkit.*
 import org.bukkit.plugin.java.JavaPlugin
 
 class StandAPI : SuspendingJavaPlugin() {
@@ -39,10 +38,12 @@ class StandAPI : SuspendingJavaPlugin() {
     }
 
     override suspend fun onEnableAsync() {
-        getCommand("standapi")!!.setSuspendingExecutor(TestCommand())
+        getCommand("standapi")!!.setSuspendingExecutor(Command())
+        getCommand("standapi")!!.setSuspendingTabCompleter(TabComplete())
         server.pluginManager.registerSuspendingEvents(EntityDeathListener(), this)
         UseEntityInterceptor()
         MoveInterceptor()
+        RotMoveInterceptor()
         TeleportInterceptor()
         launch { Ranger.tick() }
     }

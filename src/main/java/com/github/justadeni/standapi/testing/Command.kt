@@ -3,7 +3,9 @@ package com.github.justadeni.standapi.testing
 import com.comphenix.protocol.wrappers.EnumWrappers
 import com.github.justadeni.standapi.PacketStand
 import com.github.justadeni.standapi.StandAPI
+import com.github.justadeni.standapi.datatype.Offset
 import com.github.justadeni.standapi.datatype.Rotation
+import com.github.justadeni.standapi.storage.Config
 import com.github.shynixn.mccoroutine.bukkit.SuspendingCommandExecutor
 import com.github.shynixn.mccoroutine.bukkit.launch
 import com.github.shynixn.mccoroutine.bukkit.ticks
@@ -17,7 +19,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-class TestCommand: SuspendingCommandExecutor {
+class Command: SuspendingCommandExecutor {
 
     companion object {
         var testStand: PacketStand? = null
@@ -27,13 +29,23 @@ class TestCommand: SuspendingCommandExecutor {
     override suspend fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
 
         if (sender !is Player)
-            return false
+            return true
 
-        when (args[0]){
+        if (!sender.hasPermission("standapi.admin"))
+            return true
+
+        if (args[0].lowercase() == "reload") {
+            Config.reload()
+            return true
+        }
+
+        if (!Config.testMode)
+            return true
+
+        when (args[0].lowercase()){
             "spawn" -> {
                 sender.sendMessage("stand spawned!")
                 testStand = PacketStand(sender.location)
-                testStand!!.setRenderDistance(1)
             }
             "equipment" -> {
                 sender.sendMessage("stand equipped")
@@ -82,6 +94,14 @@ class TestCommand: SuspendingCommandExecutor {
                 sender.sendMessage("stand deserializing")
                 testStand = Json.decodeFromString(serializedString)
                 serializedString = ""
+            }
+            "attach" -> {
+                sender.sendMessage("stand attached")
+                testStand!!.attachTo(sender, Offset(0.5,3.0,0.5))
+            }
+            "detach" -> {
+                sender.sendMessage("stand detached")
+                testStand!!.detachFrom()
             }
         }
 

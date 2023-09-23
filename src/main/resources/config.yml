@@ -6,3 +6,6 @@ RenderDistance: 192
 
 #Should plugin save stands and load them on startup?
 SavingEnabled: true
+
+#Is test mode enabled
+TestMode: true

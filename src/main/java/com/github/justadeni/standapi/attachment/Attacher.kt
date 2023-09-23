@@ -1,67 +1,40 @@
 package com.github.justadeni.standapi.attachment
 
-import com.github.justadeni.standapi.PacketStand
+import com.github.justadeni.standapi.Ranger
 import com.github.justadeni.standapi.datatype.Offset
-import com.github.justadeni.standapi.serialization.OffsetSerializer
-import com.github.justadeni.standapi.serialization.UUIDSerializer
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
-import org.bukkit.entity.Entity
-import java.util.UUID
-@Serializable
-class Attacher private constructor(){
+import com.google.common.collect.HashMultimap
 
-    companion object {
-        @Transient
-        val instance:Attacher by lazy {
-            Attacher()
-        }
+object Attacher {
+    private val attachedMap = HashMultimap.create<Int, Pair<Int, Offset>>()
+
+    internal fun getMap() = attachedMap
+
+    internal fun add(id: Int, stand: Pair<Int, Offset>){
+        attachedMap.put(id, stand)
     }
 
-    private val attached = HashMap<@Serializable(with = UUIDSerializer::class) UUID, MutableList<Pair<Int,@Serializable(with = OffsetSerializer::class) Offset>>>()
+    internal fun removeValue(id: Int){
+        val mapit = attachedMap.keys().iterator()
+        while (mapit.hasNext()){
+            val key = mapit.next()
+            val pairit = attachedMap[key].iterator()
+            while (pairit.hasNext()){
+                val pair = pairit.next()
 
-    fun PacketStand.attachTo(entity: Entity) {
-        this.attachTo(entity, Offset.ZERO)
-    }
-
-    fun PacketStand.attachTo(entity: Entity, offset: Offset) {
-        val key = entity.uniqueId
-
-        remove(this.id)
-
-        this.setLocation(entity.location)
-
-        if (!attached.containsKey(key)) {
-            attached[key] = mutableListOf(Pair(this.id, offset))
-            return
-        }
-
-        attached[key]?.add(Pair(this.id, offset))
-    }
-
-    fun PacketStand.detach(){
-        remove(this.id)
-    }
-
-    internal fun getMap(): Map<UUID, MutableList<Pair<Int, Offset>>> = attached
-
-    internal fun remove(packetStandID: Int){
-        val itmap = attached.iterator()
-        outerloop@ while (itmap.hasNext()){
-            val list = itmap.next().value
-            val itlist = list.iterator()
-            while (itlist.hasNext()){
-                val pair = itlist.next()
-                if (pair.first != packetStandID)
+                if (pair.first != id)
                     continue
 
-                itlist.remove()
-
-                if (list.isEmpty()){
-                    itmap.remove()
-                    break@outerloop
-                }
+                attachedMap.remove(key, pair.first)
             }
         }
+        Ranger.find(id)?.detachFrom()
+    }
+
+    internal fun removeKey(id: Int){
+        for (value in attachedMap[id]){
+            Ranger.find(value.first)?.detachFrom()
+        }
+
+        attachedMap.removeAll(id)
     }
 }

@@ -6,3 +6,4 @@ depend: [ProtocolLib]
 commands:
   standapi:
     description: command used to test functionality of API
+    permission: standapi.admin

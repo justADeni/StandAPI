@@ -11,7 +11,13 @@ object Ranger {
 
     private val ticking = hashMapOf<World, MutableList<PacketStand>>()
 
-    fun find(id: Int): PacketStand? {
+    internal fun getAllStands(): List<PacketStand> {
+        val wholeList = mutableListOf<PacketStand>()
+        ticking.values.forEach { wholeList.addAll(it) }
+        return wholeList
+    }
+
+    internal fun find(id: Int): PacketStand? {
         for (list in ticking.values)
             for (stand in list)
                 if (stand.id == id)
@@ -20,7 +26,7 @@ object Ranger {
         return null
     }
 
-    fun add(stand: PacketStand){
+    internal fun add(stand: PacketStand){
         val w = stand.getLocation().world!!
 
         if (!ticking.contains(w))
@@ -29,12 +35,12 @@ object Ranger {
             ticking[w]?.add(stand)
     }
 
-    fun remove(stand: PacketStand){
+    internal fun remove(stand: PacketStand){
         val w = stand.getLocation().world!!
         ticking[w]?.remove(stand)
     }
 
-    suspend fun tick() = withContext(StandAPI.getPlugin().asyncDispatcher){
+    internal suspend fun tick() = withContext(StandAPI.getPlugin().asyncDispatcher){
         while (true) {
 
             val snapshotMap = ticking.toMap()

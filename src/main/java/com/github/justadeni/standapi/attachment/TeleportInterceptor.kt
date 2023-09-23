@@ -4,16 +4,10 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.events.ListenerPriority
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
-import com.comphenix.protocol.wrappers.EnumWrappers
-import com.github.justadeni.standapi.Misc
 import com.github.justadeni.standapi.Misc.sendTo
-import com.github.justadeni.standapi.Ranger
 import com.github.justadeni.standapi.StandAPI
 import com.github.justadeni.standapi.datatype.Offset
-import com.github.justadeni.standapi.event.Action
-import com.github.justadeni.standapi.event.PacketStandEvent
 import com.github.shynixn.mccoroutine.bukkit.launch
-import org.bukkit.Bukkit
 
 class TeleportInterceptor {
     init {
@@ -24,10 +18,10 @@ class TeleportInterceptor {
                 val id = packet.integers.read(0)
 
                 val attachedMap = Attacher.getMap()
-                if (!attachedMap.keys.contains(id))
+                if (!attachedMap.keys().contains(id))
                     return
 
-                val list = attachedMap[id]!!
+                val list = attachedMap[id]
                 for (pair in list){
 
                     if (pair.second == Offset.ZERO) {

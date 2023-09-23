@@ -10,7 +10,7 @@ import org.bukkit.event.entity.EntityDeathEvent
 class EntityDeathListener: Listener {
     @EventHandler
     suspend fun onEntityDeath(e: EntityDeathEvent) = withContext(StandAPI.getPlugin().asyncDispatcher){
-        if (Attacher.instance.getMap().contains(e.entity.uniqueId))
-            Attacher.instance.remove(e.entity.entityId)
+        if (Attacher.getMap().containsKey(e.entity.uniqueId))
+            Attacher.removeKey(e.entity.entityId)
     }
 }

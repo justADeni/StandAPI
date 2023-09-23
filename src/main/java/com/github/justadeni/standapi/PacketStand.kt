@@ -2,6 +2,8 @@ package com.github.justadeni.standapi
 
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot
 import com.github.justadeni.standapi.Misc.sendTo
+import com.github.justadeni.standapi.attachment.Attacher
+import com.github.justadeni.standapi.datatype.Offset
 import com.github.justadeni.standapi.storage.Config
 import com.github.justadeni.standapi.datatype.Rotation
 import com.github.justadeni.standapi.serialization.*
@@ -9,6 +11,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.*
@@ -26,6 +29,8 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
 
     @Transient
     internal val includedPlayers = mutableListOf<Player?>()
+
+    private var attachedTo: Pair<@Serializable(with = UUIDSerializer::class) UUID,@Serializable(with = OffsetSerializer::class) Offset>? = null
 
     private var excludedPlayers = mutableListOf<@Serializable(with = UUIDSerializer::class) UUID>()
 
@@ -71,6 +76,16 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
         val eligiblePlayers = eligiblePlayers()
         packetBundle.sendTo(eligiblePlayers)
         includedPlayers.addAll(eligiblePlayers)
+
+        if (attachedTo != null){
+            val pE = Bukkit.getEntity(attachedTo!!.first)
+            if (pE != null){
+                Attacher.add(pE.entityId, Pair(id, attachedTo!!.second))
+                setLocation(Location(pE.world, pE.location.x + attachedTo!!.second.x, pE.location.y + attachedTo!!.second.y, pE.location.z + attachedTo!!.second.z))
+            } else {
+                attachedTo = null
+            }
+        }
     }
 
     internal fun eligiblePlayers(): List<Player> = location.world!!.players.asSequence()
@@ -97,15 +112,22 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
             .filterNotNull()
             .toList()
 
-    /*
-    fun setRenderDistance(chunks: Int){
-        renderDistance2 = (chunks * 16)*(chunks * 16)
+    fun attachTo(entity: Entity){
+        attachTo(entity, Offset.ZERO)
     }
 
-    fun getRenderDistance(): Int {
-        return sqrt((renderDistance2 / 16).toDouble()).toInt()
+    fun attachTo(entity: Entity, offset: Offset){
+        setLocation(entity.location)
+        Attacher.add(entity.entityId, Pair(id, offset))
+        attachedTo = Pair(entity.uniqueId, offset)
     }
-    */
+
+    fun detachFrom(){
+        Attacher.removeValue(id)
+        attachedTo = null
+    }
+
+    fun getAttached(): Pair<UUID, Offset>? = attachedTo
 
     fun setEquipment(slot: ItemSlot, item: ItemStack){
         equipment[slot] = item
@@ -250,6 +272,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     fun getRightLegPose() = rotations[5]
 
     fun remove(){
+        Attacher.removeValue(id)
         Ranger.remove(this)
         destroyPacket.sendTo(location.world!!.players)
         /*

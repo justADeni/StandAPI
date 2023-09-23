@@ -8,9 +8,9 @@ import com.github.justadeni.standapi.Misc.sendTo
 import com.github.justadeni.standapi.StandAPI
 import com.github.shynixn.mccoroutine.bukkit.launch
 
-class MoveInterceptor {
+class RotMoveInterceptor {
     init {
-        StandAPI.getManager().addPacketListener(object : PacketAdapter(StandAPI.getPlugin(), ListenerPriority.NORMAL, PacketType.Play.Server.REL_ENTITY_MOVE) {
+        StandAPI.getManager().addPacketListener(object : PacketAdapter(StandAPI.getPlugin(), ListenerPriority.NORMAL, PacketType.Play.Server.REL_ENTITY_MOVE_LOOK) {
             override fun onPacketReceiving(event: PacketEvent) {
                 val player = event.player
                 val packet = event.packet
@@ -19,6 +19,8 @@ class MoveInterceptor {
                 val attachedMap = Attacher.getMap()
                 if (!attachedMap.keys().contains(id))
                     return
+
+                //TODO: Copy rotation of entity aswell + another packet
 
                 val list = attachedMap[id]
                 for (pair in list)
