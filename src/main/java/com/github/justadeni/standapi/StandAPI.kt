@@ -40,12 +40,12 @@ class StandAPI : SuspendingJavaPlugin() {
     override suspend fun onEnableAsync() {
         getCommand("standapi")!!.setSuspendingExecutor(Command())
         getCommand("standapi")!!.setSuspendingTabCompleter(TabComplete())
-        server.pluginManager.registerSuspendingEvents(EntityDeathListener(), this)
+        EntityDeathListener()
         UseEntityInterceptor()
         MoveInterceptor()
         RotMoveInterceptor()
         TeleportInterceptor()
-        launch { Ranger.tick() }
+        launch { Ranger.startTicking() }
     }
 
     override suspend fun onDisableAsync() {

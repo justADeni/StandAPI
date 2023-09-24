@@ -25,10 +25,10 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
 
     @Transient
     private val packetGen = PacketGenerator(id, uuid)
-
+    /*
     @Transient
     internal val includedPlayers = mutableListOf<Player?>()
-
+    */
     private var attachedTo: Pair<@Serializable(with = UUIDSerializer::class) UUID, @Serializable(with = OffsetSerializer::class) Offset>? = null
 
     private var excludedPlayers = mutableListOf<@Serializable(with = UUIDSerializer::class) UUID>()
@@ -65,7 +65,6 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     internal val destroyPacket = packetGen.destroy()
 
     init {
-        Ranger.add(this)
 
         updateMetadata()
 
@@ -74,14 +73,16 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
 
         val eligiblePlayers = eligiblePlayers()
         packetBundle.sendTo(eligiblePlayers)
-        includedPlayers.addAll(eligiblePlayers)
+        //includedPlayers.addAll(eligiblePlayers)
 
         if (attachedTo != null){
             val pE = Bukkit.getEntity(attachedTo!!.first)
             if (pE != null){
                 setLocation(Location(pE.world, pE.location.x + attachedTo!!.second.x, pE.location.y + attachedTo!!.second.y, pE.location.z + attachedTo!!.second.z))
+                Ranger.add(pE.entityId, this)
             } else {
                 attachedTo = null
+                Ranger.add(this)
             }
         }
     }
@@ -110,17 +111,23 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
             .filterNotNull()
             .toList()
 
+    fun excludedUUIDs(): List<UUID> = excludedPlayers.toList()
+
     fun attachTo(entity: Entity){
         attachTo(entity, Offset.ZERO)
     }
 
     fun attachTo(entity: Entity, offset: Offset){
+        Ranger.remove(this)
         setLocation(entity.location)
         attachedTo = Pair(entity.uniqueId, offset)
+        Ranger.add(this)
     }
 
     fun detachFrom(){
+        Ranger.remove(this)
         attachedTo = null
+        Ranger.add(this)
     }
 
     fun getAttached(): Pair<UUID, Offset>? = attachedTo

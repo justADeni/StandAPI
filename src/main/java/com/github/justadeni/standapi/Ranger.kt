@@ -1,14 +1,24 @@
 package com.github.justadeni.standapi
 
 import com.github.justadeni.standapi.Misc.sendTo
+import com.github.justadeni.standapi.storage.Config
 import com.github.shynixn.mccoroutine.bukkit.asyncDispatcher
-import com.github.shynixn.mccoroutine.bukkit.ticks
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 
 object Ranger {
-
+    /*
+    for all existing stands
+    first Int is entity Id of the entity they're bound to
+    */
     private val ticking = hashMapOf<Int, MutableList<PacketStand>>()
+
+    /*
+    for stands that are within detection radius of player
+    and have received packets already
+    */
+    private val included = hashMapOf<Player, MutableList<PacketStand>>()
 
     internal fun getAllStands(): List<PacketStand> {
         val wholeList = mutableListOf<PacketStand>()
@@ -59,47 +69,34 @@ object Ranger {
         }
     }
 
-    internal fun removeDetached(stand: PacketStand){
-        ticking[-1]!!.remove(stand)
-    }
-
-    internal suspend fun tick() = withContext(StandAPI.getPlugin().asyncDispatcher){
+    internal suspend fun startTicking() = withContext(StandAPI.getPlugin().asyncDispatcher){
         while (true) {
+            val allStands = getAllStands()
 
-            val snapshotMap = ticking.toMap()
+            for (player in Bukkit.getOnlinePlayers()){
 
-            for (world in snapshotMap.keys){
-                for (stand in snapshotMap[world]!!){
+                if (!included.containsKey(player))
+                    included[player] = mutableListOf()
 
-                    val possiblePlayers = world.players.toMutableList().also { it.removeAll(stand.excludedPlayers()) }
-                    val eligiblePlayers = stand.eligiblePlayers()
-                    val includedPlayers = stand.includedPlayers
+                val wereInside = included[player]!!
 
-                    for (player in possiblePlayers){
+                val areInside = allStands.asSequence()
+                    .filterNot { it.excludedUUIDs().contains(player.uniqueId) }
+                    .filter { it.getLocation().world == player.world }
+                    .filter { it.getLocation().distanceSquared(player.location) < Config.renderDistance2 }
+                    .toList()
 
-                        val wasInside = includedPlayers.contains(player)
-                        val isInside = eligiblePlayers.contains(player)
+                val wentInside = areInside - wereInside.toSet()
+                wentInside.forEach {
+                    it.packetBundle.sendTo(player)
+                }
+                included[player] = wentInside.toMutableList()
 
-                        //Case 1: Player was inside detection range but went outside
-                        if (wasInside && !isInside){
-                            stand.destroyPacket.sendTo(listOf(player))
-                            includedPlayers.remove(player)
-                            break
-                        }
-
-                        //Case 2: Player was outside detection range but went inside
-                        if (!wasInside && isInside){
-                            stand.packetBundle.sendTo(listOf(player))
-                            includedPlayers.add(player)
-                            break
-                        }
-
-                        //Cases 3: and 4: Player is where they were, and we don't send anything
-                    }
+                val wentOutside = wereInside - areInside.toSet()
+                wentOutside.forEach {
+                    it.destroyPacket.sendTo(player)
                 }
             }
-
-            delay(20.ticks)
         }
     }
 

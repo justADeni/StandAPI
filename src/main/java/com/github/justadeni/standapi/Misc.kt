@@ -27,6 +27,10 @@ object Misc {
         }
     }
 
+    internal fun HashMap<Int, PacketContainer>.sendTo(player: Player) = StandAPI.getPlugin().launch {
+        this@sendTo.values.forEach { manager.sendServerPacket(player, it) }
+    }
+
     internal fun HashMap<Int, PacketContainer>.sendTo(players: List<Player>) = StandAPI.getPlugin().launch {
         for (player in players){
             this@sendTo.values.forEach { manager.sendServerPacket(player, it) }
