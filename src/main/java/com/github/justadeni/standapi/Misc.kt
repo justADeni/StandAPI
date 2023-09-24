@@ -1,6 +1,7 @@
 package com.github.justadeni.standapi
 
 import com.comphenix.protocol.events.PacketContainer
+import com.github.shynixn.mccoroutine.bukkit.launch
 import org.bukkit.entity.Player
 
 object Misc {
@@ -16,19 +17,19 @@ object Misc {
         return id
     }
 
-    internal fun PacketContainer.sendTo(player: Player){
-        manager.sendServerPacket(player, this)
+    internal fun PacketContainer.sendTo(player: Player) = StandAPI.getPlugin().launch {
+        manager.sendServerPacket(player, this@sendTo)
     }
 
-    internal fun PacketContainer.sendTo(players: List<Player>){
+    internal fun PacketContainer.sendTo(players: List<Player>) = StandAPI.getPlugin().launch {
         for (player in players){
-            manager.sendServerPacket(player, this)
+            manager.sendServerPacket(player, this@sendTo)
         }
     }
 
-    internal fun HashMap<Int, PacketContainer>.sendTo(players: List<Player>){
+    internal fun HashMap<Int, PacketContainer>.sendTo(players: List<Player>) = StandAPI.getPlugin().launch {
         for (player in players){
-            this.values.forEach { manager.sendServerPacket(player, it) }
+            this@sendTo.values.forEach { manager.sendServerPacket(player, it) }
         }
     }
 

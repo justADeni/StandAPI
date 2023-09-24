@@ -5,6 +5,7 @@ import com.comphenix.protocol.events.ListenerPriority
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
 import com.github.justadeni.standapi.Misc.sendTo
+import com.github.justadeni.standapi.Ranger
 import com.github.justadeni.standapi.StandAPI
 import com.github.shynixn.mccoroutine.bukkit.launch
 
@@ -14,17 +15,16 @@ class RotMoveInterceptor {
             override fun onPacketSending(event: PacketEvent) {
                 val player = event.player
                 val packet = event.packet
-                val id = packet.integers.read(0)
+                val entityId = packet.integers.read(0)
 
-                val attachedMap = Attacher.getMap()
-                if (!attachedMap.keys().contains(id))
+                val list = Ranger.findByEntityId(entityId)
+                if (list.isEmpty())
                     return
 
                 //TODO: Copy rotation of entity aswell + another packet
 
-                val list = attachedMap[id]
-                for (pair in list)
-                    StandAPI.getPlugin().launch { packet.shallowClone().also { it.integers.write(0, pair.first) }.sendTo(player) }
+                for (stand in list)
+                    packet.deepClone().also { it.integers.write(0, stand.id) }.sendTo(player)
             }
         })
     }

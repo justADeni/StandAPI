@@ -5,11 +5,10 @@ import com.github.shynixn.mccoroutine.bukkit.asyncDispatcher
 import com.github.shynixn.mccoroutine.bukkit.ticks
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import org.bukkit.World
 
 object Ranger {
 
-    private val ticking = hashMapOf<World, MutableList<PacketStand>>()
+    private val ticking = hashMapOf<Int, MutableList<PacketStand>>()
 
     internal fun getAllStands(): List<PacketStand> {
         val wholeList = mutableListOf<PacketStand>()
@@ -17,27 +16,51 @@ object Ranger {
         return wholeList
     }
 
-    internal fun find(id: Int): PacketStand? {
+    internal fun findByEntityId(entityId: Int): List<PacketStand> {
+        if (ticking.containsKey(entityId))
+            return ticking[entityId]!!
+
+        return emptyList()
+    }
+
+    internal fun findByStandId(standId: Int): PacketStand? {
         for (list in ticking.values)
             for (stand in list)
-                if (stand.id == id)
+                if (stand.id == standId)
                     return stand
 
         return null
     }
 
     internal fun add(stand: PacketStand){
-        val w = stand.getLocation().world!!
+        add(-1, stand)
+    }
 
-        if (!ticking.contains(w))
-            ticking[w] = mutableListOf(stand)
+    internal fun add(entityId: Int, stand: PacketStand){
+        if (ticking.contains(entityId))
+            ticking[entityId]!!.add(stand)
         else
-            ticking[w]?.add(stand)
+            ticking[entityId] = mutableListOf(stand)
+
+        //stand.packetBundle.sendTo(stand.eligiblePlayers())
     }
 
     internal fun remove(stand: PacketStand){
-        val w = stand.getLocation().world!!
-        ticking[w]?.remove(stand)
+        val it = ticking.keys.iterator()
+        while (it.hasNext()){
+            val entityId = it.next()
+            if(ticking[entityId]!!.contains(stand)){
+                ticking[entityId]!!.remove(stand)
+            }
+            if (ticking[entityId]!!.isEmpty()){
+                it.remove()
+                break
+            }
+        }
+    }
+
+    internal fun removeDetached(stand: PacketStand){
+        ticking[-1]!!.remove(stand)
     }
 
     internal suspend fun tick() = withContext(StandAPI.getPlugin().asyncDispatcher){

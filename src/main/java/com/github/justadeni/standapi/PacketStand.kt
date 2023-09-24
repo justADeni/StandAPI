@@ -2,7 +2,6 @@ package com.github.justadeni.standapi
 
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot
 import com.github.justadeni.standapi.Misc.sendTo
-import com.github.justadeni.standapi.attachment.Attacher
 import com.github.justadeni.standapi.datatype.Offset
 import com.github.justadeni.standapi.storage.Config
 import com.github.justadeni.standapi.datatype.Rotation
@@ -30,7 +29,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     @Transient
     internal val includedPlayers = mutableListOf<Player?>()
 
-    private var attachedTo: Pair<@Serializable(with = UUIDSerializer::class) UUID,@Serializable(with = OffsetSerializer::class) Offset>? = null
+    private var attachedTo: Pair<@Serializable(with = UUIDSerializer::class) UUID, @Serializable(with = OffsetSerializer::class) Offset>? = null
 
     private var excludedPlayers = mutableListOf<@Serializable(with = UUIDSerializer::class) UUID>()
 
@@ -80,7 +79,6 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
         if (attachedTo != null){
             val pE = Bukkit.getEntity(attachedTo!!.first)
             if (pE != null){
-                Attacher.add(pE.entityId, Pair(id, attachedTo!!.second))
                 setLocation(Location(pE.world, pE.location.x + attachedTo!!.second.x, pE.location.y + attachedTo!!.second.y, pE.location.z + attachedTo!!.second.z))
             } else {
                 attachedTo = null
@@ -118,12 +116,10 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
 
     fun attachTo(entity: Entity, offset: Offset){
         setLocation(entity.location)
-        Attacher.add(entity.entityId, Pair(id, offset))
         attachedTo = Pair(entity.uniqueId, offset)
     }
 
     fun detachFrom(){
-        Attacher.removeValue(id)
         attachedTo = null
     }
 
@@ -272,7 +268,6 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     fun getRightLegPose() = rotations[5]
 
     fun remove(){
-        Attacher.removeValue(id)
         Ranger.remove(this)
         destroyPacket.sendTo(location.world!!.players)
         /*
