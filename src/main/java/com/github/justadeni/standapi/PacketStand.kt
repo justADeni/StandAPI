@@ -35,16 +35,11 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
 
     @Transient
     private val packetGen = PacketGenerator(id, uuid)
-    /*
-    @Transient
-    internal val includedPlayers = mutableListOf<Player?>()
-    */
+
     private var attachedTo: Pair<@Serializable(with = UUIDSerializer::class) UUID, @Serializable(with = OffsetSerializer::class) Offset>? = null
 
     private var excludedPlayers = mutableListOf<@Serializable(with = UUIDSerializer::class) UUID>()
 
-    /*@Serializable(with = PairSerializer::class)
-    private val equipment = mutableListOf<Pair<ItemSlot, ItemStack>>()*/
     @Serializable(with = PairSerializer::class)
     private val equipment = hashMapOf<ItemSlot,@Serializable(with = ItemStackSerializer::class) ItemStack>()
 
@@ -419,13 +414,5 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     fun remove(){
         Ranger.remove(this)
         destroyPacket.sendTo(location.world!!.players)
-        /*
-        StandAPI.getPlugin().launch {
-            withContext(StandAPI.getPlugin().asyncDispatcher) {
-                delay(120.ticks)
-                destroyPacket.sendTo(location.world!!.players)
-            }
-        }
-        */
     }
 }
