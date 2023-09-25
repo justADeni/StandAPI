@@ -1,6 +1,6 @@
 package com.github.justadeni.standapi.testing
 
-import com.github.justadeni.standapi.storage.Config
+import com.github.justadeni.standapi.storage.StandApiConfig
 import com.github.shynixn.mccoroutine.bukkit.SuspendingTabCompleter
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -17,7 +17,7 @@ class TabComplete: SuspendingTabCompleter {
         if (args.size > 1)
             return emptyList()
 
-        if (!Config.testMode)
+        if (!StandApiConfig.testMode)
             return if ("reload".contains(args[0].lowercase()))
                 listOf("reload")
             else

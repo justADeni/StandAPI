@@ -8,7 +8,7 @@ object Misc {
 
     private var id = 9999
 
-    private val manager = StandAPI.getManager()
+    private val manager = StandAPI.manager()
 
     internal fun currentID() = id
 
@@ -17,21 +17,21 @@ object Misc {
         return id
     }
 
-    internal fun PacketContainer.sendTo(player: Player) = StandAPI.getPlugin().launch {
+    internal fun PacketContainer.sendTo(player: Player) = StandAPI.plugin().launch {
         manager.sendServerPacket(player, this@sendTo)
     }
 
-    internal fun PacketContainer.sendTo(players: List<Player>) = StandAPI.getPlugin().launch {
+    internal fun PacketContainer.sendTo(players: List<Player>) = StandAPI.plugin().launch {
         for (player in players){
             manager.sendServerPacket(player, this@sendTo)
         }
     }
 
-    internal fun HashMap<Int, PacketContainer>.sendTo(player: Player) = StandAPI.getPlugin().launch {
+    internal fun HashMap<Int, PacketContainer>.sendTo(player: Player) = StandAPI.plugin().launch {
         this@sendTo.values.forEach { manager.sendServerPacket(player, it) }
     }
 
-    internal fun HashMap<Int, PacketContainer>.sendTo(players: List<Player>) = StandAPI.getPlugin().launch {
+    internal fun HashMap<Int, PacketContainer>.sendTo(players: List<Player>) = StandAPI.plugin().launch {
         for (player in players){
             this@sendTo.values.forEach { manager.sendServerPacket(player, it) }
         }

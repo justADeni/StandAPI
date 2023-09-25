@@ -3,16 +3,18 @@ package com.github.justadeni.standapi.storage
 import com.github.justadeni.standapi.PacketStand
 import com.github.justadeni.standapi.Ranger
 import com.github.justadeni.standapi.StandAPI
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.nio.file.Files
 
 object Saver {
-    private val file = File(StandAPI.getPlugin().dataFolder.path + "/Stands.yml").also { it.createNewFile() }
-    internal fun saveAll(){
-        if (!Config.savingEnabled)
-            return
+    private val file = File(StandAPI.plugin().dataFolder.path + "/Stands.yml").also { it.createNewFile() }
+    internal suspend fun saveAll() = withContext(Dispatchers.IO){
+        if (!StandApiConfig.savingEnabled)
+            return@withContext
 
         file.printWriter().use {out ->
             Ranger.getAllStands().forEach{
@@ -20,9 +22,9 @@ object Saver {
             }
         }
     }
-    internal fun loadAll(){
-        if (!Config.savingEnabled)
-            return
+    internal suspend fun loadAll() = withContext(Dispatchers.IO){
+        if (!StandApiConfig.savingEnabled)
+            return@withContext
 
         Files.readAllLines(file.toPath()).forEach{
             Ranger.add(Json.decodeFromString(it) as PacketStand)

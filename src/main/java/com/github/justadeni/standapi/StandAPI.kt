@@ -6,12 +6,13 @@ import com.github.justadeni.standapi.attachment.EntityDeathListener
 import com.github.justadeni.standapi.attachment.MoveInterceptor
 import com.github.justadeni.standapi.attachment.RotMoveInterceptor
 import com.github.justadeni.standapi.attachment.TeleportInterceptor
-import com.github.justadeni.standapi.storage.Config
+import com.github.justadeni.standapi.storage.StandApiConfig
 import com.github.justadeni.standapi.event.UseEntityInterceptor
 import com.github.justadeni.standapi.storage.Saver
 import com.github.justadeni.standapi.testing.TabComplete
 import com.github.justadeni.standapi.testing.Command
 import com.github.shynixn.mccoroutine.bukkit.*
+import kotlinx.coroutines.runBlocking
 import org.bukkit.plugin.java.JavaPlugin
 
 class StandAPI : SuspendingJavaPlugin() {
@@ -22,11 +23,11 @@ class StandAPI : SuspendingJavaPlugin() {
 
         private var manager: ProtocolManager? = null
 
-        fun getPlugin(): JavaPlugin {
+        fun plugin(): JavaPlugin {
             return plugin!!
         }
 
-        fun getManager(): ProtocolManager {
+        fun manager(): ProtocolManager {
             return manager!!
         }
     }
@@ -35,7 +36,7 @@ class StandAPI : SuspendingJavaPlugin() {
         plugin = this
         manager = ProtocolLibrary.getProtocolManager()
         saveDefaultConfig()
-        Config.reload()
+        StandApiConfig.reload()
     }
 
     override suspend fun onEnableAsync() {
@@ -50,7 +51,9 @@ class StandAPI : SuspendingJavaPlugin() {
         launch { Ranger.startTicking() }
     }
 
-    override suspend fun onDisableAsync() {
-        Saver.saveAll()
+    override fun onDisable() {
+        runBlocking {
+            Saver.saveAll()
+        }
     }
 }

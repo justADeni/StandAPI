@@ -3,7 +3,7 @@ package com.github.justadeni.standapi
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot
 import com.github.justadeni.standapi.Misc.sendTo
 import com.github.justadeni.standapi.datatype.Offset
-import com.github.justadeni.standapi.storage.Config
+import com.github.justadeni.standapi.storage.StandApiConfig
 import com.github.justadeni.standapi.datatype.Rotation
 import com.github.justadeni.standapi.serialization.*
 import kotlinx.serialization.Serializable
@@ -88,7 +88,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     internal fun eligiblePlayers(): List<Player> = location.world!!.players.asSequence()
-        .filter { it.location.distanceSquared(location) <= Config.renderDistance2 }
+        .filter { it.location.distanceSquared(location) <= StandApiConfig.renderDistance2 }
         .filterNot { excludedPlayers.contains(it.uniqueId) }
         .toList()
 
@@ -218,7 +218,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
         } else if (loc.distanceSquared(location) > 64){
 
             for (player in eligiblePlayers())
-                if (player.location.distanceSquared(location) > Config.renderDistance2)
+                if (player.location.distanceSquared(location) > StandApiConfig.renderDistance2)
                     packetBundle.sendTo(listOf(player))
                 else
                     packetGen.teleport(loc).sendTo(eligiblePlayers())

@@ -1,7 +1,7 @@
 package com.github.justadeni.standapi
 
 import com.github.justadeni.standapi.Misc.sendTo
-import com.github.justadeni.standapi.storage.Config
+import com.github.justadeni.standapi.storage.StandApiConfig
 import com.github.shynixn.mccoroutine.bukkit.asyncDispatcher
 import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
@@ -20,10 +20,10 @@ object Ranger {
     */
     private val included = hashMapOf<Player, MutableList<PacketStand>>()
 
-    internal fun getAllStands(): List<PacketStand> {
+    internal suspend fun getAllStands(): List<PacketStand> = withContext(StandAPI.plugin().asyncDispatcher) {
         val wholeList = mutableListOf<PacketStand>()
         ticking.values.forEach { wholeList.addAll(it) }
-        return wholeList
+        return@withContext wholeList
     }
 
     internal fun findByEntityId(entityId: Int): List<PacketStand> {
@@ -69,7 +69,7 @@ object Ranger {
         }
     }
 
-    internal suspend fun startTicking() = withContext(StandAPI.getPlugin().asyncDispatcher){
+    internal suspend fun startTicking() = withContext(StandAPI.plugin().asyncDispatcher){
         while (true) {
             val allStands = getAllStands()
 
@@ -83,7 +83,7 @@ object Ranger {
                 val areInside = allStands.asSequence()
                     .filterNot { it.excludedUUIDs().contains(player.uniqueId) }
                     .filter { it.getLocation().world == player.world }
-                    .filter { it.getLocation().distanceSquared(player.location) < Config.renderDistance2 }
+                    .filter { it.getLocation().distanceSquared(player.location) < StandApiConfig.renderDistance2 }
                     .toList()
 
                 val wentInside = areInside - wereInside.toSet()

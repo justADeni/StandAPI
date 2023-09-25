@@ -8,14 +8,14 @@ import com.comphenix.protocol.wrappers.EnumWrappers
 import com.github.justadeni.standapi.Misc
 import com.github.justadeni.standapi.Ranger
 import com.github.justadeni.standapi.StandAPI
-import com.github.justadeni.standapi.StandAPI.Companion.getManager
-import com.github.justadeni.standapi.StandAPI.Companion.getPlugin
+import com.github.justadeni.standapi.StandAPI.Companion.manager
+import com.github.justadeni.standapi.StandAPI.Companion.plugin
 import com.github.shynixn.mccoroutine.bukkit.launch
 import org.bukkit.Bukkit
 
 class UseEntityInterceptor {
     init {
-        getManager().addPacketListener(object : PacketAdapter(getPlugin(), ListenerPriority.NORMAL, PacketType.Play.Client.USE_ENTITY) {
+        manager().addPacketListener(object : PacketAdapter(plugin(), ListenerPriority.NORMAL, PacketType.Play.Client.USE_ENTITY) {
             override fun onPacketReceiving(event: PacketEvent) {
                 val player = event.player
                 val packet = event.packet
@@ -32,7 +32,7 @@ class UseEntityInterceptor {
                     EnumWrappers.EntityUseAction.INTERACT_AT -> Action.RIGHT_CLICK
                 }
 
-                StandAPI.getPlugin().launch { Bukkit.getPluginManager().callEvent(PacketStandEvent(player, id, stand, action)) }
+                StandAPI.plugin().launch { Bukkit.getPluginManager().callEvent(PacketStandEvent(player, id, stand, action)) }
             }
         })
     }

@@ -5,7 +5,7 @@ import com.github.justadeni.standapi.PacketStand
 import com.github.justadeni.standapi.StandAPI
 import com.github.justadeni.standapi.datatype.Offset
 import com.github.justadeni.standapi.datatype.Rotation
-import com.github.justadeni.standapi.storage.Config
+import com.github.justadeni.standapi.storage.StandApiConfig
 import com.github.shynixn.mccoroutine.bukkit.SuspendingCommandExecutor
 import com.github.shynixn.mccoroutine.bukkit.launch
 import com.github.shynixn.mccoroutine.bukkit.ticks
@@ -35,11 +35,11 @@ class Command: SuspendingCommandExecutor {
             return true
 
         if (args[0].lowercase() == "reload") {
-            Config.reload()
+            StandApiConfig.reload()
             return true
         }
 
-        if (!Config.testMode)
+        if (!StandApiConfig.testMode)
             return true
 
         when (args[0].lowercase()){
@@ -76,7 +76,7 @@ class Command: SuspendingCommandExecutor {
             }
             "rotatehead" -> {
                 sender.sendMessage("stand head rotating")
-                StandAPI.getPlugin().launch {
+                StandAPI.plugin().launch {
                     for (i in 0..360){
                         testStand!!.setHeadPose(Rotation(i.toFloat(), 0f, 0f))
                         delay(1.ticks)
