@@ -120,7 +120,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     /**
-     * @return online players which are excluded from seeing the stand
+     * online players which are excluded from seeing the stand
      */
     fun excludedPlayers(): List<Player> = excludedPlayers.asSequence()
             .map { Bukkit.getPlayer(it) }
@@ -128,11 +128,12 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
             .toList()
 
     /**
-     * @return uuid's of players which are excluded from seeing the stand
+     * uuid's of players which are excluded from seeing the stand
      */
     fun excludedUUIDs(): List<UUID> = excludedPlayers.toList()
 
     /**
+     * used to attach stand to entity
      * @param entity entity to which this stand will be attached to and follow
      */
     fun attachTo(entity: Entity){
@@ -140,6 +141,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     /**
+     * used to attach stand to entity
      * @see Offset pass instance of this class with desired values
      * Offset within +- 4 blocks in any direction will ensure smoother movement
      *
@@ -163,11 +165,12 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     /**
-     * @return pair of entity UUID to which the stand is attached to and offset. null if not attached
+     * pair of entity UUID to which the stand is attached to and offset. null if not attached
      */
     fun getAttached(): Pair<UUID, Offset>? = attachedTo
 
     /**
+     * set equipment
      * @param slot to which the item will be equipped
      * @param item itemstack which will be assigned to the slot
      */
@@ -185,6 +188,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     /**
+     * get equipment
      * @param slot part of equipped stand
      * @return itemstack in that slot. null if none
      */
@@ -193,7 +197,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     /**
-     * @param value sets stand visibility
+     * set stand visibility
      */
     fun setInvisible(value: Boolean){
         isInvisible = if (value) 0x20 else 0x00
@@ -201,11 +205,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     /**
+     * get stand visibility
      * @return stand visibility
      */
     fun isInvisible(): Boolean = isInvisible > 0
 
     /**
+     * set stand glowing
      * @param value sets stand glowing
      */
     fun setGlowingEffect(value: Boolean){
@@ -214,11 +220,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     /**
+     * get stand glowing
      * @return stand glowing
      */
     fun hasGlowingEffect(): Boolean = hasGlowingEffect > 0
 
     /**
+     * set custom name
      * @param value sets custom display name of stand
      */
     fun setCustomName(value: String){
@@ -227,11 +235,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     /**
+     * get custom name
      * @return custom display name of stand
      */
     fun getCustomName(): String = customName
 
     /**
+     * set custom name visibility
      * @param value sets custom name visibility
      */
     fun setCustomNameVisible(value: Boolean){
@@ -240,11 +250,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     /**
+     * get if custom name if visible
      * @return custom name visibility
      */
     fun isCustomNameVisible(): Boolean = isCustomNameVisible
 
     /**
+     * set small
      * @param value sets small property
      */
     fun setSmall(value: Boolean){
@@ -253,11 +265,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     /**
+     * get small
      * @return small property
      */
     fun isSmall(): Boolean = isSmall > 0
 
     /**
+     * set arms
      * @param value sets stand arms
      */
     fun setArms(value: Boolean){
@@ -266,11 +280,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     /**
+     * get if stand has arms
      * @return stand arms
      */
     fun hasArms(): Boolean = hasArms > 0
 
     /**
+     * set no baseplate
      * @param value sets no baseplate
      */
     fun setNoBaseplate(value: Boolean){
@@ -279,12 +295,14 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     /**
+     * get no baseplate
      * @return no baseplate
      */
     fun hasNoBaseplate(): Boolean = hasNoBaseplate > 0
 
     /**
-     * @param value sets stand to be marker (non-existent hitbox)
+     * set stand to be marker (non-existent hitbox)
+     * @param value sets stand to be marker
      */
     fun setMarker(value: Boolean){
         isMarker = if (value) 0x10 else 0x00
@@ -292,12 +310,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     /**
+     * get if stand is marker
      * @return if stand is marker
      */
     fun isMarker(): Boolean = isMarker > 0
 
     /**
-     * Uses both move and teleportation packets depending on needs, so useful for any situation
+     * move or teleport stand
      * @param loc where stand will move
      */
     fun setLocation(loc: Location){
@@ -326,11 +345,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     /**
+     * get location of stand
      * @return location of stand
      */
     fun getLocation(): Location = location
 
     /**
+     * set head pose
      * @param rotation pass instance of this class with desired values in degrees, 0-360
      */
     fun setHeadPose(rotation: Rotation){
@@ -339,11 +360,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     /**
+     * get head pose
      * @return rotation of head
      */
     fun getHeadPose() = rotations[0]
 
     /**
+     * set body pose
      * @param rotation pass instance of this class with desired values in degrees, 0-360
      */
     fun setBodyPose(rotation: Rotation){
@@ -352,11 +375,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     /**
+     * get body pose
      * @return rotation of body
      */
     fun getBodyPose() = rotations[1]
 
     /**
+     * set left arm pose
      * @param rotation pass instance of this class with desired values in degrees, 0-360
      */
     fun setLeftArmPose(rotation: Rotation){
@@ -365,11 +390,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     /**
+     * get left arm pose
      * @return rotation of left arm
      */
     fun getLeftArmPose() = rotations[2]
 
     /**
+     * set right arm pose
      * @param rotation pass instance of this class with desired values in degrees, 0-360
      */
     fun setRightArmPose(rotation: Rotation){
@@ -378,11 +405,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     /**
+     * get right arm pose
      * @return rotation of right arm
      */
     fun getRightArmPose() = rotations[3]
 
     /**
+     * set left leg pose
      * @param rotation pass instance of this class with desired values in degrees, 0-360
      */
     fun setLeftLegPose(rotation: Rotation){
@@ -391,11 +420,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     /**
+     * get left leg pose
      * @return rotation of left leg
      */
     fun getLeftLegPose() = rotations[4]
 
     /**
+     * set right leg pose
      * @param rotation pass instance of this class with desired values in degrees, 0-360
      */
     fun setRightlegPose(rotation: Rotation){
@@ -404,6 +435,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     /**
+     * get right leg pose
      * @return rotation of right leg
      */
     fun getRightLegPose() = rotations[5]

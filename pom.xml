@@ -141,7 +141,7 @@
                         </goals>
                     </execution>
                 </executions>
-                <!--configuration>
+                <configuration>
                     <dokkaPlugins>
                         <plugin>
                             <groupId>org.jetbrains.dokka</groupId>
@@ -149,7 +149,7 @@
                             <version>1.9.0</version>
                         </plugin>
                     </dokkaPlugins>
-                </configuration-->
+                </configuration>
             </plugin>
         </plugins>
         <resources>
