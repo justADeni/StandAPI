@@ -8,6 +8,7 @@ import com.github.justadeni.standapi.attachment.RotMoveInterceptor
 import com.github.justadeni.standapi.attachment.TeleportInterceptor
 import com.github.justadeni.standapi.storage.Config
 import com.github.justadeni.standapi.event.UseEntityInterceptor
+import com.github.justadeni.standapi.storage.Saver
 import com.github.justadeni.standapi.testing.TabComplete
 import com.github.justadeni.standapi.testing.Command
 import com.github.shynixn.mccoroutine.bukkit.*
@@ -45,10 +46,11 @@ class StandAPI : SuspendingJavaPlugin() {
         MoveInterceptor()
         RotMoveInterceptor()
         TeleportInterceptor()
+        Saver.loadAll()
         launch { Ranger.startTicking() }
     }
 
     override suspend fun onDisableAsync() {
-        //TODO: unregister all listeners
+        Saver.saveAll()
     }
 }
