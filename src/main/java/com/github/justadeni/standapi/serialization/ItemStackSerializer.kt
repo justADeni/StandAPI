@@ -9,6 +9,9 @@ import kotlinx.serialization.encoding.Encoder
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.ItemStack
 
+/**
+ * @suppress
+ */
 class ItemStackSerializer() : KSerializer<ItemStack> {
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.github.justadeni.standapi.serialization.ItemStackSerializer", PrimitiveKind.STRING)

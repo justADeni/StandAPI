@@ -10,6 +10,9 @@ import kotlinx.serialization.json.Json
 import java.io.File
 import java.nio.file.Files
 
+/**
+ * @suppress
+ */
 object Saver {
     private val file = File(StandAPI.plugin().dataFolder.path + "/Stands.yml").also { it.createNewFile() }
     internal suspend fun saveAll() = withContext(Dispatchers.IO){

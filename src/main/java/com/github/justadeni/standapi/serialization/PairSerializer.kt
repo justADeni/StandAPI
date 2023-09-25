@@ -10,6 +10,9 @@ import kotlinx.serialization.encoding.Encoder
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.ItemStack
 
+/**
+ * @suppress
+ */
 class PairSerializer() : KSerializer<HashMap<ItemSlot, ItemStack>> {
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.github.justadeni.standapi.serialization.PairSerializer", PrimitiveKind.STRING)

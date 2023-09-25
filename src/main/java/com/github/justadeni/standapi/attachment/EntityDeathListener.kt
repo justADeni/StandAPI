@@ -7,6 +7,9 @@ import com.comphenix.protocol.events.PacketEvent
 import com.github.justadeni.standapi.Ranger
 import com.github.justadeni.standapi.StandAPI
 
+/**
+ * @suppress
+ */
 class EntityDeathListener {
     init {
         StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.NORMAL, PacketType.Play.Server.REL_ENTITY_MOVE) {

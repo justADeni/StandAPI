@@ -8,6 +8,9 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
+/**
+ * @suppress
+ */
 class ListRotationSerializer() : KSerializer<MutableList<Rotation>> {
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.github.justadeni.standapi.serialization.ListRotationSerializer", PrimitiveKind.STRING)

@@ -6,6 +6,9 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import java.util.*
 
+/**
+ * @suppress
+ */
 class UUIDSerializer(): KSerializer<UUID> {
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.github.justadeni.standapi.serialization.UUIDSerializer", PrimitiveKind.STRING)

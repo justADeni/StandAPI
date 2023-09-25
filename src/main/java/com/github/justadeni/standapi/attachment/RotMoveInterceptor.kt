@@ -8,6 +8,9 @@ import com.github.justadeni.standapi.Misc.sendTo
 import com.github.justadeni.standapi.Ranger
 import com.github.justadeni.standapi.StandAPI
 
+/**
+ * @suppress
+ */
 class RotMoveInterceptor {
     init {
         StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.NORMAL, PacketType.Play.Server.REL_ENTITY_MOVE_LOOK) {

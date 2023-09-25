@@ -19,6 +19,9 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
+/**
+ * @suppress
+ */
 class Command: SuspendingCommandExecutor {
 
     companion object {

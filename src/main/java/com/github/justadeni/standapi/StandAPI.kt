@@ -15,6 +15,9 @@ import com.github.shynixn.mccoroutine.bukkit.*
 import kotlinx.coroutines.runBlocking
 import org.bukkit.plugin.java.JavaPlugin
 
+/**
+ * @suppress
+ */
 class StandAPI : SuspendingJavaPlugin() {
 
     companion object {

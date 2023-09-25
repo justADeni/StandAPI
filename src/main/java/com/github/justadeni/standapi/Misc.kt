@@ -4,6 +4,9 @@ import com.comphenix.protocol.events.PacketContainer
 import com.github.shynixn.mccoroutine.bukkit.launch
 import org.bukkit.entity.Player
 
+/**
+ * @suppress
+ */
 object Misc {
 
     private var id = 9999

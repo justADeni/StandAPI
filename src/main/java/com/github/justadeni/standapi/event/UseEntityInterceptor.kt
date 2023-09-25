@@ -12,6 +12,9 @@ import com.github.justadeni.standapi.StandAPI.Companion.plugin
 import com.github.shynixn.mccoroutine.bukkit.launch
 import org.bukkit.Bukkit
 
+/**
+ * @suppress
+ */
 class UseEntityInterceptor {
     init {
         manager().addPacketListener(object : PacketAdapter(plugin(), ListenerPriority.NORMAL, PacketType.Play.Client.USE_ENTITY) {

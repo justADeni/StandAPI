@@ -5,6 +5,9 @@ import com.github.shynixn.mccoroutine.bukkit.SuspendingTabCompleter
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 
+/**
+ * @suppress
+ */
 class TabComplete: SuspendingTabCompleter {
 
     val fullList = listOf("reload", "spawn", "equipment", "metadata", "invisible", "location", "destroy", "rotatehead", "serialize", "deserialize", "attach", "detach")

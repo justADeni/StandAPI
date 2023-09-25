@@ -14,6 +14,9 @@ import org.bukkit.inventory.ItemStack
 import java.util.*
 import kotlin.collections.HashMap
 
+/**
+ * @suppress
+ */
 class PacketGenerator(private val id: Int, private val uuid: UUID){
 
     private val watcher = WrappedDataWatcher()

@@ -10,6 +10,9 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import java.util.UUID
 
+/**
+ * @suppress
+ */
 class LocationSerializer() : KSerializer<Location> {
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.github.justadeni.standapi.serialization.LocationSerializer", PrimitiveKind.STRING)

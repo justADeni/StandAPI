@@ -7,6 +7,9 @@ import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
+/**
+ * @suppress
+ */
 object Ranger {
     /*
     for all existing stands
@@ -56,14 +59,14 @@ object Ranger {
     }
 
     internal fun remove(stand: PacketStand){
-        val it = ticking.keys.iterator()
-        while (it.hasNext()){
-            val entityId = it.next()
+        val tickingIt = ticking.keys.iterator()
+        while (tickingIt.hasNext()){
+            val entityId = tickingIt.next()
             if(ticking[entityId]!!.contains(stand)){
                 ticking[entityId]!!.remove(stand)
             }
             if (ticking[entityId]!!.isEmpty()){
-                it.remove()
+                tickingIt.remove()
                 break
             }
         }

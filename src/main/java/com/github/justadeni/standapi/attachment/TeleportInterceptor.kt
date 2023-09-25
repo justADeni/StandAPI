@@ -9,6 +9,9 @@ import com.github.justadeni.standapi.Ranger
 import com.github.justadeni.standapi.StandAPI
 import com.github.justadeni.standapi.datatype.Offset
 
+/**
+ * @suppress
+ */
 class TeleportInterceptor {
     init {
         StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_TELEPORT) {

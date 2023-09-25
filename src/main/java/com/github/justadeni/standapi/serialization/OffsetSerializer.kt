@@ -8,6 +8,9 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
+/**
+ * @suppress
+ */
 class OffsetSerializer: KSerializer<Offset> {
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.github.justadeni.standapi.serialization.OffsetSerializer", PrimitiveKind.STRING)
