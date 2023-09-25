@@ -7,7 +7,6 @@ import com.comphenix.protocol.events.PacketEvent
 import com.comphenix.protocol.wrappers.EnumWrappers
 import com.github.justadeni.standapi.Misc
 import com.github.justadeni.standapi.Ranger
-import com.github.justadeni.standapi.StandAPI
 import com.github.justadeni.standapi.StandAPI.Companion.manager
 import com.github.justadeni.standapi.StandAPI.Companion.plugin
 import com.github.shynixn.mccoroutine.bukkit.launch
@@ -24,7 +23,7 @@ class UseEntityInterceptor {
                 if (id < 9999 || id > Misc.currentID())
                     return
 
-                val stand = Ranger.find(id)
+                val stand = Ranger.findByStandId(id)
 
                 val action = when (packet.enumEntityUseActions.read(0).action){
                     EnumWrappers.EntityUseAction.ATTACK -> Action.LEFT_CLICK
@@ -32,7 +31,7 @@ class UseEntityInterceptor {
                     EnumWrappers.EntityUseAction.INTERACT_AT -> Action.RIGHT_CLICK
                 }
 
-                StandAPI.plugin().launch { Bukkit.getPluginManager().callEvent(PacketStandEvent(player, id, stand, action)) }
+                plugin().launch { Bukkit.getPluginManager().callEvent(PacketStandEvent(player, id, stand, action)) }
             }
         })
     }
