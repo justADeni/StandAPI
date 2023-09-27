@@ -14,10 +14,12 @@ import java.nio.file.Files
  * @suppress
  */
 object Saver {
+
     private val file = File(StandAPI.plugin().dataFolder.path + "/Stands.yml").also { it.createNewFile() }
-    internal suspend fun saveAll() = withContext(Dispatchers.IO){
+
+    internal suspend fun saveAll(){
         if (!StandApiConfig.savingEnabled)
-            return@withContext
+            return
 
         file.printWriter().use {out ->
             Ranger.getAllStands().forEach{

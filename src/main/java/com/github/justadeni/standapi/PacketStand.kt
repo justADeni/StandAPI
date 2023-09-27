@@ -84,7 +84,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
             val pE = Bukkit.getEntity(attachedTo!!.first)
             if (pE != null){
                 setLocation(Location(pE.world, pE.location.x + attachedTo!!.second.x, pE.location.y + attachedTo!!.second.y, pE.location.z + attachedTo!!.second.z))
-                Ranger.add(pE.entityId, this)
+                Ranger.add(this)
             } else {
                 attachedTo = null
                 Ranger.add(this)

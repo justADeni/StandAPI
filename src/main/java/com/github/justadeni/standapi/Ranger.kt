@@ -46,16 +46,29 @@ object Ranger {
     }
 
     internal fun add(stand: PacketStand){
-        add(-1, stand)
+        if (stand.getAttached() == null){
+            addWithId(stand, -1)
+
+            return
+        }
+
+        val entityId = Bukkit.getEntity(stand.getAttached()!!.first)?.entityId
+        if (entityId == null){
+            stand.detachFrom()
+            addWithId(stand, -1)
+
+            return
+        }
+
+        addWithId(stand, entityId)
     }
 
-    internal fun add(entityId: Int, stand: PacketStand){
-        if (ticking.contains(entityId))
-            ticking[entityId]!!.add(stand)
+    //only when you're 100% sure
+    private fun addWithId(stand: PacketStand, id: Int){
+        if (ticking.containsKey(-1))
+            ticking[id]!!.add(stand)
         else
-            ticking[entityId] = mutableListOf(stand)
-
-        //stand.packetBundle.sendTo(stand.eligiblePlayers())
+            ticking[id] = mutableListOf(stand)
     }
 
     internal fun remove(stand: PacketStand){

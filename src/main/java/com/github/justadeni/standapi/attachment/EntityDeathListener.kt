@@ -12,7 +12,7 @@ import com.github.justadeni.standapi.StandAPI
  */
 class EntityDeathListener {
     init {
-        StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.NORMAL, PacketType.Play.Server.REL_ENTITY_MOVE) {
+        StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_DESTROY) {
             override fun onPacketSending(event: PacketEvent) {
                 val packet = event.packet
                 val ids = packet.intLists.read(0)

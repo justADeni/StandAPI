@@ -24,7 +24,7 @@ class MoveInterceptor {
                     return
 
                 for (stand in list)
-                    packet.deepClone().also { it.integers.write(0, stand.id) }.sendTo(player)
+                    packet.shallowClone().also { it.integers.write(0, stand.id) }.sendTo(player)
             }
         })
     }
