@@ -89,6 +89,8 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
                 attachedTo = null
                 Ranger.add(this)
             }
+        } else {
+            Ranger.add(this)
         }
     }
 

@@ -33,6 +33,14 @@ class StandAPI : SuspendingJavaPlugin() {
         fun manager(): ProtocolManager {
             return manager!!
         }
+
+        fun log(info: String){
+            plugin!!.logger.info(info)
+        }
+
+        fun log(clazz: Any, info: String){
+            plugin!!.logger.info("${clazz}: $info")
+        }
     }
 
     override suspend fun onLoadAsync() {
@@ -45,18 +53,17 @@ class StandAPI : SuspendingJavaPlugin() {
     override suspend fun onEnableAsync() {
         getCommand("standapi")!!.setSuspendingExecutor(Command())
         getCommand("standapi")!!.setSuspendingTabCompleter(TabComplete())
-        EntityDeathListener()
         UseEntityInterceptor()
+        EntityDeathListener()
         MoveInterceptor()
         RotMoveInterceptor()
         TeleportInterceptor()
         Saver.loadAll()
+        Misc.resetId()
         launch { Ranger.startTicking() }
     }
 
     override fun onDisable() {
-        runBlocking {
-            Saver.saveAll()
-        }
+        Saver.saveAll()
     }
 }

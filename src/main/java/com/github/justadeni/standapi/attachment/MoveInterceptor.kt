@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketEvent
 import com.github.justadeni.standapi.Misc.sendTo
 import com.github.justadeni.standapi.Ranger
 import com.github.justadeni.standapi.StandAPI
+import org.bukkit.Bukkit
 
 /**
  * @suppress
@@ -19,7 +20,12 @@ class MoveInterceptor {
                 val packet = event.packet
                 val entityId = packet.integers.read(0)
 
+                //StandAPI.log("entityId: $entityId")
+
                 val list = Ranger.findByEntityId(entityId)
+
+                //StandAPI.log("list: $list")
+
                 if (list.isEmpty())
                     return
 

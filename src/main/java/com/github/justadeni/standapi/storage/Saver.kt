@@ -15,11 +15,13 @@ import java.nio.file.Files
  */
 object Saver {
 
-    private val file = File(StandAPI.plugin().dataFolder.path + "/Stands.yml").also { it.createNewFile() }
+    private val file = File(StandAPI.plugin().dataFolder.path + "/stands.yml").also { it.createNewFile() }
 
-    internal suspend fun saveAll(){
+    internal fun saveAll(){
         if (!StandApiConfig.savingEnabled)
             return
+
+        file.writeText("") //empties file
 
         file.printWriter().use {out ->
             Ranger.getAllStands().forEach{
@@ -27,11 +29,13 @@ object Saver {
             }
         }
     }
-    internal suspend fun loadAll() = withContext(Dispatchers.IO){
+    internal suspend fun loadAll(){
         if (!StandApiConfig.savingEnabled)
-            return@withContext
+            return
 
-        Files.readAllLines(file.toPath()).forEach{
+        withContext(Dispatchers.IO) {
+            Files.readAllLines(file.toPath())
+        }.forEach{
             Ranger.add(Json.decodeFromString(it) as PacketStand)
         }
     }

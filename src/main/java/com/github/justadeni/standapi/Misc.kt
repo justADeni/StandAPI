@@ -15,6 +15,14 @@ object Misc {
 
     internal fun currentID() = id
 
+    internal fun resetId(){
+        val stands = Ranger.getAllStands()
+        if (stands.isEmpty())
+            return
+
+        id = stands.sortedBy { it.id }[0].id
+    }
+
     internal fun getID(): Int {
         id += 1
         return id

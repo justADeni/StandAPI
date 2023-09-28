@@ -3,6 +3,8 @@ package com.github.justadeni.standapi
 import com.github.justadeni.standapi.Misc.sendTo
 import com.github.justadeni.standapi.storage.StandApiConfig
 import com.github.shynixn.mccoroutine.bukkit.asyncDispatcher
+import com.github.shynixn.mccoroutine.bukkit.ticks
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -23,10 +25,10 @@ object Ranger {
     */
     private val included = hashMapOf<Player, MutableList<PacketStand>>()
 
-    internal suspend fun getAllStands(): List<PacketStand> = withContext(StandAPI.plugin().asyncDispatcher) {
+    internal fun getAllStands(): List<PacketStand>{
         val wholeList = mutableListOf<PacketStand>()
         ticking.values.forEach { wholeList.addAll(it) }
-        return@withContext wholeList
+        return wholeList
     }
 
     internal fun findByEntityId(entityId: Int): List<PacketStand> {
@@ -49,23 +51,31 @@ object Ranger {
         if (stand.getAttached() == null){
             addWithId(stand, -1)
 
+            StandAPI.log("attached null")
+
             return
         }
 
         val entityId = Bukkit.getEntity(stand.getAttached()!!.first)?.entityId
+        StandAPI.log("found entity Id: $entityId")
+
         if (entityId == null){
             stand.detachFrom()
             addWithId(stand, -1)
 
+            StandAPI.log("entityId null")
             return
         }
 
+        StandAPI.log("added stand")
         addWithId(stand, entityId)
+
+        StandAPI.log("list: $ticking")
     }
 
-    //only when you're 100% sure
+    //only use when you're 100% sure
     private fun addWithId(stand: PacketStand, id: Int){
-        if (ticking.containsKey(-1))
+        if (ticking.containsKey(id))
             ticking[id]!!.add(stand)
         else
             ticking[id] = mutableListOf(stand)
@@ -113,6 +123,10 @@ object Ranger {
                     it.destroyPacket.sendTo(player)
                 }
             }
+
+            StandAPI.log(ticking.toString())
+
+            delay(20.ticks)
         }
     }
 
