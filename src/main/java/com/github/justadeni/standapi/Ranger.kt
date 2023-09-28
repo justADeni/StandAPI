@@ -7,6 +7,7 @@ import com.github.shynixn.mccoroutine.bukkit.ticks
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.entity.Player
 
 /**
@@ -31,11 +32,11 @@ object Ranger {
         return wholeList
     }
 
-    internal fun findByEntityId(entityId: Int): List<PacketStand> {
-        if (ticking.containsKey(entityId))
-            return ticking[entityId]!!
+    internal fun findByEntityId(entityId: Int): List<PacketStand>? {
+        //if (ticking.containsKey(entityId))
+            return ticking[entityId]
 
-        return emptyList()
+        //return emptyList()
     }
 
     internal fun findByStandId(standId: Int): PacketStand? {
@@ -49,7 +50,7 @@ object Ranger {
 
     internal fun add(stand: PacketStand){
         if (stand.getAttached() == null){
-            addWithId(stand, -1)
+            addWithId(stand, -2)
 
             StandAPI.log("attached null")
 
@@ -76,7 +77,8 @@ object Ranger {
     //only use when you're 100% sure
     private fun addWithId(stand: PacketStand, id: Int){
         if (ticking.containsKey(id))
-            ticking[id]!!.add(stand)
+            if (!ticking[id]!!.contains(stand))
+                ticking[id]!!.add(stand)
         else
             ticking[id] = mutableListOf(stand)
     }
@@ -97,6 +99,8 @@ object Ranger {
 
     internal suspend fun startTicking() = withContext(StandAPI.plugin().asyncDispatcher){
         while (true) {
+            delay(20.ticks)
+
             val allStands = getAllStands()
 
             for (player in Bukkit.getOnlinePlayers()){
@@ -126,7 +130,27 @@ object Ranger {
 
             StandAPI.log(ticking.toString())
 
-            delay(20.ticks)
+            if (!ticking.containsKey(-1))
+                continue
+
+            val listIt = ticking[-1]!!.iterator()
+            while (listIt.hasNext()){
+                val stand = listIt.next()
+                if (stand.getAttached() == null){
+                    listIt.remove()
+                    addWithId(stand, -2)
+                    continue
+                }
+                val pE = Bukkit.getEntity(stand.getAttached()!!.first) ?: continue
+                listIt.remove()
+                addWithId(stand, pE.entityId)
+                stand.setLocation(Location(
+                    pE.world,
+                    pE.location.x + stand.getAttached()!!.second.x,
+                    pE.location.x + stand.getAttached()!!.second.y,
+                    pE.location.x + stand.getAttached()!!.second.z
+                ))
+            }
         }
     }
 

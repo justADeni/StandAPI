@@ -8,6 +8,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.io.PrintWriter
 import java.nio.file.Files
 
 /**
@@ -21,7 +22,7 @@ object Saver {
         if (!StandApiConfig.savingEnabled)
             return
 
-        file.writeText("") //empties file
+        PrintWriter(file).close()
 
         file.printWriter().use {out ->
             Ranger.getAllStands().forEach{
@@ -33,10 +34,10 @@ object Saver {
         if (!StandApiConfig.savingEnabled)
             return
 
-        withContext(Dispatchers.IO) {
-            Files.readAllLines(file.toPath())
-        }.forEach{
-            Ranger.add(Json.decodeFromString(it) as PacketStand)
+
+        Files.readAllLines(file.toPath()).forEach{
+            Json.decodeFromString(it) as PacketStand
+            StandAPI.log(it)
         }
     }
 }

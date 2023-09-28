@@ -37,10 +37,6 @@ class StandAPI : SuspendingJavaPlugin() {
         fun log(info: String){
             plugin!!.logger.info(info)
         }
-
-        fun log(clazz: Any, info: String){
-            plugin!!.logger.info("${clazz}: $info")
-        }
     }
 
     override suspend fun onLoadAsync() {

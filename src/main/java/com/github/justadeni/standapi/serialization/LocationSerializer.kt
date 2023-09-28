@@ -1,5 +1,6 @@
 package com.github.justadeni.standapi.serialization
 
+import com.github.justadeni.standapi.Misc.round
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -18,7 +19,7 @@ class LocationSerializer() : KSerializer<Location> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.github.justadeni.standapi.serialization.LocationSerializer", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: Location) {
-        encoder.encodeString("${value.world!!.uid},${value.x},${value.y},${value.z}")
+        encoder.encodeString("${value.world!!.uid},${value.x.round(3)},${value.y.round(3)},${value.z.round(3)}")
     }
 
     override fun deserialize(decoder: Decoder): Location {

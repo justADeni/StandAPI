@@ -18,9 +18,7 @@ class EntityDeathListener {
                 val ids = packet.intLists.read(0)
 
                 for (entityId in ids){
-                    val standList = Ranger.findByEntityId(entityId)
-                    if (standList.isEmpty())
-                        return
+                    val standList = Ranger.findByEntityId(entityId) ?: return
 
                     for (stand in standList){
                         stand.detachFrom()

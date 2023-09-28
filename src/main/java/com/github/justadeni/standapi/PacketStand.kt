@@ -78,20 +78,8 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
 
         val eligiblePlayers = eligiblePlayers()
         packetBundle.sendTo(eligiblePlayers)
-        //includedPlayers.addAll(eligiblePlayers)
 
-        if (attachedTo != null){
-            val pE = Bukkit.getEntity(attachedTo!!.first)
-            if (pE != null){
-                setLocation(Location(pE.world, pE.location.x + attachedTo!!.second.x, pE.location.y + attachedTo!!.second.y, pE.location.z + attachedTo!!.second.z))
-                Ranger.add(this)
-            } else {
-                attachedTo = null
-                Ranger.add(this)
-            }
-        } else {
-            Ranger.add(this)
-        }
+        Ranger.add(this)
     }
 
     internal fun eligiblePlayers(): List<Player> = location.world!!.players.asSequence()
@@ -100,7 +88,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
         .toList()
 
     /**
-     * used to make stand invisible to any number of chose players
+     * used to make stand invisible to any number of chosen players
      * @param player which will be excluded from seeing and interacting with the stand
      */
     fun excludePlayer(player: Player){
@@ -325,10 +313,8 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
         packetBundle[0] = packetGen.create(loc)
 
         if (loc.world != location.world){
-            Ranger.remove(this)
             destroyPacket.sendTo(eligiblePlayers())
             location = loc
-            Ranger.add(this)
             packetBundle.sendTo(eligiblePlayers())
 
         } else if (loc.distanceSquared(location) > 64){

@@ -3,6 +3,7 @@ package com.github.justadeni.standapi
 import com.comphenix.protocol.events.PacketContainer
 import com.github.shynixn.mccoroutine.bukkit.launch
 import org.bukkit.entity.Player
+import kotlin.math.round
 
 /**
  * @suppress
@@ -20,7 +21,7 @@ object Misc {
         if (stands.isEmpty())
             return
 
-        id = stands.sortedBy { it.id }[0].id
+        id = stands.sortedByDescending { it.id }[0].id
     }
 
     internal fun getID(): Int {
@@ -50,5 +51,11 @@ object Misc {
 
     internal fun Int.squared(): Int{
         return this*this
+    }
+
+    internal fun Double.round(decimals: Int): Double {
+        var multiplier = 1.0
+        repeat(decimals) { multiplier *= 10 }
+        return round(this * multiplier) / multiplier
     }
 }

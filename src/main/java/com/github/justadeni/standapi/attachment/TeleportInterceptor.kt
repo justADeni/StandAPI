@@ -20,7 +20,7 @@ class TeleportInterceptor {
                 val packet = event.packet
                 val entityId = packet.integers.read(0)
 
-                val list = Ranger.findByEntityId(entityId)
+                val list = Ranger.findByEntityId(entityId) ?: return
                 for (stand in list){
 
                     if (stand.getAttached()!!.second == Offset.ZERO) {

@@ -19,9 +19,7 @@ class RotMoveInterceptor {
                 val packet = event.packet
                 val entityId = packet.integers.read(0)
 
-                val list = Ranger.findByEntityId(entityId)
-                if (list.isEmpty())
-                    return
+                val list = Ranger.findByEntityId(entityId) ?: return
 
                 //TODO: Copy rotation of entity aswell + another packet
 

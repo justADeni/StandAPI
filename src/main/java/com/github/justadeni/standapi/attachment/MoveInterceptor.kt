@@ -14,20 +14,19 @@ import org.bukkit.Bukkit
  */
 class MoveInterceptor {
     init {
+        //this is for mobs
+        //TODO: make another one for players https://wiki.vg/Protocol#Set_Player_Position
         StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.NORMAL, PacketType.Play.Server.REL_ENTITY_MOVE) {
             override fun onPacketSending(event: PacketEvent) {
                 val player = event.player
                 val packet = event.packet
                 val entityId = packet.integers.read(0)
 
-                //StandAPI.log("entityId: $entityId")
+                StandAPI.log("entityId: $entityId")
 
-                val list = Ranger.findByEntityId(entityId)
+                val list = Ranger.findByEntityId(entityId) ?: return
 
-                //StandAPI.log("list: $list")
-
-                if (list.isEmpty())
-                    return
+                StandAPI.log("list: $list")
 
                 for (stand in list)
                     packet.shallowClone().also { it.integers.write(0, stand.id) }.sendTo(player)
