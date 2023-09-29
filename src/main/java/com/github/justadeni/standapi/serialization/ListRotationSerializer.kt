@@ -1,5 +1,6 @@
 package com.github.justadeni.standapi.serialization
 
+import com.github.justadeni.standapi.Misc.round
 import com.github.justadeni.standapi.datatype.Rotation
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -17,7 +18,7 @@ class ListRotationSerializer() : KSerializer<MutableList<Rotation>> {
 
     override fun serialize(encoder: Encoder, value: MutableList<Rotation>) {
         var string = ""
-        value.forEach { string += "${it.pitch},${it.yaw},${it.roll}|" }
+        value.forEach { string += "${it.pitch.round(3)},${it.yaw.round(3)},${it.roll.round(3)}|" }
         encoder.encodeString(string)
     }
 
@@ -25,7 +26,7 @@ class ListRotationSerializer() : KSerializer<MutableList<Rotation>> {
         val list = mutableListOf<Rotation>()
         val listParts = decoder.decodeString().split("|")
         for (part in listParts){
-            if (!part.contains(","))
+            if (part.isEmpty() || !part.contains(","))
                 continue
 
             val rotationParts = part.split(",")

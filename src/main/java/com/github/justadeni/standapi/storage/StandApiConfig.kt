@@ -18,18 +18,21 @@ object StandApiConfig {
         testMode = config.getBoolean("TestMode")
     }
 
+    @JvmStatic
     fun setRenderDistance(rd: Int){
         config.set("RenderDistance", rd)
         StandAPI.plugin().saveConfig()
         renderDistance2 = rd.squared()
     }
 
+    @JvmStatic
     fun setSavingEnabled(se: Boolean){
         config.set("SavingEnabled", se)
         StandAPI.plugin().saveConfig()
         savingEnabled = se
     }
 
+    @JvmStatic
     fun testMode(tm: Boolean){
         config.set("TestMode", tm)
         StandAPI.plugin().saveConfig()

@@ -58,4 +58,10 @@ object Misc {
         repeat(decimals) { multiplier *= 10 }
         return round(this * multiplier) / multiplier
     }
+
+    internal fun Float.round(decimals: Int): Float {
+        var multiplier = 1.0
+        repeat(decimals) { multiplier *= 10 }
+        return (round(this * multiplier) / multiplier).toFloat()
+    }
 }

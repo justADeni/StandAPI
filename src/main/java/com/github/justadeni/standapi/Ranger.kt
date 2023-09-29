@@ -3,8 +3,10 @@ package com.github.justadeni.standapi
 import com.github.justadeni.standapi.Misc.sendTo
 import com.github.justadeni.standapi.storage.StandApiConfig
 import com.github.shynixn.mccoroutine.bukkit.asyncDispatcher
+import com.github.shynixn.mccoroutine.bukkit.minecraftDispatcher
 import com.github.shynixn.mccoroutine.bukkit.ticks
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -61,7 +63,7 @@ object Ranger {
         StandAPI.log("found entity Id: $entityId")
 
         if (entityId == null){
-            stand.detachFrom()
+            //stand.detachFrom()
             addWithId(stand, -1)
 
             StandAPI.log("entityId null")
@@ -76,24 +78,26 @@ object Ranger {
 
     //only use when you're 100% sure
     private fun addWithId(stand: PacketStand, id: Int){
-        if (ticking.containsKey(id))
-            if (!ticking[id]!!.contains(stand))
+        if (ticking.containsKey(id)) {
+            if (!ticking[id]!!.contains(stand)) {
                 ticking[id]!!.add(stand)
-        else
+            }
+        }else {
             ticking[id] = mutableListOf(stand)
+        }
     }
 
     internal fun remove(stand: PacketStand){
-        val tickingIt = ticking.keys.iterator()
-        while (tickingIt.hasNext()){
-            val entityId = tickingIt.next()
-            if(ticking[entityId]!!.contains(stand)){
-                ticking[entityId]!!.remove(stand)
-            }
-            if (ticking[entityId]!!.isEmpty()){
-                tickingIt.remove()
-                break
-            }
+        val mapIt = ticking.entries.iterator()
+        while (mapIt.hasNext()){
+            val pair = mapIt.next()
+            if (!pair.value.contains(stand))
+                continue
+
+            pair.value.remove(stand)
+            if (pair.value.isEmpty())
+                mapIt.remove()
+            break
         }
     }
 
@@ -136,12 +140,15 @@ object Ranger {
             val listIt = ticking[-1]!!.iterator()
             while (listIt.hasNext()){
                 val stand = listIt.next()
+                /*
                 if (stand.getAttached() == null){
                     listIt.remove()
                     addWithId(stand, -2)
                     continue
                 }
-                val pE = Bukkit.getEntity(stand.getAttached()!!.first) ?: continue
+                */
+                stand.getAttached() ?: continue
+                val pE = withContext(StandAPI.plugin().minecraftDispatcher){ Bukkit.getEntity(stand.getAttached()!!.first) } ?: continue
                 listIt.remove()
                 addWithId(stand, pE.entityId)
                 stand.setLocation(Location(

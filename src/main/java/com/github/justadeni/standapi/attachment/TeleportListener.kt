@@ -12,7 +12,7 @@ import com.github.justadeni.standapi.datatype.Offset
 /**
  * @suppress
  */
-class TeleportInterceptor {
+class TeleportListener {
     init {
         StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_TELEPORT) {
             override fun onPacketSending(event: PacketEvent) {

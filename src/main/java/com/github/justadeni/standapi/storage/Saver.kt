@@ -30,14 +30,14 @@ object Saver {
             }
         }
     }
+
     internal suspend fun loadAll(){
         if (!StandApiConfig.savingEnabled)
             return
 
-
         Files.readAllLines(file.toPath()).forEach{
             Json.decodeFromString(it) as PacketStand
-            StandAPI.log(it)
+            StandAPI.log("loading $it")
         }
     }
 }
