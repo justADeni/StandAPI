@@ -122,10 +122,11 @@ object Ranger {
                     .toList()
 
                 val wentInside = areInside - wereInside.toSet()
+                StandAPI.log("went inside: $wentInside")
                 wentInside.forEach {
                     it.packetBundle.sendTo(player)
                 }
-                included[player] = wentInside.toMutableList()
+                included[player] = areInside.toMutableList()
 
                 val wentOutside = wereInside - areInside.toSet()
                 wentOutside.forEach {
