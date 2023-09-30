@@ -2,6 +2,7 @@ package com.github.justadeni.standapi
 
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.ProtocolManager
+import com.github.justadeni.standapi.Misc.squared
 import com.github.justadeni.standapi.attachment.EntityDeathListener
 import com.github.justadeni.standapi.attachment.client.PlayerMoveListener
 import com.github.justadeni.standapi.attachment.client.PlayerRotListener
@@ -13,7 +14,10 @@ import com.github.justadeni.standapi.storage.Saver
 import com.github.justadeni.standapi.testing.TabComplete
 import com.github.justadeni.standapi.testing.Command
 import com.github.shynixn.mccoroutine.bukkit.*
+import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
+import org.spigotmc.SpigotWorldConfig
+import java.util.*
 
 /**
  * @suppress
@@ -37,6 +41,12 @@ class StandAPI : SuspendingJavaPlugin() {
         fun log(info: String){
             plugin!!.logger.info(info)
         }
+
+        private val pTrackingRanges = hashMapOf<UUID, Int>()
+
+        fun getPTrackingRange2(worlduuid: UUID): Int {
+            return pTrackingRanges[worlduuid] ?: 2304 //48
+        }
     }
 
     override suspend fun onLoadAsync() {
@@ -56,12 +66,16 @@ class StandAPI : SuspendingJavaPlugin() {
         EntityPitchMoveListener()
         EntityYawListener()
         TeleportListener()
+
         PlayerMoveListener()
         PlayerRotListener()
         PlayerRotMoveListener()
         Saver.loadAll()
         Misc.resetId()
         launch { Ranger.startTicking() }
+        for (world in Bukkit.getWorlds()){
+            pTrackingRanges[world.uid] = SpigotWorldConfig(world.name).playerTrackingRange.squared()
+        }
     }
 
     override fun onDisable() {

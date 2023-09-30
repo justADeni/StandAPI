@@ -3,8 +3,12 @@ package com.github.justadeni.standapi
 import com.comphenix.protocol.events.PacketContainer
 import com.github.justadeni.standapi.datatype.Offset
 import com.github.shynixn.mccoroutine.bukkit.launch
+import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.Server.Spigot
 import org.bukkit.entity.Player
+import org.spigotmc.SpigotConfig
+import org.spigotmc.SpigotWorldConfig
 import java.util.SplittableRandom
 import kotlin.math.round
 
@@ -52,7 +56,7 @@ object Misc {
         }
     }
 
-    internal fun Int.squared(): Int{
+    internal fun Int.squared(): Int {
         return this*this
     }
 
@@ -68,11 +72,19 @@ object Misc {
         return (round(this * multiplier) / multiplier).toFloat()
     }
 
-    internal fun Location.applyOffset(offset: Offset?): Location{
+    internal fun Location.applyOffset(offset: Offset?): Location {
         if (offset == null)
             return this
 
         return Location(this.world, this.x + offset.x, this.y + offset.y, this.z + offset.z)
     }
 
+    //TODO: this might not be very good for performance, investigate
+    internal fun Player.isAnyoneNearby(): Boolean {
+        return this@isAnyoneNearby.world.players.asSequence()
+            .filterNot { it == this@isAnyoneNearby }
+            .filter { it.location.distanceSquared(this@isAnyoneNearby.location) < StandAPI.getPTrackingRange2(this.world.uid) }
+            .toList()
+            .isNotEmpty()
+    }
 }

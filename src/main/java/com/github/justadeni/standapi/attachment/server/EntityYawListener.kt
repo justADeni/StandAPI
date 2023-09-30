@@ -27,9 +27,9 @@ class EntityYawListener {
                     val cloned = packet.shallowClone()
 
                     if (stand.isAttachedYaw())
-                        stand.rotations[0] = Rotation(stand.getHeadPose().pitch, cloned.bytes.read(0).toFloat(), stand.getHeadPose().roll)
+                        stand.rotations[0] = Rotation(stand.getHeadPose().pitch, cloned.bytes.read(0) * 360.0F / 256.0F, stand.getHeadPose().roll)
                     else
-                        cloned.bytes.write(0, stand.getHeadPose().yaw.toInt().toByte())
+                        cloned.bytes.write(0, (stand.getHeadPose().yaw * 256.0F / 360.0F).toInt().toByte())
 
                     cloned.integers.write(0, stand.id)
                     cloned.sendTo(player)

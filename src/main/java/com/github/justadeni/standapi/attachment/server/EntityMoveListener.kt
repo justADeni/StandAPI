@@ -21,6 +21,8 @@ class EntityMoveListener {
                 val entityId = packet.integers.read(0)
 
                 StandAPI.log("entity moved: $entityId")
+                //TODO: check if player not excluded in every stands
+                //TODO: send to player if they are the entity
 
                 val list = Ranger.findByEntityId(entityId) ?: return
 

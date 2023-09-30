@@ -5,9 +5,11 @@ import com.comphenix.protocol.events.ListenerPriority
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
 import com.github.justadeni.standapi.Misc.applyOffset
+import com.github.justadeni.standapi.Misc.isAnyoneNearby
 import com.github.justadeni.standapi.Misc.sendTo
 import com.github.justadeni.standapi.Ranger
 import com.github.justadeni.standapi.StandAPI
+import com.github.justadeni.standapi.datatype.Rotation
 import org.bukkit.Location
 
 /**
@@ -17,6 +19,8 @@ class PlayerMoveListener {
     init {
         StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.LOWEST, PacketType.Play.Client.POSITION) {
             override fun onPacketReceiving(event: PacketEvent) {
+
+                /*
                 val player = event.player
                 val packet = event.packet
                 val entityId = player.entityId
@@ -27,8 +31,22 @@ class PlayerMoveListener {
 
                 for (stand in list){
                     val offsetLoc = loc.applyOffset(stand.getAttached()?.second)
+                    //val offsetLoc = player.location.applyOffset(stand.getAttached()?.second)
                     stand.setLocationNoUpdate(offsetLoc)
                     stand.packetGen.teleport(offsetLoc).sendTo(player)
+                }
+                */
+                val player = event.player
+                val packet = event.packet
+                val entityId = player.entityId
+
+                val list = Ranger.findByEntityId(entityId) ?: return
+
+                if (player.isAnyoneNearby())
+                    return
+
+                for (stand in list){
+                    stand.setLocation(player.location.applyOffset(stand.getAttached()?.second))
                 }
             }
         })
