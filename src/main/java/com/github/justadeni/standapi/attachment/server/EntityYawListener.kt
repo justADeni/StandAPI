@@ -10,12 +10,9 @@ import com.github.justadeni.standapi.StandAPI
 import com.github.justadeni.standapi.datatype.Rotation
 import org.bukkit.Location
 
-/**
- * @suppress
- */
-class EntityRotMoveListener {
+class EntityYawListener {
     init {
-        StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.LOW, PacketType.Play.Server.REL_ENTITY_MOVE_LOOK) {
+        StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.LOW, PacketType.Play.Server.ENTITY_HEAD_ROTATION) {
             override fun onPacketSending(event: PacketEvent) {
                 val player = event.player
                 val packet = event.packet
@@ -26,11 +23,10 @@ class EntityRotMoveListener {
                 for (stand in list) {
                     val cloned = packet.shallowClone()
 
-                    stand.setLocationNoUpdate(Location(player.world, cloned.doubles.read(0), cloned.doubles.read(1), cloned.doubles.read(2)))
-                    if (stand.isAttachedPitch())
-                        stand.rotations[0] = (Rotation(cloned.bytes.read(1) * 360.0F / 256.0F, stand.getHeadPose().yaw ,stand.getHeadPose().roll))
+                    if (stand.isAttachedYaw())
+                        stand.rotations[0] = Rotation(stand.getHeadPose().pitch, cloned.bytes.read(0).toFloat(), stand.getHeadPose().roll)
                     else
-                        cloned.bytes.write(1, (stand.getHeadPose().pitch * 256.0F / 360.0F).toInt().toByte())
+                        cloned.bytes.write(0, stand.getHeadPose().yaw.toInt().toByte())
 
                     cloned.integers.write(0, stand.id)
                     cloned.sendTo(player)

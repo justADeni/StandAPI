@@ -7,13 +7,14 @@ import com.comphenix.protocol.events.PacketEvent
 import com.github.justadeni.standapi.Misc.sendTo
 import com.github.justadeni.standapi.Ranger
 import com.github.justadeni.standapi.StandAPI
+import org.bukkit.Location
 
 /**
  * @suppress
  */
 class EntityMoveListener {
     init {
-        StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.NORMAL, PacketType.Play.Server.REL_ENTITY_MOVE) {
+        StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.LOW, PacketType.Play.Server.REL_ENTITY_MOVE) {
             override fun onPacketSending(event: PacketEvent) {
                 val player = event.player
                 val packet = event.packet
@@ -23,8 +24,12 @@ class EntityMoveListener {
 
                 val list = Ranger.findByEntityId(entityId) ?: return
 
-                for (stand in list)
-                    packet.shallowClone().also { it.integers.write(0, stand.id) }.sendTo(player)
+                for (stand in list) {
+                    val cloned = packet.shallowClone()
+                    stand.setLocationNoUpdate(Location(player.world, cloned.doubles.read(0), cloned.doubles.read(1), cloned.doubles.read(2)))
+                    cloned.integers.write(0, stand.id)
+                    cloned.sendTo(player)
+                }
             }
         })
     }

@@ -13,7 +13,7 @@ import org.bukkit.Location
  */
 class PlayerRotListener {
     init {
-        StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.NORMAL, PacketType.Play.Client.LOOK) {
+        StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.LOWEST, PacketType.Play.Client.LOOK) {
             override fun onPacketReceiving(event: PacketEvent) {
                 val player = event.player
                 val packet = event.packet

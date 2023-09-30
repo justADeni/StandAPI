@@ -10,10 +10,13 @@ class Rotation(
 ): Rotations(pitch, yaw, roll) {
 
     companion object {
+
+        @JvmStatic
         fun EulerAngle.toRotation(): Rotation {
             return Rotation(Math.toDegrees(this.x).toFloat(), Math.toDegrees(this.y).toFloat(), Math.toDegrees(this.z).toFloat())
         }
 
+        @JvmStatic
         fun Rotation.toEulerAngle(): EulerAngle {
             return EulerAngle(Math.toRadians(this.x.toDouble()), Math.toRadians(this.y.toDouble()), Math.toRadians(this.z.toDouble()))
         }

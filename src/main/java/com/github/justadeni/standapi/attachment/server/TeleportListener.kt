@@ -28,7 +28,8 @@ class TeleportListener {
                         continue
                     }
 
-                    val altPacket = packet.shallowClone().also { it.integers.write(0, stand.id) }
+                    val altPacket = packet.shallowClone()
+                    altPacket.integers.write(0, stand.id)
                     altPacket.doubles.write(0,altPacket.doubles.read(0) + stand.getAttached()!!.second.x)
                     altPacket.doubles.write(1,altPacket.doubles.read(1) + stand.getAttached()!!.second.y)
                     altPacket.doubles.write(2,altPacket.doubles.read(2) + stand.getAttached()!!.second.z)

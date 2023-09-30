@@ -7,13 +7,17 @@ import com.comphenix.protocol.events.PacketEvent
 import com.github.justadeni.standapi.Misc.sendTo
 import com.github.justadeni.standapi.Ranger
 import com.github.justadeni.standapi.StandAPI
+import com.github.justadeni.standapi.datatype.Rotation
+import org.bukkit.Location
 
 /**
  * @suppress
+ * this packet gives head pitch and body yaw
+ * for head yaw, ENTITY_HEAD_ROTATION is used
  */
 class EntityRotListener {
     init {
-        StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_LOOK) {
+        StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.LOW, PacketType.Play.Server.ENTITY_LOOK) {
             override fun onPacketSending(event: PacketEvent) {
                 val player = event.player
                 val packet = event.packet
@@ -21,8 +25,17 @@ class EntityRotListener {
 
                 val list = Ranger.findByEntityId(entityId) ?: return
 
-                for (stand in list)
-                    packet.shallowClone().also { it.integers.write(0, stand.id) }.sendTo(player)
+                for (stand in list) {
+                    val cloned = packet.shallowClone()
+
+                    if (stand.isAttachedPitch())
+                        stand.rotations[0] = (Rotation(cloned.bytes.read(1) * 360.0F / 256.0F, stand.getHeadPose().yaw ,stand.getHeadPose().roll))
+                    else
+                        cloned.bytes.write(1, (stand.getHeadPose().pitch * 256.0F / 360.0F).toInt().toByte())
+
+                    cloned.integers.write(0, stand.id)
+                    cloned.sendTo(player)
+                }
             }
         })
     }

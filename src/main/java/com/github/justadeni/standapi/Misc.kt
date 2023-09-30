@@ -19,8 +19,6 @@ object Misc {
 
     internal fun currentID() = id
 
-    private val rand = SplittableRandom()
-
     internal fun resetId(){
         val stands = Ranger.getAllStands()
         if (stands.isEmpty())
@@ -77,7 +75,4 @@ object Misc {
         return Location(this.world, this.x + offset.x, this.y + offset.y, this.z + offset.z)
     }
 
-    internal fun random10pc(): Boolean {
-        return rand.nextInt() == 0
-    }
 }

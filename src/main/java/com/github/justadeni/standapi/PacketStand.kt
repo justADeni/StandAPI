@@ -38,6 +38,8 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     private val packetGen = PacketGenerator(id)
 
     private var attachedTo: Pair<@Serializable(with = UUIDSerializer::class) UUID, @Serializable(with = OffsetSerializer::class) Offset>? = null
+    private var attachedPitch = true
+    private var attachedYaw = true
 
     private var excludedPlayers = mutableListOf<@Serializable(with = UUIDSerializer::class) UUID>()
 
@@ -56,7 +58,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     private var isMarker = 0x00 //15, 0x10
 
     @Serializable(with = ListRotationSerializer::class)
-    private val rotations = mutableListOf<@Serializable(with = RotationSerializer::class) Rotation>(
+    internal val rotations = mutableListOf<@Serializable(with = RotationSerializer::class) Rotation>(
         Rotation(0f, 0f, 0f), //head 16
         Rotation(0f, 0f, 0f), //body 17
         Rotation(-10f, 0f, -10f), //left arm 18
@@ -159,6 +161,26 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      * pair of entity UUID to which the stand is attached to and offset. null if not attached
      */
     fun getAttached(): Pair<UUID, Offset>? = attachedTo
+
+    /**
+     * should attached stand copy entity's pitch
+     */
+    fun setAttachPitch() = run { attachedPitch = true }
+
+    /**
+     * is stand's pitch attached to entity
+     */
+    fun isAttachedPitch() = attachedPitch
+
+    /**
+     * should attached stand copy entity's yaw
+     */
+    fun setAttachYaw() = run { attachedYaw = true}
+
+    /**
+     * is stand's yaw attached to entity
+     */
+    fun isAttachedYaw() = attachedYaw
 
     /**
      * set equipment
@@ -331,6 +353,11 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
         } */
 
         location = loc
+    }
+
+    internal fun setLocationNoUpdate(loc: Location){
+        location = loc
+        packetBundle[0] = packetGen.create(loc, uuid)
     }
 
     /**

@@ -6,10 +6,7 @@ import com.github.justadeni.standapi.attachment.EntityDeathListener
 import com.github.justadeni.standapi.attachment.client.PlayerMoveListener
 import com.github.justadeni.standapi.attachment.client.PlayerRotListener
 import com.github.justadeni.standapi.attachment.client.PlayerRotMoveListener
-import com.github.justadeni.standapi.attachment.server.EntityMoveListener
-import com.github.justadeni.standapi.attachment.server.EntityRotListener
-import com.github.justadeni.standapi.attachment.server.EntityRotMoveListener
-import com.github.justadeni.standapi.attachment.server.TeleportListener
+import com.github.justadeni.standapi.attachment.server.*
 import com.github.justadeni.standapi.storage.StandApiConfig
 import com.github.justadeni.standapi.event.UseEntityListener
 import com.github.justadeni.standapi.storage.Saver
@@ -54,10 +51,10 @@ class StandAPI : SuspendingJavaPlugin() {
         getCommand("standapi")!!.setSuspendingTabCompleter(TabComplete())
         server.pluginManager.registerSuspendingEvents(EntityDeathListener(), this)
         UseEntityListener()
-        //EntityDeathListener()
         EntityMoveListener()
         EntityRotListener()
         EntityRotMoveListener()
+        EntityYawListener()
         TeleportListener()
         PlayerMoveListener()
         PlayerRotListener()
