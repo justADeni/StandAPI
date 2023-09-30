@@ -8,14 +8,13 @@ import com.github.justadeni.standapi.Misc.sendTo
 import com.github.justadeni.standapi.Ranger
 import com.github.justadeni.standapi.StandAPI
 import com.github.justadeni.standapi.datatype.Rotation
-import org.bukkit.Location
 
 /**
  * @suppress
  * this packet gives head pitch and body yaw
  * for head yaw, ENTITY_HEAD_ROTATION is used
  */
-class EntityRotListener {
+class EntityPitchListener {
     init {
         StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.LOW, PacketType.Play.Server.ENTITY_LOOK) {
             override fun onPacketSending(event: PacketEvent) {

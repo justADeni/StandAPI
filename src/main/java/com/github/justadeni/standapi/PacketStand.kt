@@ -35,7 +35,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     val uuid: UUID = UUID.randomUUID()
 
     @Transient
-    private val packetGen = PacketGenerator(id)
+    internal val packetGen = PacketGenerator(id)
 
     private var attachedTo: Pair<@Serializable(with = UUIDSerializer::class) UUID, @Serializable(with = OffsetSerializer::class) Offset>? = null
     private var attachedPitch = true

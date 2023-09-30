@@ -13,7 +13,7 @@ import org.bukkit.Location
 /**
  * @suppress
  */
-class EntityRotMoveListener {
+class EntityPitchMoveListener {
     init {
         StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.LOW, PacketType.Play.Server.REL_ENTITY_MOVE_LOOK) {
             override fun onPacketSending(event: PacketEvent) {

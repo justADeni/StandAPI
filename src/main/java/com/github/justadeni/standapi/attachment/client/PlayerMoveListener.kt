@@ -5,6 +5,7 @@ import com.comphenix.protocol.events.ListenerPriority
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
 import com.github.justadeni.standapi.Misc.applyOffset
+import com.github.justadeni.standapi.Misc.sendTo
 import com.github.justadeni.standapi.Ranger
 import com.github.justadeni.standapi.StandAPI
 import org.bukkit.Location
@@ -25,7 +26,9 @@ class PlayerMoveListener {
                 val loc = Location(player.world, packet.doubles.read(0), packet.doubles.read(1), packet.doubles.read(2))
 
                 for (stand in list){
-                    stand.setLocation(loc.applyOffset(stand.getAttached()?.second))
+                    val offsetLoc = loc.applyOffset(stand.getAttached()?.second)
+                    stand.setLocationNoUpdate(offsetLoc)
+                    stand.packetGen.teleport(offsetLoc).sendTo(player)
                 }
             }
         })
