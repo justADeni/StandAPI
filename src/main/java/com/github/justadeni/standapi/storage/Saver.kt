@@ -9,6 +9,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.PrintWriter
+import java.nio.file.CopyOption
 import java.nio.file.Files
 
 /**
@@ -22,6 +23,7 @@ object Saver {
         if (!StandApiConfig.savingEnabled)
             return
 
+        file.copyTo(File(StandAPI.plugin().dataFolder.path + "/backup.yml"), true)
         PrintWriter(file).close()
 
         file.printWriter().use {out ->

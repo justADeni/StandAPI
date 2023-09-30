@@ -7,6 +7,9 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDeathEvent
 
+/**
+ * @suppress
+ */
 class EntityDeathListener: Listener {
 
     @EventHandler

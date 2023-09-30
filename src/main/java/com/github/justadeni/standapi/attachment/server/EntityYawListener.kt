@@ -10,6 +10,9 @@ import com.github.justadeni.standapi.StandAPI
 import com.github.justadeni.standapi.datatype.Rotation
 import org.bukkit.Location
 
+/**
+ * @suppress
+ */
 class EntityYawListener {
     init {
         StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.LOW, PacketType.Play.Server.ENTITY_HEAD_ROTATION) {
