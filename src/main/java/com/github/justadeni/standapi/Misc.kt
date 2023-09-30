@@ -5,6 +5,7 @@ import com.github.justadeni.standapi.datatype.Offset
 import com.github.shynixn.mccoroutine.bukkit.launch
 import org.bukkit.Location
 import org.bukkit.entity.Player
+import java.util.SplittableRandom
 import kotlin.math.round
 
 /**
@@ -17,6 +18,8 @@ object Misc {
     private val manager = StandAPI.manager()
 
     internal fun currentID() = id
+
+    private val rand = SplittableRandom()
 
     internal fun resetId(){
         val stands = Ranger.getAllStands()
@@ -72,5 +75,9 @@ object Misc {
             return this
 
         return Location(this.world, this.x + offset.x, this.y + offset.y, this.z + offset.z)
+    }
+
+    internal fun random10pc(): Boolean {
+        return rand.nextInt() == 0
     }
 }

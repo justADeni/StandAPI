@@ -318,7 +318,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
             location = loc
             packetBundle.sendTo(eligiblePlayers())
 
-        } else if (loc.distanceSquared(location) > 64){
+        } else /*if (loc.distanceSquared(location) > 64)*/{
 
             for (player in eligiblePlayers())
                 if (player.location.distanceSquared(location) > StandApiConfig.renderDistance2)
@@ -326,9 +326,9 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
                 else
                     packetGen.teleport(loc).sendTo(eligiblePlayers())
 
-        } else {
+        } /*else {
             packetGen.move(location, loc).sendTo(eligiblePlayers())
-        }
+        } */
 
         location = loc
     }

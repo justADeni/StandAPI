@@ -2,6 +2,7 @@ package com.github.justadeni.standapi
 
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.ProtocolManager
+import com.github.justadeni.standapi.attachment.EntityDeathListener
 import com.github.justadeni.standapi.attachment.client.PlayerMoveListener
 import com.github.justadeni.standapi.attachment.client.PlayerRotListener
 import com.github.justadeni.standapi.attachment.client.PlayerRotMoveListener
@@ -10,7 +11,7 @@ import com.github.justadeni.standapi.attachment.server.EntityRotListener
 import com.github.justadeni.standapi.attachment.server.EntityRotMoveListener
 import com.github.justadeni.standapi.attachment.server.TeleportListener
 import com.github.justadeni.standapi.storage.StandApiConfig
-import com.github.justadeni.standapi.event.UseEntityInterceptor
+import com.github.justadeni.standapi.event.UseEntityListener
 import com.github.justadeni.standapi.storage.Saver
 import com.github.justadeni.standapi.testing.TabComplete
 import com.github.justadeni.standapi.testing.Command
@@ -51,7 +52,8 @@ class StandAPI : SuspendingJavaPlugin() {
     override suspend fun onEnableAsync() {
         getCommand("standapi")!!.setSuspendingExecutor(Command())
         getCommand("standapi")!!.setSuspendingTabCompleter(TabComplete())
-        UseEntityInterceptor()
+        server.pluginManager.registerSuspendingEvents(EntityDeathListener(), this)
+        UseEntityListener()
         //EntityDeathListener()
         EntityMoveListener()
         EntityRotListener()

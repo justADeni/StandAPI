@@ -15,7 +15,7 @@ import org.bukkit.Bukkit
 /**
  * @suppress
  */
-class UseEntityInterceptor {
+class UseEntityListener {
     init {
         manager().addPacketListener(object : PacketAdapter(plugin(), ListenerPriority.NORMAL, PacketType.Play.Client.USE_ENTITY) {
             override fun onPacketReceiving(event: PacketEvent) {

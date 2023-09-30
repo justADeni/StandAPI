@@ -1,30 +1,23 @@
 package com.github.justadeni.standapi.attachment
 
-import com.comphenix.protocol.PacketType
-import com.comphenix.protocol.events.ListenerPriority
-import com.comphenix.protocol.events.PacketAdapter
-import com.comphenix.protocol.events.PacketEvent
 import com.github.justadeni.standapi.Ranger
-import com.github.justadeni.standapi.StandAPI
+import kotlinx.coroutines.withContext
+import org.bukkit.entity.EntityType
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.entity.EntityDeathEvent
 
-/**
- * @suppress
- */
-class EntityDeathListener {
-    init {
-        StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_DESTROY) {
-            override fun onPacketSending(event: PacketEvent) {
-                val packet = event.packet
-                val ids = packet.intLists.read(0)
+class EntityDeathListener: Listener {
 
-                for (entityId in ids){
-                    val standList = Ranger.findByEntityId(entityId) ?: return
+    @EventHandler
+    fun onEntityDeath(e: EntityDeathEvent){
+        if (e.entityType == EntityType.PLAYER)
+            return
 
-                    for (stand in standList){
-                        stand.detachFrom()
-                    }
-                }
-            }
-        })
+        val list = Ranger.findByEntityId(e.entity.entityId) ?: return
+
+        for (stand in list){
+            stand.detachFrom()
+        }
     }
 }
