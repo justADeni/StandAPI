@@ -1,7 +1,9 @@
 package com.github.justadeni.standapi
 
 import com.comphenix.protocol.events.PacketContainer
+import com.github.justadeni.standapi.datatype.Offset
 import com.github.shynixn.mccoroutine.bukkit.launch
+import org.bukkit.Location
 import org.bukkit.entity.Player
 import kotlin.math.round
 
@@ -63,5 +65,12 @@ object Misc {
         var multiplier = 1.0
         repeat(decimals) { multiplier *= 10 }
         return (round(this * multiplier) / multiplier).toFloat()
+    }
+
+    internal fun Location.applyOffset(offset: Offset?): Location{
+        if (offset == null)
+            return this
+
+        return Location(this.world, this.x + offset.x, this.y + offset.y, this.z + offset.z)
     }
 }

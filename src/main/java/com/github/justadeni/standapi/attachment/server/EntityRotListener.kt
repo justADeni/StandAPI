@@ -1,4 +1,4 @@
-package com.github.justadeni.standapi.attachment
+package com.github.justadeni.standapi.attachment.server
 
 import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.events.ListenerPriority
@@ -11,15 +11,13 @@ import com.github.justadeni.standapi.StandAPI
 /**
  * @suppress
  */
-class EntityMoveListener {
+class EntityRotListener {
     init {
-        StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.NORMAL, PacketType.Play.Server.REL_ENTITY_MOVE) {
+        StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_LOOK) {
             override fun onPacketSending(event: PacketEvent) {
                 val player = event.player
                 val packet = event.packet
                 val entityId = packet.integers.read(0)
-
-                StandAPI.log("entity moved: $entityId")
 
                 val list = Ranger.findByEntityId(entityId) ?: return
 

@@ -1,6 +1,7 @@
 package com.github.justadeni.standapi
 
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot
+import com.github.justadeni.standapi.Misc.applyOffset
 import com.github.justadeni.standapi.Misc.sendTo
 import com.github.justadeni.standapi.datatype.Offset
 import com.github.justadeni.standapi.storage.StandApiConfig
@@ -140,7 +141,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      */
     fun attachTo(entity: Entity, offset: Offset){
         Ranger.remove(this)
-        setLocation(entity.location)
+        setLocation(entity.location.applyOffset(offset))
         attachedTo = Pair(entity.uniqueId, offset)
         Ranger.add(this)
     }

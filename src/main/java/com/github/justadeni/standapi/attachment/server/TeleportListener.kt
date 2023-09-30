@@ -1,4 +1,4 @@
-package com.github.justadeni.standapi.attachment
+package com.github.justadeni.standapi.attachment.server
 
 import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.events.ListenerPriority

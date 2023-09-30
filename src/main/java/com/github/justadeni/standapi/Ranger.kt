@@ -1,5 +1,6 @@
 package com.github.justadeni.standapi
 
+import com.github.justadeni.standapi.Misc.applyOffset
 import com.github.justadeni.standapi.Misc.sendTo
 import com.github.justadeni.standapi.storage.StandApiConfig
 import com.github.shynixn.mccoroutine.bukkit.asyncDispatcher
@@ -151,12 +152,7 @@ object Ranger {
                 val pE = withContext(StandAPI.plugin().minecraftDispatcher){ Bukkit.getEntity(stand.getAttached()!!.first) } ?: continue
                 listIt.remove()
                 addWithId(stand, pE.entityId)
-                stand.setLocation(Location(
-                    pE.world,
-                    pE.location.x + stand.getAttached()!!.second.x,
-                    pE.location.x + stand.getAttached()!!.second.y,
-                    pE.location.x + stand.getAttached()!!.second.z
-                ))
+                stand.setLocation(pE.location.applyOffset(stand.getAttached()?.second))
             }
         }
     }

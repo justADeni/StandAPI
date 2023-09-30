@@ -2,7 +2,13 @@ package com.github.justadeni.standapi
 
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.ProtocolManager
-import com.github.justadeni.standapi.attachment.*
+import com.github.justadeni.standapi.attachment.client.PlayerMoveListener
+import com.github.justadeni.standapi.attachment.client.PlayerRotListener
+import com.github.justadeni.standapi.attachment.client.PlayerRotMoveListener
+import com.github.justadeni.standapi.attachment.server.EntityMoveListener
+import com.github.justadeni.standapi.attachment.server.EntityRotListener
+import com.github.justadeni.standapi.attachment.server.EntityRotMoveListener
+import com.github.justadeni.standapi.attachment.server.TeleportListener
 import com.github.justadeni.standapi.storage.StandApiConfig
 import com.github.justadeni.standapi.event.UseEntityInterceptor
 import com.github.justadeni.standapi.storage.Saver
@@ -48,8 +54,11 @@ class StandAPI : SuspendingJavaPlugin() {
         UseEntityInterceptor()
         //EntityDeathListener()
         EntityMoveListener()
+        EntityRotListener()
         EntityRotMoveListener()
         TeleportListener()
+        PlayerMoveListener()
+        PlayerRotListener()
         PlayerRotMoveListener()
         Saver.loadAll()
         Misc.resetId()
