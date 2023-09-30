@@ -35,9 +35,11 @@ object Saver {
         if (!StandApiConfig.savingEnabled)
             return
 
-        Files.readAllLines(file.toPath()).forEach{
-            Json.decodeFromString(it) as PacketStand
-            StandAPI.log("loading $it")
+        withContext(Dispatchers.IO) {
+            Files.readAllLines(file.toPath()).forEach {
+                Json.decodeFromString(it) as PacketStand
+                StandAPI.log("loading $it")
+            }
         }
     }
 }

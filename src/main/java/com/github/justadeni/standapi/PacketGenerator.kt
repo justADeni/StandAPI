@@ -17,11 +17,11 @@ import kotlin.collections.HashMap
 /**
  * @suppress
  */
-class PacketGenerator(private val id: Int, private val uuid: UUID){
+class PacketGenerator(private val id: Int){
 
     private val watcher = WrappedDataWatcher()
 
-    fun create(location: Location): PacketContainer{
+    fun create(location: Location, uuid: UUID): PacketContainer{
         val packet = PacketContainer(PacketType.Play.Server.SPAWN_ENTITY)
 
         packet.integers.write(0,id)

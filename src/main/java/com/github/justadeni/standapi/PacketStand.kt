@@ -35,7 +35,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     val uuid: UUID = UUID.randomUUID()
 
     @Transient
-    private val packetGen = PacketGenerator(id, uuid)
+    private val packetGen = PacketGenerator(id)
 
     private var attachedTo: Pair<@Serializable(with = UUIDSerializer::class) UUID, @Serializable(with = OffsetSerializer::class) Offset>? = null
 
@@ -66,7 +66,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     )
 
     @Transient
-    internal val packetBundle = hashMapOf(Pair(0,packetGen.create(location)))
+    internal val packetBundle = hashMapOf(Pair(0,packetGen.create(location, uuid)))
     @Transient
     internal val destroyPacket = packetGen.destroy()
 
@@ -311,7 +311,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      * @param loc where stand will move
      */
     fun setLocation(loc: Location){
-        packetBundle[0] = packetGen.create(loc)
+        packetBundle[0] = packetGen.create(loc, uuid)
 
         if (loc.world != location.world){
             destroyPacket.sendTo(eligiblePlayers())
