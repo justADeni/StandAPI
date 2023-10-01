@@ -72,7 +72,7 @@ class StandAPI : SuspendingJavaPlugin() {
         PlayerRotMoveListener()
         Saver.loadAll()
         Misc.resetId()
-        launch { Ranger.startTicking() }
+        launch { StandManager.startTicking() }
         for (world in Bukkit.getWorlds()){
             pTrackingRanges[world.uid] = SpigotWorldConfig(world.name).playerTrackingRange.squared()
         }

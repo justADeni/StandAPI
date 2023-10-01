@@ -1,6 +1,6 @@
 package com.github.justadeni.standapi.attachment
 
-import com.github.justadeni.standapi.Ranger
+import com.github.justadeni.standapi.StandManager
 import org.bukkit.entity.EntityType
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -16,7 +16,7 @@ class EntityDeathListener: Listener {
         if (e.entityType == EntityType.PLAYER)
             return
 
-        val list = Ranger.findAttachedTo(e.entity.entityId) ?: return
+        val list = StandManager.findAttachedTo(e.entity.entityId) ?: return
 
         for (stand in list){
             stand.detachFrom()

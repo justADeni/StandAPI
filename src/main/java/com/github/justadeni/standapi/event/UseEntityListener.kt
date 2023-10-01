@@ -6,7 +6,7 @@ import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
 import com.comphenix.protocol.wrappers.EnumWrappers
 import com.github.justadeni.standapi.Misc
-import com.github.justadeni.standapi.Ranger
+import com.github.justadeni.standapi.StandManager
 import com.github.justadeni.standapi.StandAPI.Companion.manager
 import com.github.justadeni.standapi.StandAPI.Companion.plugin
 import com.github.shynixn.mccoroutine.bukkit.launch
@@ -26,7 +26,7 @@ class UseEntityListener {
                 if (id < 9999 || id > Misc.currentID())
                     return
 
-                val stand = Ranger.findByStandId(id)
+                val stand = StandManager.findByStandId(id)
 
                 val action = when (packet.enumEntityUseActions.read(0).action){
                     EnumWrappers.EntityUseAction.ATTACK -> Action.LEFT_CLICK

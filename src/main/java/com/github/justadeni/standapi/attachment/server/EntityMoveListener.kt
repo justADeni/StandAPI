@@ -7,7 +7,7 @@ import com.comphenix.protocol.events.PacketEvent
 import com.github.justadeni.standapi.Misc
 import com.github.justadeni.standapi.Misc.applyOffset
 import com.github.justadeni.standapi.Misc.sendTo
-import com.github.justadeni.standapi.Ranger
+import com.github.justadeni.standapi.StandManager
 import com.github.justadeni.standapi.StandAPI
 
 /**
@@ -21,7 +21,7 @@ class EntityMoveListener {
                 val packet = event.packet
                 val entityId = packet.integers.read(0)
 
-                val list = Ranger.findAttachedTo(entityId) ?: return
+                val list = StandManager.findAttachedTo(entityId) ?: return
 
                 val attachedToPlayer = Misc.getPlayerById(entityId, player.world)
 

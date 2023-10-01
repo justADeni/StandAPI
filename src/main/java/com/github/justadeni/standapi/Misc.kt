@@ -3,14 +3,9 @@ package com.github.justadeni.standapi
 import com.comphenix.protocol.events.PacketContainer
 import com.github.justadeni.standapi.datatype.Offset
 import com.github.shynixn.mccoroutine.bukkit.launch
-import org.bukkit.Bukkit
 import org.bukkit.Location
-import org.bukkit.Server.Spigot
 import org.bukkit.World
 import org.bukkit.entity.Player
-import org.spigotmc.SpigotConfig
-import org.spigotmc.SpigotWorldConfig
-import java.util.SplittableRandom
 import kotlin.math.round
 
 /**
@@ -25,7 +20,7 @@ object Misc {
     internal fun currentID() = id
 
     internal fun resetId(){
-        val stands = Ranger.getAllStands()
+        val stands = StandManager.getAllStands()
         if (stands.isEmpty())
             return
 

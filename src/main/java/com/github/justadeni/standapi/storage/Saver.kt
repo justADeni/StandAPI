@@ -1,7 +1,7 @@
 package com.github.justadeni.standapi.storage
 
 import com.github.justadeni.standapi.PacketStand
-import com.github.justadeni.standapi.Ranger
+import com.github.justadeni.standapi.StandManager
 import com.github.justadeni.standapi.StandAPI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -9,7 +9,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.PrintWriter
-import java.nio.file.CopyOption
 import java.nio.file.Files
 
 /**
@@ -27,7 +26,7 @@ object Saver {
         PrintWriter(file).close()
 
         file.printWriter().use {out ->
-            Ranger.getAllStands().forEach{
+            StandManager.getAllStands().forEach{
                 out.println(Json.encodeToString(it))
             }
         }

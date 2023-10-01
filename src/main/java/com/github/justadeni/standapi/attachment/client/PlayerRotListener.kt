@@ -5,7 +5,7 @@ import com.comphenix.protocol.events.ListenerPriority
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
 import com.github.justadeni.standapi.Misc.isAnyoneNearby
-import com.github.justadeni.standapi.Ranger
+import com.github.justadeni.standapi.StandManager
 import com.github.justadeni.standapi.StandAPI
 import com.github.justadeni.standapi.datatype.Rotation
 
@@ -41,10 +41,10 @@ class PlayerRotListener {
                 */
 
                 val player = event.player
-                val packet = event.packet
+                //val packet = event.packet
                 val entityId = player.entityId
 
-                val list = Ranger.findAttachedTo(entityId) ?: return
+                val list = StandManager.findAttachedTo(entityId) ?: return
 
                 if (player.isAnyoneNearby())
                     return

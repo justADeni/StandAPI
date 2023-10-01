@@ -19,9 +19,15 @@ object StandApiConfig {
         testMode = config.getBoolean("TestMode")
     }
 
+    /**
+     * returns render distance squared
+     */
     @JvmStatic
     fun getRenderDistance2() = renderDistance2
 
+    /**
+     * sets render distance in blocks (not squared)
+     */
     @JvmStatic
     fun setRenderDistance(rd: Int){
         config.set("RenderDistance", rd)
@@ -29,9 +35,15 @@ object StandApiConfig {
         renderDistance2 = rd.squared()
     }
 
+    /**
+     * returns if saving and loading is enabled
+     */
     @JvmStatic
     fun getSavingEnabled() = savingEnabled
 
+    /**
+     * set saving to specified value
+     */
     @JvmStatic
     fun setSavingEnabled(se: Boolean){
         config.set("SavingEnabled", se)
@@ -39,11 +51,9 @@ object StandApiConfig {
         savingEnabled = se
     }
 
-    @JvmStatic
-    fun getTestMode() = testMode
+    internal fun getTestMode() = testMode
 
-    @JvmStatic
-    fun testMode(tm: Boolean){
+    internal fun testMode(tm: Boolean){
         config.set("TestMode", tm)
         StandAPI.plugin().saveConfig()
         testMode = tm

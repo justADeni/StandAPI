@@ -82,7 +82,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
         val eligiblePlayers = eligiblePlayers()
         packetBundle.sendTo(eligiblePlayers)
 
-        Ranger.add(this)
+        StandManager.add(this)
     }
 
     internal fun eligiblePlayers(): List<Player> = location.world!!.players.asSequence()
@@ -161,19 +161,19 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      * @param offset relative offset of location from the entity
      */
     fun attachTo(entity: Entity, offset: Offset){
-        Ranger.remove(this)
+        StandManager.remove(this)
         setLocation(entity.location.applyOffset(offset))
         attachedTo = Pair(entity.uniqueId, offset)
-        Ranger.add(this)
+        StandManager.add(this)
     }
 
     /**
      * used to detach stand from any entity it was attached to
      */
     fun detachFrom(){
-        Ranger.remove(this)
+        StandManager.remove(this)
         attachedTo = null
-        Ranger.add(this)
+        StandManager.add(this)
     }
 
     /**
@@ -479,7 +479,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      * removes the stand. dereference this instance to get it picked up by GC
      */
     fun remove(){
-        Ranger.remove(this)
+        StandManager.remove(this)
         destroyPacket.sendTo(location.world!!.players)
     }
 }

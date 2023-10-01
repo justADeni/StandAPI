@@ -9,9 +9,10 @@ import com.github.shynixn.mccoroutine.bukkit.ticks
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
+import org.bukkit.World
 import org.bukkit.entity.Player
 
-object Ranger {
+object StandManager {
     /*
     for all existing stands
     first Int is entity Id of the entity they're bound to
@@ -28,10 +29,19 @@ object Ranger {
      * returns list of all stands on the server
      */
     @JvmStatic
-    fun getAllStands(): List<PacketStand>{
+    fun getAllStands(): List<PacketStand> {
         val wholeList = mutableListOf<PacketStand>()
         ticking.values.forEach { wholeList.addAll(it) }
         return wholeList
+    }
+
+    /**
+     * returns list of all stands in specified world
+     * @param world in which stands will be retrieved
+     */
+    @JvmStatic
+    fun getAllStandsInWorld(world: World): List<PacketStand> {
+        return getAllStands().filter { it.getLocation().world == world }
     }
 
     /**

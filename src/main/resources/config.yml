@@ -8,4 +8,4 @@ RenderDistance: 192
 SavingEnabled: true
 
 #Is test mode enabled
-TestMode: true
+TestMode: false
