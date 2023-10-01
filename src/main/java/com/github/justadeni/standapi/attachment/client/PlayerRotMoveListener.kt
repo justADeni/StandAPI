@@ -3,15 +3,12 @@ package com.github.justadeni.standapi.attachment.client
 import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.events.ListenerPriority
 import com.comphenix.protocol.events.PacketAdapter
-import com.comphenix.protocol.events.PacketContainer
 import com.comphenix.protocol.events.PacketEvent
 import com.github.justadeni.standapi.Misc.applyOffset
 import com.github.justadeni.standapi.Misc.isAnyoneNearby
-import com.github.justadeni.standapi.Misc.sendTo
 import com.github.justadeni.standapi.Ranger
 import com.github.justadeni.standapi.StandAPI
 import com.github.justadeni.standapi.datatype.Rotation
-import org.bukkit.Location
 
 /**
  * @suppress
@@ -54,7 +51,7 @@ class PlayerRotMoveListener {
                 val packet = event.packet
                 val entityId = player.entityId
 
-                val list = Ranger.findByEntityId(entityId) ?: return
+                val list = Ranger.findAttachedTo(entityId) ?: return
 
                 if (player.isAnyoneNearby())
                     return

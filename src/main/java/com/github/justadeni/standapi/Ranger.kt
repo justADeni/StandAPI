@@ -6,17 +6,11 @@ import com.github.justadeni.standapi.storage.StandApiConfig
 import com.github.shynixn.mccoroutine.bukkit.asyncDispatcher
 import com.github.shynixn.mccoroutine.bukkit.minecraftDispatcher
 import com.github.shynixn.mccoroutine.bukkit.ticks
-import javafx.application.Application.launch
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
-import org.bukkit.Location
 import org.bukkit.entity.Player
 
-/**
- * @suppress
- */
 object Ranger {
     /*
     for all existing stands
@@ -30,13 +24,23 @@ object Ranger {
     */
     private val included = hashMapOf<Player, MutableList<PacketStand>>()
 
-    internal fun getAllStands(): List<PacketStand>{
+    /**
+     * returns list of all stands on the server
+     */
+    @JvmStatic
+    fun getAllStands(): List<PacketStand>{
         val wholeList = mutableListOf<PacketStand>()
         ticking.values.forEach { wholeList.addAll(it) }
         return wholeList
     }
 
-    internal fun findByEntityId(entityId: Int): List<PacketStand>? {
+    /**
+     * returns list of stands attached to that entity or null if empty
+     * will also return null if entity is an offline player
+     * @param entityId of entity with attached stands
+     */
+    @JvmStatic
+    fun findAttachedTo(entityId: Int): List<PacketStand>? {
         //if (ticking.containsKey(entityId))
             return ticking[entityId]
 

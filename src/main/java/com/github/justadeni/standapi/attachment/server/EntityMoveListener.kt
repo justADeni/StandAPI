@@ -9,7 +9,6 @@ import com.github.justadeni.standapi.Misc.applyOffset
 import com.github.justadeni.standapi.Misc.sendTo
 import com.github.justadeni.standapi.Ranger
 import com.github.justadeni.standapi.StandAPI
-import org.bukkit.Location
 
 /**
  * @suppress
@@ -22,7 +21,7 @@ class EntityMoveListener {
                 val packet = event.packet
                 val entityId = packet.integers.read(0)
 
-                val list = Ranger.findByEntityId(entityId) ?: return
+                val list = Ranger.findAttachedTo(entityId) ?: return
 
                 val attachedToPlayer = Misc.getPlayerById(entityId, player.world)
 

@@ -173,6 +173,10 @@
             <id>dmulloy2-repo</id>
             <url>https://repo.dmulloy2.net/repository/public/</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -187,13 +191,14 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib</artifactId>
             <version>${kotlin.version}</version>
+            <scope>provided</scope>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-test</artifactId>
             <version>${kotlin.version}</version>
             <scope>test</scope>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
@@ -203,18 +208,19 @@
         <dependency>
             <groupId>com.github.shynixn.mccoroutine</groupId>
             <artifactId>mccoroutine-bukkit-api</artifactId>
-            <version>2.4.0</version>
+            <version>2.11.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.shynixn.mccoroutine</groupId>
             <artifactId>mccoroutine-bukkit-core</artifactId>
-            <version>2.4.0</version>
+            <version>2.12.1</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-coroutines-core</artifactId>
             <version>1.7.3</version>
             <type>pom</type>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -227,10 +233,16 @@
             <version>1.6.0</version>
             <!--scope>compile</scope-->
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>31.1-jre</version>
+        </dependency-->
+        <dependency>
+            <groupId>com.github.zorbeytorunoglu</groupId>
+            <artifactId>kLib</artifactId>
+            <version>0.0.7</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

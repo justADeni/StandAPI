@@ -2,7 +2,7 @@ name: StandAPI
 version: '${project.version}'
 main: com.github.justadeni.standapi.StandAPI
 api-version: '1.19'
-depend: [ProtocolLib]
+depend: [ProtocolLib, kLib]
 commands:
   standapi:
     description: command used to test functionality of API

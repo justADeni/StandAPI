@@ -5,10 +5,8 @@ import com.comphenix.protocol.events.ListenerPriority
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
 import com.github.justadeni.standapi.Misc.applyOffset
-import com.github.justadeni.standapi.Misc.sendTo
 import com.github.justadeni.standapi.Ranger
 import com.github.justadeni.standapi.StandAPI
-import com.github.justadeni.standapi.datatype.Offset
 import org.bukkit.Location
 
 /**
@@ -22,7 +20,7 @@ class TeleportListener {
                 val packet = event.packet
                 val entityId = packet.integers.read(0)
 
-                val list = Ranger.findByEntityId(entityId) ?: return
+                val list = Ranger.findAttachedTo(entityId) ?: return
 
                 val loc = Location(player.world, packet.doubles.read(0), packet.doubles.read(1), packet.doubles.read(2))
                 for (stand in list){

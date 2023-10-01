@@ -4,12 +4,9 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.events.ListenerPriority
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
-import com.github.justadeni.standapi.Misc
-import com.github.justadeni.standapi.Misc.sendTo
 import com.github.justadeni.standapi.Ranger
 import com.github.justadeni.standapi.StandAPI
 import com.github.justadeni.standapi.datatype.Rotation
-import org.bukkit.Location
 
 /**
  * @suppress
@@ -22,7 +19,7 @@ class EntityYawListener {
                 val packet = event.packet
                 val entityId = packet.integers.read(0)
 
-                val list = Ranger.findByEntityId(entityId) ?: return
+                val list = Ranger.findAttachedTo(entityId) ?: return
 
                 //val attachedToPlayer = Misc.getPlayerById(entityId, player.world)
 
