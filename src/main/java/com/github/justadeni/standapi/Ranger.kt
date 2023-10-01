@@ -55,27 +55,17 @@ object Ranger {
     internal fun add(stand: PacketStand){
         if (stand.getAttached() == null){
             addWithId(stand, -2)
-
-            StandAPI.log("attached null")
-
             return
         }
 
         val entityId = Bukkit.getEntity(stand.getAttached()!!.first)?.entityId
-        StandAPI.log("found entity Id: $entityId")
 
         if (entityId == null){
-            //stand.detachFrom()
             addWithId(stand, -1)
-
-            StandAPI.log("entityId null")
             return
         }
 
-        StandAPI.log("added stand")
         addWithId(stand, entityId)
-
-        StandAPI.log("list: $ticking")
     }
 
     //only use when you're 100% sure
@@ -123,7 +113,6 @@ object Ranger {
                     .toList()
 
                 val wentInside = areInside - wereInside.toSet()
-                StandAPI.log("went inside: $wentInside")
                 wentInside.forEach {
                     it.packetBundle.sendTo(player)
                 }
@@ -134,8 +123,6 @@ object Ranger {
                     it.destroyPacket.sendTo(player)
                 }
             }
-
-            StandAPI.log(ticking.toString())
 
             if (!ticking.containsKey(-1))
                 continue
