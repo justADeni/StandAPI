@@ -6,6 +6,7 @@ import com.github.shynixn.mccoroutine.bukkit.launch
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Server.Spigot
+import org.bukkit.World
 import org.bukkit.entity.Player
 import org.spigotmc.SpigotConfig
 import org.spigotmc.SpigotWorldConfig
@@ -79,12 +80,13 @@ object Misc {
         return Location(this.world, this.x + offset.x, this.y + offset.y, this.z + offset.z)
     }
 
-    //TODO: this might not be very good for performance, investigate
     internal fun Player.isAnyoneNearby(): Boolean {
-        return this@isAnyoneNearby.world.players.asSequence()
+        return this@isAnyoneNearby.world.players
             .filterNot { it == this@isAnyoneNearby }
-            .filter { it.location.distanceSquared(this@isAnyoneNearby.location) < StandAPI.getPTrackingRange2(this.world.uid) }
-            .toList()
-            .isNotEmpty()
+            .any { it.location.distanceSquared(this@isAnyoneNearby.location) < StandAPI.getPTrackingRange2(this.world.uid) }
+    }
+
+    internal fun getPlayerById(id: Int, world: World): Player? {
+        return world.players.firstOrNull { it.entityId == id }
     }
 }

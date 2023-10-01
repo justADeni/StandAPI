@@ -42,7 +42,7 @@ class Command: SuspendingCommandExecutor {
             return true
         }
 
-        if (!StandApiConfig.testMode)
+        if (!StandApiConfig.getTestMode())
             return true
 
         when (args[0].lowercase()){

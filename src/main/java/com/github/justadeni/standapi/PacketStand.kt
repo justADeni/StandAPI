@@ -86,7 +86,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     internal fun eligiblePlayers(): List<Player> = location.world!!.players.asSequence()
-        .filter { it.location.distanceSquared(location) <= StandApiConfig.renderDistance2 }
+        .filter { it.location.distanceSquared(location) <= StandApiConfig.getRenderDistance2() }
         .filterNot { excludedPlayers.contains(it.uniqueId) }
         .toList()
 
@@ -343,7 +343,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
         } else /*if (loc.distanceSquared(location) > 64)*/{
 
             for (player in eligiblePlayers())
-                if (player.location.distanceSquared(location) > StandApiConfig.renderDistance2)
+                if (player.location.distanceSquared(location) > StandApiConfig.getRenderDistance2())
                     packetBundle.sendTo(listOf(player))
                 else
                     packetGen.teleport(loc).sendTo(eligiblePlayers())

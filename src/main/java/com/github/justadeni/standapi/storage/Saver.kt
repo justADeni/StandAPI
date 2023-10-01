@@ -20,7 +20,7 @@ object Saver {
     private val file = File(StandAPI.plugin().dataFolder.path + "/stands.yml").also { it.createNewFile() }
 
     internal fun saveAll(){
-        if (!StandApiConfig.savingEnabled)
+        if (!StandApiConfig.getSavingEnabled())
             return
 
         file.copyTo(File(StandAPI.plugin().dataFolder.path + "/backup.yml"), true)
@@ -34,7 +34,7 @@ object Saver {
     }
 
     internal suspend fun loadAll(){
-        if (!StandApiConfig.savingEnabled)
+        if (!StandApiConfig.getSavingEnabled())
             return
 
         withContext(Dispatchers.IO) { Files.readAllLines(file.toPath())}.forEach {

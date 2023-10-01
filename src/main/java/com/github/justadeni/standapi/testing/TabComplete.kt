@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender
  */
 class TabComplete: SuspendingTabCompleter {
 
-    val fullList = listOf("reload", "spawn", "equipment", "metadata", "invisible", "location", "destroy", "rotatehead", "serialize", "deserialize", "attach", "detach")
+    private val fullList = listOf("reload", "spawn", "equipment", "metadata", "invisible", "location", "destroy", "rotatehead", "serialize", "deserialize", "attach", "detach")
 
     override suspend fun onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array<out String>): List<String> {
 
@@ -20,7 +20,7 @@ class TabComplete: SuspendingTabCompleter {
         if (args.size > 1)
             return emptyList()
 
-        if (!StandApiConfig.testMode)
+        if (!StandApiConfig.getTestMode())
             return if ("reload".contains(args[0].lowercase()))
                 listOf("reload")
             else

@@ -119,7 +119,7 @@ object Ranger {
                 val areInside = allStands.asSequence()
                     .filterNot { it.excludedUUIDs().contains(player.uniqueId) }
                     .filter { it.getLocation().world == player.world }
-                    .filter { it.getLocation().distanceSquared(player.location) < StandApiConfig.renderDistance2 }
+                    .filter { it.getLocation().distanceSquared(player.location) < StandApiConfig.getRenderDistance2() }
                     .toList()
 
                 val wentInside = areInside - wereInside.toSet()

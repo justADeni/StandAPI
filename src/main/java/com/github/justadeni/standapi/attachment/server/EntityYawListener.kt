@@ -4,6 +4,7 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.events.ListenerPriority
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
+import com.github.justadeni.standapi.Misc
 import com.github.justadeni.standapi.Misc.sendTo
 import com.github.justadeni.standapi.Ranger
 import com.github.justadeni.standapi.StandAPI
@@ -23,16 +24,25 @@ class EntityYawListener {
 
                 val list = Ranger.findByEntityId(entityId) ?: return
 
+                //val attachedToPlayer = Misc.getPlayerById(entityId, player.world)
+
                 for (stand in list) {
+                    /*
                     val cloned = packet.shallowClone()
+                    cloned.integers.write(0, stand.id)
 
                     if (stand.isAttachedYaw())
                         stand.rotations[0] = Rotation(stand.getHeadPose().pitch, cloned.bytes.read(0) * 360.0F / 256.0F, stand.getHeadPose().roll)
                     else
-                        cloned.bytes.write(0, (stand.getHeadPose().yaw * 256.0F / 360.0F).toInt().toByte())
+                        continue
 
-                    cloned.integers.write(0, stand.id)
                     cloned.sendTo(player)
+                    if (attachedToPlayer != null)
+                        cloned.sendTo(attachedToPlayer)
+                    */
+
+                    if (stand.isAttachedYaw())
+                        stand.setHeadPose(Rotation(stand.getHeadPose().pitch,  packet.bytes.read(0) * 360.0F / 256.0F, stand.getHeadPose().roll))
                 }
             }
         })

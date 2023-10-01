@@ -4,6 +4,8 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.events.ListenerPriority
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
+import com.github.justadeni.standapi.Misc
+import com.github.justadeni.standapi.Misc.applyOffset
 import com.github.justadeni.standapi.Misc.sendTo
 import com.github.justadeni.standapi.Ranger
 import com.github.justadeni.standapi.StandAPI
@@ -26,11 +28,17 @@ class EntityMoveListener {
 
                 val list = Ranger.findByEntityId(entityId) ?: return
 
+                val attachedToPlayer = Misc.getPlayerById(entityId, player.world)
+
                 for (stand in list) {
                     val cloned = packet.shallowClone()
-                    stand.setLocationNoUpdate(Location(player.world, cloned.doubles.read(0), cloned.doubles.read(1), cloned.doubles.read(2)))
+                    //stand.setLocationNoUpdate(Location(player.world, cloned.doubles.read(0), cloned.doubles.read(1), cloned.doubles.read(2)))
+                    stand.setLocationNoUpdate(player.location.applyOffset(stand.getAttached()?.second))
                     cloned.integers.write(0, stand.id)
                     cloned.sendTo(player)
+
+                    if (attachedToPlayer != null)
+                        cloned.sendTo(attachedToPlayer)
                 }
             }
         })
