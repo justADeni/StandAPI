@@ -47,7 +47,7 @@ packetStand.attachTo(entity)
 
 //PacketStand will copy every move but will be two blocks above it's location
 val offset = Offset(0.0,2.0,0.0)
-packetStand.attachTo(entity)
+packetStand.attachTo(entity, offset)
 ```
 this also copies the entity's head pitch and yaw movements by default
 however, it can be disabled
@@ -90,7 +90,7 @@ setRenderDistance(192)
 setSavingEnabled(true)
 ```
 **PacketStandEvent**
-custom event fired when player right or left clicks a PacketStand
+custom event fired when player right or left clicks a PacketStand    
 it is registered and used as any other event in spigot
 ```kotlin
 //in main class onEnable
@@ -99,14 +99,14 @@ server.pluginManager.registerEvents(ExampleListener(), this)
 ```kotlin
 class ExampleListener: Listener {  
   
-	@EventHandler  
+    @EventHandler  
 	fun onEntityDeath(e: PacketStandEvent){  
         if(e.action = Action.LEFT_CLICK){
 	        //do whatever
         }
         val stand = e.packetStand
         val player = e.player
-	}
+    }
 	
 }
 ```
@@ -116,9 +116,9 @@ class ExampleListener: Listener {
 </a>
 
 ## Serialization and deserialization 💽
-let's say you have disabled StandAPI's saving and loading, but still want to save PacketStands in some way or pass them as strings?
-Very easy using [Kotlin's serialization](https://kotlinlang.org/docs/serialization.html#example-json-serialization).
-There are more formats to choose from, but here is json:
+let's say you have disabled StandAPI's saving and loading, but still want to save PacketStands in some way or pass them as strings?    
+Very easy using [Kotlin's serialization](https://kotlinlang.org/docs/serialization.html#example-json-serialization).    
+There are more formats to choose from, but here is json:    
 ```kotlin
 //serialize
 val string = Json.encodeToString(packetStand)
@@ -127,7 +127,7 @@ val string = Json.encodeToString(packetStand)
 val packetStand = Json.decodeFromString(string) as PacketStand
 ```
 ## Import 👇
-_it is not advised to shade StandAPI into your plugin_
+_it is not advised to shade StandAPI into your plugin_    
 [![](https://jitpack.io/v/justADeni/StandAPI.svg)](https://jitpack.io/#justADeni/StandAPI)
 
 plugin.yml:
