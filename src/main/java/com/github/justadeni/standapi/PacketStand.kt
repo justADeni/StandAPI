@@ -102,7 +102,17 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     /**
-     * used to make stand visible again to any player that was previously excluded
+     * used to make stand invisible to any number of chosen players
+     * use this method only for offline players
+     * @param player which will be excluded from seeing and interacting with the stand
+     */
+    fun excludePlayer(uuid: UUID){
+        if (!excludedPlayers.contains(uuid))
+            excludedPlayers.add(uuid)
+    }
+
+    /**
+     * used to make stand visible again to a player that was previously excluded
      * @param player which will now be able to see and interact with the stand
      */
     fun unexcludePlayer(player: Player){
@@ -110,6 +120,15 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
         //Send All Packets
         if (eligiblePlayers().contains(player))
             packetBundle.sendTo(listOf(player))
+    }
+
+    /**
+     * used to make stand visible again to a player that was previously excluded
+     * use this method only for offline players
+     * @param uuid uuid of player which will now be able to see and interact with the stand
+     */
+    fun unexcludePlayer(uuid: UUID){
+        excludedPlayers.remove(uuid)
     }
 
     /**
