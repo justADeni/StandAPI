@@ -95,7 +95,13 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-target/
+target/classes/
+target/generated-sources/
+target/maven-archiver/
+target/maven-status/
+target/original-StandAPI-1.2.jar
+target/StandAPI-1.2-remapped-obf.jar
+target/StandAPI-1.2-shaded.jar
 
 pom.xml.tag
 pom.xml.releaseBackup
