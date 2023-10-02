@@ -126,6 +126,15 @@ val string = Json.encodeToString(packetStand)
 //deserialize
 val packetStand = Json.decodeFromString(string) as PacketStand
 ```
+### Command and permission    
+there is only one command    
+```
+/standapi reload
+```
+and only one permission    
+```
+standapi.admin
+```
 ## Import 👇
 _it is not advised to shade StandAPI into your plugin_    
 [![](https://jitpack.io/v/justADeni/StandAPI.svg)](https://jitpack.io/#justADeni/StandAPI)
