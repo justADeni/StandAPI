@@ -77,6 +77,7 @@ class StandAPI : SuspendingJavaPlugin() {
             pTrackingRanges[world.uid] = SpigotWorldConfig(world.name).playerTrackingRange.squared()
         }
         Saver.tickingSaving()
+        Metrics(this, 19953)
     }
 
     override fun onDisable() {
