@@ -30,21 +30,21 @@ class StandAPI : SuspendingJavaPlugin() {
 
         private var manager: ProtocolManager? = null
 
-        fun plugin(): JavaPlugin {
+        internal fun plugin(): JavaPlugin {
             return plugin!!
         }
 
-        fun manager(): ProtocolManager {
+        internal fun manager(): ProtocolManager {
             return manager!!
         }
 
-        fun log(info: String){
+        internal fun log(info: String){
             plugin!!.logger.info(info)
         }
 
         private val pTrackingRanges = hashMapOf<UUID, Int>()
 
-        fun getPTrackingRange2(worlduuid: UUID): Int {
+        internal fun getPTrackingRange2(worlduuid: UUID): Int {
             return pTrackingRanges[worlduuid] ?: 2304 //48
         }
     }
