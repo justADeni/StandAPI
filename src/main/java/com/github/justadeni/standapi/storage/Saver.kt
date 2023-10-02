@@ -3,7 +3,10 @@ package com.github.justadeni.standapi.storage
 import com.github.justadeni.standapi.PacketStand
 import com.github.justadeni.standapi.StandManager
 import com.github.justadeni.standapi.StandAPI
+import com.github.shynixn.mccoroutine.bukkit.launch
+import com.github.shynixn.mccoroutine.bukkit.ticks
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -17,6 +20,11 @@ import java.nio.file.Files
 object Saver {
 
     private val file = File(StandAPI.plugin().dataFolder.path + "/stands.yml").also { it.createNewFile() }
+
+    internal fun tickingSaving() = StandAPI.plugin().launch(Dispatchers.IO){
+        delay(18_000.ticks) //15 minutes
+        saveAll()
+    }
 
     internal fun saveAll(){
         if (!StandApiConfig.getSavingEnabled())
