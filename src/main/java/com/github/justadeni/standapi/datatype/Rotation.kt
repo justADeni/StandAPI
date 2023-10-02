@@ -3,11 +3,11 @@ package com.github.justadeni.standapi.datatype
 import net.minecraft.core.Rotations
 import org.bukkit.util.EulerAngle
 
-class Rotation(
-    val pitch: Float = 0f,
-    val yaw: Float = 0f,
-    val roll: Float = 0f
-): Rotations(pitch, yaw, roll) {
+class Rotation(pitch: Float = 0f, yaw: Float = 0f, roll: Float = 0f): Rotations(pitch, yaw, roll) {
+
+    val pitch = if (super.x < 0f) super.x + 360f else super.x
+    val yaw = if (super.y < 0f) super.y + 360f else super.y
+    val roll = if (super.z < 0f) super.z + 360f else super.z
 
     companion object {
 
