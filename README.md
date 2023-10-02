@@ -49,7 +49,7 @@ packetStand.attachTo(entity)
 val offset = Offset(0.0,2.0,0.0)
 packetStand.attachTo(entity, offset)
 ```
-this also copies the entity's head pitch and yaw movements by default
+this also copies the entity's head pitch and yaw movements by default    
 however, it can be disabled
 ```kotlin
 packetStand.setAttachPitch(false)
@@ -63,8 +63,8 @@ of course it can be moved
 ```kotlin
 packetStand.setLocation(location)
 ```
-head, body and each limb's rotation can be gotten or changed
-StandAPI operates in regular degrees, 0-360, so no EulerAngles or any of that stuff
+head, body and each limb's rotation can be gotten or changed    
+StandAPI operates in regular degrees, 0f-360f, so no EulerAngles or any of that stuff
 ```kotlin
 val pitch = packetStand.getHeadRotation().pitch
 val yaw = packetStand.getHeadRotation().yaw
