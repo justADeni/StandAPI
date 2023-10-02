@@ -30,8 +30,6 @@ class StandAPI : SuspendingJavaPlugin() {
 
         private var manager: ProtocolManager? = null
 
-        private val pTrackingRanges = hashMapOf<UUID, Int>()
-
         internal fun plugin(): JavaPlugin {
             return plugin!!
         }
@@ -43,6 +41,8 @@ class StandAPI : SuspendingJavaPlugin() {
         internal fun log(info: String){
             plugin!!.logger.info(info)
         }
+
+        private val pTrackingRanges = hashMapOf<UUID, Int>()
 
         internal fun getPTrackingRange2(worlduuid: UUID): Int {
             return pTrackingRanges[worlduuid] ?: 2304 //48
@@ -76,7 +76,6 @@ class StandAPI : SuspendingJavaPlugin() {
         for (world in Bukkit.getWorlds()){
             pTrackingRanges[world.uid] = SpigotWorldConfig(world.name).playerTrackingRange.squared()
         }
-        Saver.tickingSave()
     }
 
     override fun onDisable() {
