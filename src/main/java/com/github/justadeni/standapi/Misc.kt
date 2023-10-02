@@ -3,6 +3,7 @@ package com.github.justadeni.standapi
 import com.comphenix.protocol.events.PacketContainer
 import com.github.justadeni.standapi.datatype.Offset
 import com.github.shynixn.mccoroutine.bukkit.launch
+import kotlinx.coroutines.launch
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -38,17 +39,21 @@ object Misc {
 
     internal fun PacketContainer.sendTo(players: List<Player>) = StandAPI.plugin().launch {
         for (player in players){
-            manager.sendServerPacket(player, this@sendTo)
+            launch { manager.sendServerPacket(player, this@sendTo) }
         }
     }
 
     internal fun HashMap<Int, PacketContainer>.sendTo(player: Player) = StandAPI.plugin().launch {
-        this@sendTo.values.forEach { manager.sendServerPacket(player, it) }
+        this@sendTo.values.forEach {
+            launch { manager.sendServerPacket(player, it) }
+        }
     }
 
     internal fun HashMap<Int, PacketContainer>.sendTo(players: List<Player>) = StandAPI.plugin().launch {
         for (player in players){
-            this@sendTo.values.forEach { manager.sendServerPacket(player, it) }
+            this@sendTo.values.forEach {
+                launch { manager.sendServerPacket(player, it) }
+            }
         }
     }
 
@@ -76,9 +81,9 @@ object Misc {
     }
 
     internal fun Player.isAnyoneNearby(): Boolean {
-        return this@isAnyoneNearby.world.players
-            .filterNot { it == this@isAnyoneNearby }
-            .any { it.location.distanceSquared(this@isAnyoneNearby.location) < StandAPI.getPTrackingRange2(this.world.uid) }
+        return this.world.players
+            .filterNot { it == this }
+            .any { it.location.distanceSquared(this.location) < StandAPI.getPTrackingRange2(this.world.uid) }
     }
 
     internal fun getPlayerById(id: Int, world: World): Player? {

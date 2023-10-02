@@ -3,7 +3,10 @@ package com.github.justadeni.standapi.storage
 import com.github.justadeni.standapi.PacketStand
 import com.github.justadeni.standapi.StandManager
 import com.github.justadeni.standapi.StandAPI
+import com.github.shynixn.mccoroutine.bukkit.launch
+import com.github.shynixn.mccoroutine.bukkit.ticks
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -22,12 +25,14 @@ object Saver {
         if (!StandApiConfig.getSavingEnabled())
             return
 
-        file.copyTo(File(StandAPI.plugin().dataFolder.path + "/backup.yml"), true)
-        PrintWriter(file).close()
+        val savingProcess = fun() {
+            file.copyTo(File(StandAPI.plugin().dataFolder.path + "/backup.yml"), true)
+            PrintWriter(file).close()
 
-        file.printWriter().use {out ->
-            StandManager.getAllStands().forEach{
-                out.println(Json.encodeToString(it))
+            file.printWriter().use { out ->
+                StandManager.getAllStands().forEach {
+                    out.println(Json.encodeToString(it))
+                }
             }
         }
     }
@@ -39,6 +44,12 @@ object Saver {
         withContext(Dispatchers.IO) { Files.readAllLines(file.toPath())}.forEach {
             Json.decodeFromString(it) as PacketStand
         }
+    }
 
+    internal fun tickingSave() = StandAPI.plugin().launch(Dispatchers.IO) {
+        while (true) {
+            delay(12000.ticks) //10 minutes
+            saveAll()
+        }
     }
 }

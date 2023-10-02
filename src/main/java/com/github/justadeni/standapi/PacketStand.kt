@@ -1,5 +1,6 @@
 package com.github.justadeni.standapi
 
+import com.comphenix.protocol.events.PacketContainer
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot
 import com.github.justadeni.standapi.Misc.applyOffset
 import com.github.justadeni.standapi.Misc.sendTo
@@ -7,6 +8,8 @@ import com.github.justadeni.standapi.datatype.Offset
 import com.github.justadeni.standapi.storage.StandApiConfig
 import com.github.justadeni.standapi.datatype.Rotation
 import com.github.justadeni.standapi.serialization.*
+import com.github.shynixn.mccoroutine.bukkit.asyncDispatcher
+import com.github.shynixn.mccoroutine.bukkit.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import org.bukkit.Bukkit
@@ -68,27 +71,31 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     )
 
     @Transient
-    internal val packetBundle = hashMapOf(Pair(0,packetGen.create(location, uuid)))
+    internal val packetBundle = hashMapOf<Int, PacketContainer>()
     @Transient
-    internal val destroyPacket = packetGen.destroy()
+    internal lateinit var destroyPacket: PacketContainer
 
     init {
+        StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher) {
 
-        updateMetadata()
+            packetBundle[0] = packetGen.create(location, uuid)
+            destroyPacket = packetGen.destroy()
+            updateMetadata()
 
-        if (equipment.isNotEmpty())
-            packetBundle[1] = packetGen.equipment(equipment)
+            if (equipment.isNotEmpty())
+                packetBundle[1] = packetGen.equipment(equipment)
 
-        val eligiblePlayers = eligiblePlayers()
-        packetBundle.sendTo(eligiblePlayers)
+            val eligiblePlayers = eligiblePlayers()
+            packetBundle.sendTo(eligiblePlayers)
 
-        StandManager.add(this)
+            StandManager.add(this@PacketStand)
+        }
     }
 
     internal fun eligiblePlayers(): List<Player> = location.world!!.players.asSequence()
-        .filter { it.location.distanceSquared(location) <= StandApiConfig.getRenderDistance2() }
-        .filterNot { excludedPlayers.contains(it.uniqueId) }
-        .toList()
+                .filter { it.location.distanceSquared(location) <= StandApiConfig.getRenderDistance2() }
+                .filterNot { excludedPlayers.contains(it.uniqueId) }
+                .toList()
 
     /**
      * used to make stand invisible to any number of chosen players
@@ -133,6 +140,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
 
     /**
      * online players which are excluded from seeing the stand
+     * only use in main thread due to access to bukkit api
      */
     fun excludedPlayers(): List<Player> = excludedPlayers.asSequence()
             .map { Bukkit.getPlayer(it) }
@@ -160,20 +168,20 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      * @param entity entity to which this stand will be attached to and follow
      * @param offset relative offset of location from the entity
      */
-    fun attachTo(entity: Entity, offset: Offset){
-        StandManager.remove(this)
+    fun attachTo(entity: Entity, offset: Offset) = StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher){
+        StandManager.remove(this@PacketStand)
         setLocation(entity.location.applyOffset(offset))
         attachedTo = Pair(entity.uniqueId, offset)
-        StandManager.add(this)
+        StandManager.add(this@PacketStand)
     }
 
     /**
      * used to detach stand from any entity it was attached to
      */
-    fun detachFrom(){
-        StandManager.remove(this)
+    fun detachFrom() = StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher){
+        StandManager.remove(this@PacketStand)
         attachedTo = null
-        StandManager.add(this)
+        StandManager.add(this@PacketStand)
     }
 
     /**
@@ -194,7 +202,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     /**
      * should attached stand copy entity's yaw
      */
-    fun setAttachYaw() = run { attachedYaw = true}
+    fun setAttachYaw() = run { attachedYaw = true }
 
     /**
      * is stand's yaw attached to entity
@@ -206,12 +214,12 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      * @param slot to which the item will be equipped
      * @param item itemstack which will be assigned to the slot
      */
-    fun setEquipment(slot: ItemSlot, item: ItemStack){
+    fun setEquipment(slot: ItemSlot, item: ItemStack) = StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher){
         equipment[slot] = item
         packetBundle[1] = packetGen.equipment(equipment).also { it.sendTo(eligiblePlayers()) }
     }
 
-    private fun updateMetadata(){
+    private fun updateMetadata() = StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher){
         packetBundle[2] = packetGen.metadata(
             Pair((isInvisible or hasGlowingEffect).toByte(), (isSmall or hasArms or hasNoBaseplate or isMarker).toByte()),
             isCustomNameVisible,
@@ -231,7 +239,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     /**
      * set stand visibility
      */
-    fun setInvisible(value: Boolean){
+    fun setInvisible(value: Boolean) = StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher){
         isInvisible = if (value) 0x20 else 0x00
         updateMetadata()
     }
@@ -246,7 +254,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      * set stand glowing
      * @param value sets stand glowing
      */
-    fun setGlowingEffect(value: Boolean){
+    fun setGlowingEffect(value: Boolean) = StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher){
         hasGlowingEffect = if (value) 0x40 else 0x00
         updateMetadata()
     }
@@ -261,7 +269,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      * set custom name
      * @param value sets custom display name of stand
      */
-    fun setCustomName(value: String){
+    fun setCustomName(value: String) = StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher){
         customName = value
         updateMetadata()
     }
@@ -276,7 +284,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      * set custom name visibility
      * @param value sets custom name visibility
      */
-    fun setCustomNameVisible(value: Boolean){
+    fun setCustomNameVisible(value: Boolean) = StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher){
         isCustomNameVisible = value
         updateMetadata()
     }
@@ -291,7 +299,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      * set small
      * @param value sets small property
      */
-    fun setSmall(value: Boolean){
+    fun setSmall(value: Boolean) = StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher){
         isSmall = if (value) 0x01 else 0x00
         updateMetadata()
     }
@@ -306,7 +314,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      * set arms
      * @param value sets stand arms
      */
-    fun setArms(value: Boolean){
+    fun setArms(value: Boolean) = StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher){
         hasArms = if (value) 0x04 else 0x00
         updateMetadata()
     }
@@ -321,7 +329,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      * set no baseplate
      * @param value sets no baseplate
      */
-    fun setNoBaseplate(value: Boolean){
+    fun setNoBaseplate(value: Boolean) = StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher){
         hasNoBaseplate = if (value) 0x08 else 0x00
         updateMetadata()
     }
@@ -336,7 +344,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      * set stand to be marker (non-existent hitbox)
      * @param value sets stand to be marker
      */
-    fun setMarker(value: Boolean){
+    fun setMarker(value: Boolean) = StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher){
         isMarker = if (value) 0x10 else 0x00
         updateMetadata()
     }
@@ -351,15 +359,15 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      * move or teleport stand
      * @param loc where stand will move
      */
-    fun setLocation(loc: Location){
+    fun setLocation(loc: Location) = StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher){
         packetBundle[0] = packetGen.create(loc, uuid)
 
-        if (loc.world != location.world){
+        if (loc.world != location.world) {
             destroyPacket.sendTo(eligiblePlayers())
             location = loc
             packetBundle.sendTo(eligiblePlayers())
 
-        } else /*if (loc.distanceSquared(location) > 64)*/{
+        } else /*if (loc.distanceSquared(location) > 64)*/ {
 
             for (player in eligiblePlayers())
                 if (player.location.distanceSquared(location) > StandApiConfig.getRenderDistance2())
@@ -374,7 +382,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
         location = loc
     }
 
-    internal fun setLocationNoUpdate(loc: Location){
+    internal fun setLocationNoUpdate(loc: Location) = StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher){
         location = loc
         packetBundle[0] = packetGen.create(loc, uuid)
     }
@@ -389,7 +397,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      * set head pose
      * @param rotation pass instance of this class with desired values in degrees, 0-360
      */
-    fun setHeadPose(rotation: Rotation){
+    fun setHeadPose(rotation: Rotation) = StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher){
         rotations[0] = rotation
         updateMetadata()
     }
@@ -404,7 +412,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      * set body pose
      * @param rotation pass instance of this class with desired values in degrees, 0-360
      */
-    fun setBodyPose(rotation: Rotation){
+    fun setBodyPose(rotation: Rotation) = StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher){
         rotations[1] = rotation
         updateMetadata()
     }
@@ -419,7 +427,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      * set left arm pose
      * @param rotation pass instance of this class with desired values in degrees, 0-360
      */
-    fun setLeftArmPose(rotation: Rotation){
+    fun setLeftArmPose(rotation: Rotation) = StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher){
         rotations[2] = rotation
         updateMetadata()
     }
@@ -434,7 +442,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      * set right arm pose
      * @param rotation pass instance of this class with desired values in degrees, 0-360
      */
-    fun setRightArmPose(rotation: Rotation){
+    fun setRightArmPose(rotation: Rotation) = StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher){
         rotations[3] = rotation
         updateMetadata()
     }
@@ -449,7 +457,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      * set left leg pose
      * @param rotation pass instance of this class with desired values in degrees, 0-360
      */
-    fun setLeftLegPose(rotation: Rotation){
+    fun setLeftLegPose(rotation: Rotation) = StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher){
         rotations[4] = rotation
         updateMetadata()
     }
@@ -464,7 +472,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      * set right leg pose
      * @param rotation pass instance of this class with desired values in degrees, 0-360
      */
-    fun setRightlegPose(rotation: Rotation){
+    fun setRightlegPose(rotation: Rotation) = StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher){
         rotations[5] = rotation
         updateMetadata()
     }
@@ -478,8 +486,8 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     /**
      * removes the stand. dereference this instance to get it picked up by GC
      */
-    fun remove(){
-        StandManager.remove(this)
+    fun remove() = StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher){
+        StandManager.remove(this@PacketStand)
         destroyPacket.sendTo(location.world!!.players)
     }
 }

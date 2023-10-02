@@ -2,15 +2,20 @@ package com.github.justadeni.standapi
 
 import com.github.justadeni.standapi.Misc.applyOffset
 import com.github.justadeni.standapi.Misc.sendTo
+import com.github.justadeni.standapi.storage.Saver
 import com.github.justadeni.standapi.storage.StandApiConfig
 import com.github.shynixn.mccoroutine.bukkit.asyncDispatcher
+import com.github.shynixn.mccoroutine.bukkit.launch
 import com.github.shynixn.mccoroutine.bukkit.minecraftDispatcher
 import com.github.shynixn.mccoroutine.bukkit.ticks
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.entity.Player
+import java.util.*
 
 object StandManager {
     /*
@@ -23,13 +28,13 @@ object StandManager {
     for stands that are within detection radius of player
     and have received packets already
     */
-    private val included = hashMapOf<Player, MutableList<PacketStand>>()
+    private val included = Collections.synchronizedMap(hashMapOf<Player, MutableList<PacketStand>>())
 
     /**
      * returns list of all stands on the server
      */
     @JvmStatic
-    fun getAllStands(): List<PacketStand> {
+    fun getAllStands(): List<PacketStand>{
         val wholeList = mutableListOf<PacketStand>()
         ticking.values.forEach { wholeList.addAll(it) }
         return wholeList
@@ -40,7 +45,7 @@ object StandManager {
      * @param world in which stands will be retrieved
      */
     @JvmStatic
-    fun getAllStandsInWorld(world: World): List<PacketStand> {
+    fun getAllStandsInWorld(world: World): List<PacketStand>{
         return getAllStands().filter { it.getLocation().world == world }
     }
 
@@ -51,10 +56,7 @@ object StandManager {
      */
     @JvmStatic
     fun findAttachedTo(entityId: Int): List<PacketStand>? {
-        //if (ticking.containsKey(entityId))
-            return ticking[entityId]
-
-        //return emptyList()
+        return ticking[entityId]
     }
 
     internal fun findByStandId(standId: Int): PacketStand? {
@@ -66,17 +68,17 @@ object StandManager {
         return null
     }
 
-    internal fun add(stand: PacketStand){
+    internal fun add(stand: PacketStand) = StandAPI.plugin().launch{
         if (stand.getAttached() == null){
             addWithId(stand, -2)
-            return
+            return@launch
         }
 
         val entityId = Bukkit.getEntity(stand.getAttached()!!.first)?.entityId
 
         if (entityId == null){
             addWithId(stand, -1)
-            return
+            return@launch
         }
 
         addWithId(stand, entityId)
@@ -114,27 +116,29 @@ object StandManager {
             val allStands = getAllStands()
 
             for (player in Bukkit.getOnlinePlayers()){
+                launch {
+                    if (!included.containsKey(player))
+                        included[player] = mutableListOf()
 
-                if (!included.containsKey(player))
-                    included[player] = mutableListOf()
+                    val wereInside = included[player]!!
 
-                val wereInside = included[player]!!
+                    val areInside = async{ allStands//.asSequence()
+                        .filterNot { it.excludedUUIDs().contains(player.uniqueId) }
+                        .filter { it.getLocation().world == player.world }
+                        .filter { it.getLocation().distanceSquared(player.location) < StandApiConfig.getRenderDistance2() }
+                    }.await()
+                    //.toList()
+                    included[player] = areInside.toMutableList()
 
-                val areInside = allStands.asSequence()
-                    .filterNot { it.excludedUUIDs().contains(player.uniqueId) }
-                    .filter { it.getLocation().world == player.world }
-                    .filter { it.getLocation().distanceSquared(player.location) < StandApiConfig.getRenderDistance2() }
-                    .toList()
+                    val wentInside = async { areInside - wereInside.toSet() }
+                    val wentOutside = async { wereInside - areInside.toSet() }
 
-                val wentInside = areInside - wereInside.toSet()
-                wentInside.forEach {
-                    it.packetBundle.sendTo(player)
-                }
-                included[player] = areInside.toMutableList()
-
-                val wentOutside = wereInside - areInside.toSet()
-                wentOutside.forEach {
-                    it.destroyPacket.sendTo(player)
+                    wentInside.await().forEach {
+                        it.packetBundle.sendTo(player)
+                    }
+                    wentOutside.await().forEach {
+                        it.destroyPacket.sendTo(player)
+                    }
                 }
             }
 
@@ -152,7 +156,7 @@ object StandManager {
                 }
                 */
                 stand.getAttached() ?: continue
-                val pE = withContext(StandAPI.plugin().minecraftDispatcher){ Bukkit.getEntity(stand.getAttached()!!.first) } ?: continue
+                val pE = async(StandAPI.plugin().minecraftDispatcher){ Bukkit.getEntity(stand.getAttached()!!.first) }.await() ?: continue
                 listIt.remove()
                 addWithId(stand, pE.entityId)
                 stand.setLocation(pE.location.applyOffset(stand.getAttached()?.second))
