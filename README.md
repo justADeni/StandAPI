@@ -100,7 +100,7 @@ server.pluginManager.registerEvents(ExampleListener(), this)
 class ExampleListener: Listener {  
   
     @EventHandler  
-	fun onEntityDeath(e: PacketStandEvent){  
+	fun onStandClick(e: PacketStandEvent){  
         if(e.action = Action.LEFT_CLICK){
 	        //do whatever
         }
