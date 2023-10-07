@@ -57,8 +57,8 @@ class StandAPI : SuspendingJavaPlugin() {
     override suspend fun onEnableAsync() {
 
         //only for testing
-        getCommand("standapi")!!.setSuspendingExecutor(Command())
-        getCommand("standapi")!!.setSuspendingTabCompleter(TabComplete())
+        //getCommand("standapi")!!.setSuspendingExecutor(Command())
+        //getCommand("standapi")!!.setSuspendingTabCompleter(TabComplete())
 
         server.pluginManager.registerSuspendingEvents(EntityDeathListener(), this)
         UseEntityListener()
