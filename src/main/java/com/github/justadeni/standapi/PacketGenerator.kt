@@ -7,7 +7,7 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent
 import com.comphenix.protocol.wrappers.WrappedDataValue
 import com.comphenix.protocol.wrappers.WrappedDataWatcher
 import com.comphenix.protocol.wrappers.WrappedDataWatcher.WrappedDataWatcherObject
-import net.minecraft.core.Rotations
+import net.minecraft.core.Vector3f
 import org.bukkit.Location
 import org.bukkit.entity.EntityType
 import org.bukkit.inventory.ItemStack
@@ -53,7 +53,7 @@ class PacketGenerator(private val id: Int){
         return packet
     }
 
-    fun metadata(bytes: Pair<Byte, Byte>, isCustomNameVisible: Boolean, customName: String, rotations: List<Rotations>): PacketContainer{
+    fun metadata(bytes: Pair<Byte, Byte>, isCustomNameVisible: Boolean, customName: String, rotations: List<Vector3f>): PacketContainer{
         val packet = PacketContainer(PacketType.Play.Server.ENTITY_METADATA)
         packet.integers.write(0, id)
         val dataWatcher = watcher.deepClone()
@@ -64,7 +64,7 @@ class PacketGenerator(private val id: Int){
         dataWatcher.setObject(WrappedDataWatcherObject(2, WrappedDataWatcher.Registry.getChatComponentSerializer(true)), Optional.of(WrappedChatComponent.fromChatMessage(customName)[0].handle))
 
         for (index in 16..21){
-            dataWatcher.setObject(WrappedDataWatcherObject(index, WrappedDataWatcher.Registry.get(Rotations::class.java)), rotations[index-16])
+            dataWatcher.setObject(WrappedDataWatcherObject(index, WrappedDataWatcher.Registry.get(Vector3f::class.java)), rotations[index-16])
         }
 
         val wrappedDataValueList: MutableList<WrappedDataValue> = ArrayList()
