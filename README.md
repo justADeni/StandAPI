@@ -19,13 +19,12 @@ Don't worry, you can use this library from either Kotlin or Java
 
 ## How do I use this thing? 😯
 import StandAPI into your project and create an instance of PacketStand like so:
-```Kotlin
-//kotlin
+```kotlin
 val packetStand = PacketStand(location)
 ```
-```Java
-//java
-PacketStand packetStand = new PacketStand(location)
+If you want StandAPI to also **save and load** said stand, provide plugin name in constructor:
+```kotlin
+val packetStand = PacketStand(location, "my-plugin-name")
 ```
 then you can alter or get properties, for example
 ```kotlin
@@ -37,6 +36,11 @@ packetStand.hasGlowingEffect()
 
 packetStand.setCustomName("Bob")
 packetStand.getCustomName()
+
+//since non-final operations return back instance of PacketStand, you can chain them
+packetStand.setArms(true)
+		   .setSmall(true)
+		   .setCustomNameVisible(true)
 ```
 or you can attach the PacketStand to an entity    
 *__note 1__: if a stand is attached to a Player, due to the nature of packets, that player will not see the stand moving smoothly (all others will, however), but rather with small delay, more or less said player's ping. It is recommended to hide the stand for the player using .excludePlayer(player)*    
@@ -78,17 +82,12 @@ packetStand.setHeadRotation(rotation)
 **StandManager** provides several potentially useful methods
 ```kotlin
 StandManager.getAllStands()
-
 StandManager.getAllStandsInWorld(world)
-
 StandManager.findAttachedTo(entityId)
+StandManager.getStandsOfPlugin(pluginName: String)
 ```
-**StandApiConfig**
-```kotlin
-setRenderDistance(192)
 
-setSavingEnabled(true)
-```
+
 **PacketStandEvent**
 custom event fired when player right or left clicks a PacketStand    
 it is registered and used as any other event in spigot
@@ -125,15 +124,6 @@ val string = Json.encodeToString(packetStand)
 
 //deserialize
 val packetStand = Json.decodeFromString(string) as PacketStand
-```
-### Command and permission    
-there is only one command    
-```
-/standapi reload
-```
-and only one permission    
-```
-standapi.admin
 ```
 ## Import 👇
 _it is not advised to shade StandAPI into your plugin_    
