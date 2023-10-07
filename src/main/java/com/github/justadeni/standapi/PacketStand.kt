@@ -25,7 +25,8 @@ class PacketStand(
     @Serializable(with = LocationSerializer::class)
     private var location: Location,
 
-    internal val pluginName: String = "None") {
+    @Transient
+    internal var pluginName: String = "None") {
 
     /**
      * entityId of the stand

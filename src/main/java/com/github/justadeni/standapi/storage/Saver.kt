@@ -19,7 +19,6 @@ import java.nio.file.Files
  */
 object Saver {
 
-    //private val file = File(StandAPI.plugin().dataFolder.path + "/stands.yml").also { it.createNewFile() }
     private val folder = StandAPI.plugin().dataFolder.also { it.mkdirs() }
 
     internal fun tickingSaving() = StandAPI.plugin().launch(Dispatchers.IO){
@@ -42,9 +41,10 @@ object Saver {
     }
 
     internal suspend fun loadAll() = withContext(Dispatchers.IO){
-        Files.list(folder.toPath()).forEach {
-            Files.readAllLines(it).forEach {
-                Json.decodeFromString(it) as PacketStand
+        Files.list(folder.toPath()).forEach { path ->
+            Files.readAllLines(path).forEach {
+                val stand = Json.decodeFromString(it) as PacketStand
+                stand.pluginName = path.fileName.toString().removeSuffix(".yml")
             }
         }
     }
