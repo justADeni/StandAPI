@@ -4,7 +4,7 @@
 # Simple yet powerful API for easy operation with fake ArmorStands
 
  ## Features 🤩
-- PacketStands have all the functionality of regular armorstands
+- PacketStands have almost all the functionality of regular armorstands
 - they don't tick or cause lag, they aren't real entities
 - they can be attached to any entity, including head pitch and yaw (can be customized)
 - they can be hidden for certain players
@@ -100,7 +100,7 @@ server.pluginManager.registerEvents(ExampleListener(), this)
 class ExampleListener: Listener {  
   
     @EventHandler  
-	fun onEntityDeath(e: PacketStandEvent){  
+	fun onStandClick(e: PacketStandEvent){  
         if(e.action = Action.LEFT_CLICK){
 	        //do whatever
         }
@@ -125,6 +125,15 @@ val string = Json.encodeToString(packetStand)
 
 //deserialize
 val packetStand = Json.decodeFromString(string) as PacketStand
+```
+### Command and permission    
+there is only one command    
+```
+/standapi reload
+```
+and only one permission    
+```
+standapi.admin
 ```
 ## Import 👇
 _it is not advised to shade StandAPI into your plugin_    
