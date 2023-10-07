@@ -3,8 +3,8 @@ package com.github.justadeni.standapi
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot
 import com.github.justadeni.standapi.Misc.applyOffset
 import com.github.justadeni.standapi.Misc.sendTo
+import com.github.justadeni.standapi.Misc.squared
 import com.github.justadeni.standapi.datatype.Offset
-import com.github.justadeni.standapi.storage.StandApiConfig
 import com.github.justadeni.standapi.datatype.Rotation
 import com.github.justadeni.standapi.serialization.*
 import kotlinx.serialization.Serializable
@@ -21,7 +21,11 @@ import java.util.*
  * @author justADeni
  */
 @Serializable
-class PacketStand(@Serializable(with = LocationSerializer::class) private var location: Location) {
+class PacketStand(
+    @Serializable(with = LocationSerializer::class)
+    private var location: Location,
+
+    internal val pluginName: String = "None") {
 
     /**
      * entityId of the stand
@@ -86,7 +90,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     }
 
     internal fun eligiblePlayers(): List<Player> = location.world!!.players.asSequence()
-        .filter { it.location.distanceSquared(location) <= StandApiConfig.getRenderDistance2() }
+        .filter { it.location.distanceSquared(location) <= 192.squared() }
         .filterNot { excludedPlayers.contains(it.uniqueId) }
         .toList()
 
@@ -106,20 +110,24 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      * use this method only for offline players
      * @param player which will be excluded from seeing and interacting with the stand
      */
-    fun excludePlayer(uuid: UUID){
+    fun excludePlayer(uuid: UUID): PacketStand {
         if (!excludedPlayers.contains(uuid))
             excludedPlayers.add(uuid)
+
+        return this
     }
 
     /**
      * used to make stand visible again to a player that was previously excluded
      * @param player which will now be able to see and interact with the stand
      */
-    fun unexcludePlayer(player: Player){
+    fun unexcludePlayer(player: Player): PacketStand {
         excludedPlayers.remove(player.uniqueId)
         //Send All Packets
         if (eligiblePlayers().contains(player))
             packetBundle.sendTo(listOf(player))
+
+        return this
     }
 
     /**
@@ -127,8 +135,10 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      * use this method only for offline players
      * @param uuid uuid of player which will now be able to see and interact with the stand
      */
-    fun unexcludePlayer(uuid: UUID){
+    fun unexcludePlayer(uuid: UUID): PacketStand {
         excludedPlayers.remove(uuid)
+
+        return this
     }
 
     /**
@@ -147,9 +157,12 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     /**
      * used to attach stand to entity
      * @param entity entity to which this stand will be attached to and follow
+     * @return returns back this instance
      */
-    fun attachTo(entity: Entity){
+    fun attachTo(entity: Entity): PacketStand {
         attachTo(entity, Offset.ZERO)
+
+        return this
     }
 
     /**
@@ -159,21 +172,27 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      *
      * @param entity entity to which this stand will be attached to and follow
      * @param offset relative offset of location from the entity
+     * @return returns back this instance
      */
-    fun attachTo(entity: Entity, offset: Offset){
+    fun attachTo(entity: Entity, offset: Offset): PacketStand {
         StandManager.remove(this)
         setLocation(entity.location.applyOffset(offset))
         attachedTo = Pair(entity.uniqueId, offset)
         StandManager.add(this)
+
+        return this
     }
 
     /**
      * used to detach stand from any entity it was attached to
+     * @return returns back this instance
      */
-    fun detachFrom(){
+    fun detachFrom(): PacketStand {
         StandManager.remove(this)
         attachedTo = null
         StandManager.add(this)
+
+        return this
     }
 
     /**
@@ -183,8 +202,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
 
     /**
      * should attached stand copy entity's pitch
+     * @return returns back this instance
      */
-    fun setAttachPitch() = run { attachedPitch = true }
+    fun setAttachPitch(): PacketStand {
+        attachedPitch = true
+
+        return this
+    }
 
     /**
      * is stand's pitch attached to entity
@@ -193,8 +217,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
 
     /**
      * should attached stand copy entity's yaw
+     * @return returns back this instance
      */
-    fun setAttachYaw() = run { attachedYaw = true}
+    fun setAttachYaw(): PacketStand{
+        attachedYaw = true
+
+        return this
+    }
 
     /**
      * is stand's yaw attached to entity
@@ -205,10 +234,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
      * set equipment
      * @param slot to which the item will be equipped
      * @param item itemstack which will be assigned to the slot
+     * @return returns back this instance
      */
-    fun setEquipment(slot: ItemSlot, item: ItemStack){
+    fun setEquipment(slot: ItemSlot, item: ItemStack): PacketStand {
         equipment[slot] = item
         packetBundle[1] = packetGen.equipment(equipment).also { it.sendTo(eligiblePlayers()) }
+
+        return this
     }
 
     private fun updateMetadata(){
@@ -230,10 +262,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
 
     /**
      * set stand visibility
+     * @return returns back this instance
      */
-    fun setInvisible(value: Boolean){
+    fun setInvisible(value: Boolean): PacketStand {
         isInvisible = if (value) 0x20 else 0x00
         updateMetadata()
+
+        return this
     }
 
     /**
@@ -245,10 +280,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     /**
      * set stand glowing
      * @param value sets stand glowing
+     * @return returns back this instance
      */
-    fun setGlowingEffect(value: Boolean){
+    fun setGlowingEffect(value: Boolean): PacketStand {
         hasGlowingEffect = if (value) 0x40 else 0x00
         updateMetadata()
+
+        return this
     }
 
     /**
@@ -260,25 +298,32 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     /**
      * set custom name
      * @param value sets custom display name of stand
+     * @return returns back this instance
      */
-    fun setCustomName(value: String){
+    fun setCustomName(value: String): PacketStand {
         customName = value
         updateMetadata()
+
+        return this
     }
 
     /**
      * get custom name
      * @return custom display name of stand
+     * @return returns back this instance
      */
     fun getCustomName(): String = customName
 
     /**
      * set custom name visibility
      * @param value sets custom name visibility
+     * @return returns back this instance
      */
-    fun setCustomNameVisible(value: Boolean){
+    fun setCustomNameVisible(value: Boolean): PacketStand {
         isCustomNameVisible = value
         updateMetadata()
+
+        return this
     }
 
     /**
@@ -290,10 +335,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     /**
      * set small
      * @param value sets small property
+     * @return returns back this instance
      */
-    fun setSmall(value: Boolean){
+    fun setSmall(value: Boolean): PacketStand {
         isSmall = if (value) 0x01 else 0x00
         updateMetadata()
+
+        return this
     }
 
     /**
@@ -305,10 +353,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     /**
      * set arms
      * @param value sets stand arms
+     * @return returns back this instance
      */
-    fun setArms(value: Boolean){
+    fun setArms(value: Boolean): PacketStand {
         hasArms = if (value) 0x04 else 0x00
         updateMetadata()
+
+        return this
     }
 
     /**
@@ -320,10 +371,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     /**
      * set no baseplate
      * @param value sets no baseplate
+     * @return returns back this instance
      */
-    fun setNoBaseplate(value: Boolean){
+    fun setNoBaseplate(value: Boolean): PacketStand {
         hasNoBaseplate = if (value) 0x08 else 0x00
         updateMetadata()
+
+        return this
     }
 
     /**
@@ -335,10 +389,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     /**
      * set stand to be marker (non-existent hitbox)
      * @param value sets stand to be marker
+     * @return returns back this instance
      */
-    fun setMarker(value: Boolean){
+    fun setMarker(value: Boolean): PacketStand {
         isMarker = if (value) 0x10 else 0x00
         updateMetadata()
+
+        return this
     }
 
     /**
@@ -350,8 +407,9 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     /**
      * move or teleport stand
      * @param loc where stand will move
+     * @return returns back this instance
      */
-    fun setLocation(loc: Location){
+    fun setLocation(loc: Location): PacketStand {
         packetBundle[0] = packetGen.create(loc, uuid)
 
         if (loc.world != location.world){
@@ -362,7 +420,7 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
         } else /*if (loc.distanceSquared(location) > 64)*/{
 
             for (player in eligiblePlayers())
-                if (player.location.distanceSquared(location) > StandApiConfig.getRenderDistance2())
+                if (player.location.distanceSquared(location) > 192.squared() )
                     packetBundle.sendTo(listOf(player))
                 else
                     packetGen.teleport(loc).sendTo(eligiblePlayers())
@@ -372,11 +430,15 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
         } */
 
         location = loc
+
+        return this
     }
 
-    internal fun setLocationNoUpdate(loc: Location){
+    internal fun setLocationNoUpdate(loc: Location): PacketStand {
         location = loc
         packetBundle[0] = packetGen.create(loc, uuid)
+
+        return this
     }
 
     /**
@@ -388,10 +450,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     /**
      * set head pose
      * @param rotation pass instance of this class with desired values in degrees, 0-360
+     * @return returns back this instance
      */
-    fun setHeadPose(rotation: Rotation){
+    fun setHeadPose(rotation: Rotation): PacketStand {
         rotations[0] = rotation
         updateMetadata()
+
+        return this
     }
 
     /**
@@ -403,10 +468,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     /**
      * set body pose
      * @param rotation pass instance of this class with desired values in degrees, 0-360
+     * @return returns back this instance
      */
-    fun setBodyPose(rotation: Rotation){
+    fun setBodyPose(rotation: Rotation): PacketStand {
         rotations[1] = rotation
         updateMetadata()
+
+        return this
     }
 
     /**
@@ -418,10 +486,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     /**
      * set left arm pose
      * @param rotation pass instance of this class with desired values in degrees, 0-360
+     * @return returns back this instance
      */
-    fun setLeftArmPose(rotation: Rotation){
+    fun setLeftArmPose(rotation: Rotation): PacketStand {
         rotations[2] = rotation
         updateMetadata()
+
+        return this
     }
 
     /**
@@ -433,10 +504,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     /**
      * set right arm pose
      * @param rotation pass instance of this class with desired values in degrees, 0-360
+     * @return returns back this instance
      */
-    fun setRightArmPose(rotation: Rotation){
+    fun setRightArmPose(rotation: Rotation): PacketStand {
         rotations[3] = rotation
         updateMetadata()
+
+        return this
     }
 
     /**
@@ -448,10 +522,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     /**
      * set left leg pose
      * @param rotation pass instance of this class with desired values in degrees, 0-360
+     * @return returns back this instance
      */
-    fun setLeftLegPose(rotation: Rotation){
+    fun setLeftLegPose(rotation: Rotation): PacketStand {
         rotations[4] = rotation
         updateMetadata()
+
+        return this
     }
 
     /**
@@ -463,10 +540,13 @@ class PacketStand(@Serializable(with = LocationSerializer::class) private var lo
     /**
      * set right leg pose
      * @param rotation pass instance of this class with desired values in degrees, 0-360
+     * @return returns back this instance
      */
-    fun setRightlegPose(rotation: Rotation){
+    fun setRightlegPose(rotation: Rotation): PacketStand {
         rotations[5] = rotation
         updateMetadata()
+
+        return this
     }
 
     /**

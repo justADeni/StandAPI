@@ -2,7 +2,7 @@ package com.github.justadeni.standapi
 
 import com.github.justadeni.standapi.Misc.applyOffset
 import com.github.justadeni.standapi.Misc.sendTo
-import com.github.justadeni.standapi.storage.StandApiConfig
+import com.github.justadeni.standapi.Misc.squared
 import com.github.shynixn.mccoroutine.bukkit.asyncDispatcher
 import com.github.shynixn.mccoroutine.bukkit.minecraftDispatcher
 import com.github.shynixn.mccoroutine.bukkit.ticks
@@ -27,6 +27,7 @@ object StandManager {
 
     /**
      * returns list of all stands on the server
+     * use with care if other plugin uses StandAPI on the same server
      */
     @JvmStatic
     fun getAllStands(): List<PacketStand> {
@@ -36,11 +37,21 @@ object StandManager {
     }
 
     /**
-     * returns list of all stands in specified world
-     * @param world in which stands will be retrieved
+     * returns list of all stands on the server with specified plugin name
+     * @param pluginName name of plugin at PacketStand instantiation
      */
     @JvmStatic
-    fun getAllStandsInWorld(world: World): List<PacketStand> {
+    fun getStandsOfPlugin(pluginName: String): List<PacketStand> {
+        return getAllStands().groupBy { it.pluginName }[pluginName] ?: emptyList()
+    }
+
+    /**
+     * returns list of all stands in specified world
+     * @param world in which stands will be retrieved
+     * use with care if other plugin uses StandAPI on the same server
+     */
+    @JvmStatic
+    fun getStandsInWorld(world: World): List<PacketStand> {
         return getAllStands().filter { it.getLocation().world == world }
     }
 
@@ -123,7 +134,7 @@ object StandManager {
                 val areInside = allStands.asSequence()
                     .filterNot { it.excludedUUIDs().contains(player.uniqueId) }
                     .filter { it.getLocation().world == player.world }
-                    .filter { it.getLocation().distanceSquared(player.location) < StandApiConfig.getRenderDistance2() }
+                    .filter { it.getLocation().distanceSquared(player.location) < 192.squared() }
                     .toList()
 
                 val wentInside = areInside - wereInside.toSet()
@@ -144,13 +155,7 @@ object StandManager {
             val listIt = ticking[-1]!!.iterator()
             while (listIt.hasNext()){
                 val stand = listIt.next()
-                /*
-                if (stand.getAttached() == null){
-                    listIt.remove()
-                    addWithId(stand, -2)
-                    continue
-                }
-                */
+
                 stand.getAttached() ?: continue
                 val pE = withContext(StandAPI.plugin().minecraftDispatcher){ Bukkit.getEntity(stand.getAttached()!!.first) } ?: continue
                 listIt.remove()

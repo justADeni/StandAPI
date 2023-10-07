@@ -1,8 +1,8 @@
 package com.github.justadeni.standapi.storage
 
 import com.github.justadeni.standapi.PacketStand
-import com.github.justadeni.standapi.StandManager
 import com.github.justadeni.standapi.StandAPI
+import com.github.justadeni.standapi.StandManager
 import com.github.shynixn.mccoroutine.bukkit.launch
 import com.github.shynixn.mccoroutine.bukkit.ticks
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +19,8 @@ import java.nio.file.Files
  */
 object Saver {
 
-    private val file = File(StandAPI.plugin().dataFolder.path + "/stands.yml").also { it.createNewFile() }
+    //private val file = File(StandAPI.plugin().dataFolder.path + "/stands.yml").also { it.createNewFile() }
+    private val folder = StandAPI.plugin().dataFolder.also { it.mkdirs() }
 
     internal fun tickingSaving() = StandAPI.plugin().launch(Dispatchers.IO){
         delay(18_000.ticks) //15 minutes
@@ -27,26 +28,24 @@ object Saver {
     }
 
     internal fun saveAll(){
-        if (!StandApiConfig.getSavingEnabled())
-            return
-
-        file.copyTo(File(StandAPI.plugin().dataFolder.path + "/backup.yml"), true)
-        PrintWriter(file).close()
-
-        file.printWriter().use {out ->
-            StandManager.getAllStands().forEach{
-                out.println(Json.encodeToString(it))
+        val groupedByPlugin = StandManager.getAllStands().groupBy { it.pluginName }.toMutableMap()
+        groupedByPlugin.remove("None")
+        groupedByPlugin.keys.forEach {
+            val file = File(folder.path + "/$it.yml").also { it.createNewFile() }
+            PrintWriter(file).close()
+            file.printWriter().use {out ->
+                groupedByPlugin[it]!!.forEach{
+                    out.println(Json.encodeToString(it))
+                }
             }
         }
     }
 
-    internal suspend fun loadAll(){
-        if (!StandApiConfig.getSavingEnabled())
-            return
-
-        withContext(Dispatchers.IO) { Files.readAllLines(file.toPath())}.forEach {
-            Json.decodeFromString(it) as PacketStand
+    internal suspend fun loadAll() = withContext(Dispatchers.IO){
+        Files.list(folder.toPath()).forEach {
+            Files.readAllLines(it).forEach {
+                Json.decodeFromString(it) as PacketStand
+            }
         }
-
     }
 }

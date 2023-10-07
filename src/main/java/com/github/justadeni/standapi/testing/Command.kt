@@ -5,7 +5,6 @@ import com.github.justadeni.standapi.PacketStand
 import com.github.justadeni.standapi.StandAPI
 import com.github.justadeni.standapi.datatype.Offset
 import com.github.justadeni.standapi.datatype.Rotation
-import com.github.justadeni.standapi.storage.StandApiConfig
 import com.github.shynixn.mccoroutine.bukkit.SuspendingCommandExecutor
 import com.github.shynixn.mccoroutine.bukkit.launch
 import com.github.shynixn.mccoroutine.bukkit.ticks
@@ -25,8 +24,8 @@ import org.bukkit.inventory.ItemStack
 class Command: SuspendingCommandExecutor {
 
     companion object {
-        var testStand: PacketStand? = null
-        var serializedString: String = ""
+        private var testStand: PacketStand? = null
+        private var serializedString: String = ""
     }
 
     override suspend fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
@@ -37,18 +36,10 @@ class Command: SuspendingCommandExecutor {
         if (!sender.hasPermission("standapi.admin"))
             return true
 
-        if (args[0].lowercase() == "reload") {
-            StandApiConfig.reload()
-            return true
-        }
-
-        if (!StandApiConfig.getTestMode())
-            return true
-
         when (args[0].lowercase()){
             "spawn" -> {
                 sender.sendMessage("stand spawned!")
-                testStand = PacketStand(sender.location)
+                testStand = PacketStand(sender.location, "StandAPI_test")
             }
             "equipment" -> {
                 sender.sendMessage("stand equipped")
