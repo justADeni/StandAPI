@@ -9,7 +9,6 @@
 - they can be attached to any entity, including head pitch and yaw (can be customized)
 - they can be hidden for certain players
 - StandAPI also has a custom event for when player hits a PacketStand
-- basic configuration
 - saving and loading are built-in (but can be disabled)
 - serializable and deserializable in one line of code
 - extremely fast, async code [powered by coroutines](https://kotlinlang.org/docs/coroutines-overview.html)
