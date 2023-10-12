@@ -78,6 +78,17 @@ to change any rotation, create and pass [Rotation object](https://docshoster.org
 val rotation = Rotation(0f, 90f, 0f)
 packetStand.setHeadRotation(rotation)
 ```
+though there are two extension methods to convert from and to EulerAngle
+```kotlin
+//kotlin
+val rotation = eulerAngle.toRotation()
+val eulerAngle = rotation.toEulerAngle()
+```
+```java
+//java
+Rotation rotation = Rotation.toRotation(eulerAngle);
+EulerAngle eulerAngle = Rotation.toEulerAngle(rotation);
+```
 ### Other classes
 **StandManager** provides several potentially useful methods
 ```kotlin
