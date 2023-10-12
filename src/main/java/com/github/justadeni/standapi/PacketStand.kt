@@ -7,6 +7,7 @@ import com.github.justadeni.standapi.Misc.squared
 import com.github.justadeni.standapi.datatype.Offset
 import com.github.justadeni.standapi.datatype.Rotation
 import com.github.justadeni.standapi.serialization.*
+import com.github.shynixn.mccoroutine.bukkit.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import org.bukkit.Bukkit
@@ -87,7 +88,9 @@ class PacketStand(
         val eligiblePlayers = eligiblePlayers()
         packetBundle.sendTo(eligiblePlayers)
 
-        StandManager.add(this)
+        StandAPI.plugin().launch {
+            StandManager.add(this@PacketStand)
+        }
     }
 
     internal fun eligiblePlayers(): List<Player> = location.world!!.players.asSequence()
@@ -176,10 +179,14 @@ class PacketStand(
      * @return returns back this instance
      */
     fun attachTo(entity: Entity, offset: Offset): PacketStand {
-        StandManager.remove(this)
+        StandAPI.plugin().launch {
+            StandManager.remove(this@PacketStand)
+        }
         setLocation(entity.location.applyOffset(offset))
         attachedTo = Pair(entity.uniqueId, offset)
-        StandManager.add(this)
+        StandAPI.plugin().launch {
+            StandManager.add(this@PacketStand)
+        }
 
         return this
     }
@@ -189,9 +196,13 @@ class PacketStand(
      * @return returns back this instance
      */
     fun detachFrom(): PacketStand {
-        StandManager.remove(this)
+        StandAPI.plugin().launch {
+            StandManager.remove(this@PacketStand)
+        }
         attachedTo = null
-        StandManager.add(this)
+        StandAPI.plugin().launch {
+            StandManager.add(this@PacketStand)
+        }
 
         return this
     }
@@ -560,7 +571,9 @@ class PacketStand(
      * removes the stand. dereference this instance to get it picked up by GC
      */
     fun remove(){
-        StandManager.remove(this)
+        StandAPI.plugin().launch {
+            StandManager.remove(this@PacketStand)
+        }
         destroyPacket.sendTo(location.world!!.players)
     }
 }

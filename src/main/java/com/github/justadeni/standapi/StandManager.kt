@@ -4,15 +4,21 @@ import com.github.justadeni.standapi.Misc.applyOffset
 import com.github.justadeni.standapi.Misc.sendTo
 import com.github.justadeni.standapi.Misc.squared
 import com.github.shynixn.mccoroutine.bukkit.asyncDispatcher
+import com.github.shynixn.mccoroutine.bukkit.launch
 import com.github.shynixn.mccoroutine.bukkit.minecraftDispatcher
 import com.github.shynixn.mccoroutine.bukkit.ticks
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.entity.Player
 
 object StandManager {
+
+    private val mutex = Mutex()
     /*
     for all existing stands
     first Int is entity Id of the entity they're bound to
@@ -31,8 +37,21 @@ object StandManager {
      */
     @JvmStatic
     fun getAllStands(): List<PacketStand> {
+        //val wholeList = mutableListOf<PacketStand>()
+        return runBlocking {
+            val wholeList = mutableListOf<PacketStand>()
+            mutex.withLock {
+                ticking.values.forEach { wholeList.addAll(it) }
+            }
+            return@runBlocking wholeList
+        }
+    }
+
+    internal suspend fun getAllStandsSuspend(): List<PacketStand> {
         val wholeList = mutableListOf<PacketStand>()
-        ticking.values.forEach { wholeList.addAll(it) }
+        mutex.withLock {
+            ticking.values.forEach { wholeList.addAll(it) }
+        }
         return wholeList
     }
 
@@ -63,7 +82,7 @@ object StandManager {
     @JvmStatic
     fun findAttachedTo(entityId: Int): List<PacketStand>? {
         //if (ticking.containsKey(entityId))
-            return ticking[entityId]
+        return ticking[entityId]
 
         //return emptyList()
     }
@@ -77,7 +96,16 @@ object StandManager {
         return null
     }
 
-    internal fun add(stand: PacketStand){
+    internal suspend fun findByStandIdSuspend(standId: Int): PacketStand? = mutex.withLock {
+        for (list in ticking.values)
+            for (stand in list)
+                if (stand.id == standId)
+                    return stand
+
+        return null
+    }
+
+    internal suspend fun add(stand: PacketStand){
         if (stand.getAttached() == null){
             addWithId(stand, -2)
             return
@@ -94,7 +122,7 @@ object StandManager {
     }
 
     //only use when you're 100% sure
-    private fun addWithId(stand: PacketStand, id: Int){
+    private suspend fun addWithId(stand: PacketStand, id: Int) = mutex.withLock {
         if (ticking.containsKey(id)) {
             if (!ticking[id]!!.contains(stand)) {
                 ticking[id]!!.add(stand)
@@ -104,7 +132,7 @@ object StandManager {
         }
     }
 
-    internal fun remove(stand: PacketStand){
+    internal suspend fun remove(stand: PacketStand) = mutex.withLock {
         val mapIt = ticking.entries.iterator()
         while (mapIt.hasNext()){
             val pair = mapIt.next()
@@ -122,9 +150,9 @@ object StandManager {
         while (true) {
             delay(20.ticks)
 
-            val allStands = getAllStands()
+            val allStands = getAllStandsSuspend()
 
-            for (player in Bukkit.getOnlinePlayers()){
+            for (player in Bukkit.getOnlinePlayers()) {
 
                 if (!included.containsKey(player))
                     included[player] = mutableListOf()
@@ -141,27 +169,37 @@ object StandManager {
                 wentInside.forEach {
                     it.packetBundle.sendTo(player)
                 }
+
                 included[player] = areInside.toMutableList()
 
                 val wentOutside = wereInside - areInside.toSet()
                 wentOutside.forEach {
                     it.destroyPacket.sendTo(player)
                 }
+
             }
 
-            if (!ticking.containsKey(-1))
+
+            if (mutex.withLock { return@withLock !ticking.containsKey(-1) })
                 continue
 
-            val listIt = ticking[-1]!!.iterator()
-            while (listIt.hasNext()){
+            val listIt = mutex.withLock { ticking[-1]!!.iterator() }
+            while (listIt.hasNext()) {
                 val stand = listIt.next()
 
                 stand.getAttached() ?: continue
-                val pE = withContext(StandAPI.plugin().minecraftDispatcher){ Bukkit.getEntity(stand.getAttached()!!.first) } ?: continue
-                listIt.remove()
+                val pE =
+                    withContext(StandAPI.plugin().minecraftDispatcher) { Bukkit.getEntity(stand.getAttached()!!.first) }
+                        ?: continue
+
+                mutex.withLock {
+                    listIt.remove()
+                }
+
                 addWithId(stand, pE.entityId)
                 stand.setLocation(pE.location.applyOffset(stand.getAttached()?.second))
             }
+
         }
     }
 

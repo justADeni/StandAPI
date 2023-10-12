@@ -19,8 +19,8 @@ object Misc {
 
     internal fun currentID() = id
 
-    internal fun resetId(){
-        val stands = StandManager.getAllStands()
+    internal suspend fun resetId(){
+        val stands = StandManager.getAllStandsSuspend()
         if (stands.isEmpty())
             return
 
