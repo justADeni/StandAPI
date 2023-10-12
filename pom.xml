@@ -6,7 +6,7 @@
 
     <groupId>com.github.justadeni</groupId>
     <artifactId>StandAPI</artifactId>
-    <version>1.6</version>
+    <version>1.5</version>
     <packaging>jar</packaging>
 
     <name>StandAPI</name>
@@ -191,8 +191,7 @@
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
             <version>1.19.4-R0.1-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/dependencies/spigot-1.19.4.jar</systemPath>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
