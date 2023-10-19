@@ -1,11 +1,14 @@
 package com.github.justadeni.standapi
 
 import com.comphenix.protocol.events.PacketContainer
+import com.comphenix.protocol.wrappers.EnumWrappers
+import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot
 import com.github.justadeni.standapi.datatype.Offset
 import com.github.shynixn.mccoroutine.bukkit.launch
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
+import org.bukkit.inventory.EquipmentSlot
 import kotlin.math.round
 
 /**
@@ -83,5 +86,28 @@ object Misc {
 
     internal fun getPlayerById(id: Int, world: World): Player? {
         return world.players.firstOrNull { it.entityId == id }
+    }
+
+    //now of course I could do this more elegantly with .name and Strings in one line, but switch is more performant and consumes no memory
+    internal fun EWtoEQ(itemSlot: ItemSlot): EquipmentSlot {
+        return when(itemSlot){
+            ItemSlot.MAINHAND -> EquipmentSlot.HAND
+            ItemSlot.OFFHAND -> EquipmentSlot.OFF_HAND
+            ItemSlot.FEET -> EquipmentSlot.FEET
+            ItemSlot.LEGS -> EquipmentSlot.LEGS
+            ItemSlot.CHEST -> EquipmentSlot.CHEST
+            ItemSlot.HEAD -> EquipmentSlot.HEAD
+        }
+    }
+
+    internal fun EQtoEW(equipmentSlot: EquipmentSlot): ItemSlot {
+        return when(equipmentSlot){
+            EquipmentSlot.HAND -> ItemSlot.MAINHAND
+            EquipmentSlot.OFF_HAND -> ItemSlot.OFFHAND
+            EquipmentSlot.FEET -> ItemSlot.FEET
+            EquipmentSlot.LEGS -> ItemSlot.LEGS
+            EquipmentSlot.CHEST -> ItemSlot.CHEST
+            EquipmentSlot.HEAD -> ItemSlot.HEAD
+        }
     }
 }
