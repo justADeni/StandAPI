@@ -16,6 +16,7 @@ import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 
 /**
@@ -43,20 +44,20 @@ class Command: SuspendingCommandExecutor {
             }
             "equipment" -> {
                 sender.sendMessage("stand equipped")
-                testStand!!.setEquipment(EnumWrappers.ItemSlot.HEAD, ItemStack(Material.ACACIA_CHEST_BOAT))
+                testStand!!.setEquipment(EquipmentSlot.HEAD, ItemStack(Material.ACACIA_CHEST_BOAT))
             }
             "metadata" -> {
                 sender.sendMessage("stand metadata sent")
                 //testStand!!.setGlowingEffect(true)
                 //testStand!!.setArms(true)
                 testStand!!.setSmall(true)
-                testStand!!.setNoBaseplate(true)
+                testStand!!.setBaseplate(false)
                 testStand!!.setCustomNameVisible(true)
                 testStand!!.setCustomName("test name")
             }
             "invisible" -> {
                 sender.sendMessage("stand made invisible")
-                testStand!!.setInvisible(true)
+                testStand!!.setVisible(false)
                 testStand!!.setMarker(true)
             }
             "location" -> {
@@ -96,6 +97,11 @@ class Command: SuspendingCommandExecutor {
             "detach" -> {
                 sender.sendMessage("stand detached")
                 testStand!!.detachFrom()
+            }
+            "torealstand" -> {
+                sender.sendMessage("real stand created")
+                testStand!!.toRealStand()
+                testStand = null
             }
         }
 

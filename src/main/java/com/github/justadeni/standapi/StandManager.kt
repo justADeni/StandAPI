@@ -37,7 +37,6 @@ object StandManager {
      */
     @JvmStatic
     fun getAllStands(): List<PacketStand> {
-        //val wholeList = mutableListOf<PacketStand>()
         return runBlocking {
             val wholeList = mutableListOf<PacketStand>()
             mutex.withLock {

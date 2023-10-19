@@ -386,8 +386,8 @@ class PacketStand(
     fun hasArms(): Boolean = hasArms > 0
 
     /**
-     * set no baseplate
-     * @param value sets no baseplate
+     * set baseplate
+     * @param value sets baseplate
      * @return returns back this instance
      */
     fun setBaseplate(value: Boolean): PacketStand {
@@ -398,8 +398,8 @@ class PacketStand(
     }
 
     /**
-     * get no baseplate
-     * @return no baseplate
+     * get baseplate
+     * @return baseplate
      */
     fun hasBaseplate(): Boolean = hasNoBaseplate == 0
 
@@ -593,7 +593,7 @@ class PacketStand(
         realStand.setBasePlate(hasBaseplate())
         realStand.isMarker = isMarker()
         realStand.isSmall = isSmall()
-        realStand.isVisible = !isVisible()
+        realStand.isVisible = isVisible()
         realStand.isCustomNameVisible = isCustomNameVisible
         realStand.customName = customName
         for (itemSlotItemPair in equipment){

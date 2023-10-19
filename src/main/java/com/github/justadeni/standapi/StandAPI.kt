@@ -10,6 +10,8 @@ import com.github.justadeni.standapi.attachment.client.PlayerRotMoveListener
 import com.github.justadeni.standapi.attachment.server.*
 import com.github.justadeni.standapi.event.UseEntityListener
 import com.github.justadeni.standapi.storage.Saver
+import com.github.justadeni.standapi.testing.Command
+import com.github.justadeni.standapi.testing.TabComplete
 import com.github.shynixn.mccoroutine.bukkit.*
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
@@ -54,8 +56,8 @@ class StandAPI : SuspendingJavaPlugin() {
     override suspend fun onEnableAsync() {
 
         //only for testing
-        //getCommand("standapi")!!.setSuspendingExecutor(Command())
-        //getCommand("standapi")!!.setSuspendingTabCompleter(TabComplete())
+        getCommand("standapi")!!.setSuspendingExecutor(Command())
+        getCommand("standapi")!!.setSuspendingTabCompleter(TabComplete())
 
         server.pluginManager.registerSuspendingEvents(EntityDeathListener(), this)
         UseEntityListener()

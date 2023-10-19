@@ -1,7 +1,6 @@
 package com.github.justadeni.standapi
 
 import com.comphenix.protocol.events.PacketContainer
-import com.comphenix.protocol.wrappers.EnumWrappers
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot
 import com.github.justadeni.standapi.datatype.Offset
 import com.github.shynixn.mccoroutine.bukkit.launch
@@ -16,7 +15,7 @@ import kotlin.math.round
  */
 object Misc {
 
-    private var id = 9999
+    private var id = 47_483_647
 
     private val manager = StandAPI.manager()
 
