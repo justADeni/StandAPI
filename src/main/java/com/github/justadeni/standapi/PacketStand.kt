@@ -1,19 +1,25 @@
 package com.github.justadeni.standapi
 
+import com.comphenix.protocol.wrappers.EnumWrappers
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot
 import com.github.justadeni.standapi.Misc.applyOffset
 import com.github.justadeni.standapi.Misc.sendTo
 import com.github.justadeni.standapi.Misc.squared
 import com.github.justadeni.standapi.datatype.Offset
 import com.github.justadeni.standapi.datatype.Rotation
+import com.github.justadeni.standapi.datatype.Rotation.Companion.toEulerAngle
+import com.github.justadeni.standapi.datatype.Rotation.Companion.toRotation
 import com.github.justadeni.standapi.serialization.*
 import com.github.shynixn.mccoroutine.bukkit.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Entity
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import java.util.*
 
@@ -312,8 +318,8 @@ class PacketStand(
      * @param value sets custom display name of stand
      * @return returns back this instance
      */
-    fun setCustomName(value: String): PacketStand {
-        customName = value
+    fun setCustomName(value: String?): PacketStand {
+        customName = value ?: ""
         updateMetadata()
 
         return this
@@ -575,5 +581,73 @@ class PacketStand(
             StandManager.remove(this@PacketStand)
         }
         destroyPacket.sendTo(location.world!!.players)
+    }
+
+    /**
+     * Converts PacketStand to a real entity with all it's properties
+     * and removes the former
+     * @return returns the real entity
+     */
+    fun toRealStand(): ArmorStand {
+        val realStand = location.world?.spawnEntity(location, EntityType.ARMOR_STAND) as ArmorStand
+        realStand.setArms(hasArms())
+        realStand.setBasePlate(!hasNoBaseplate())
+        realStand.isMarker = isMarker()
+        realStand.isSmall = isSmall()
+        realStand.isVisible = !isInvisible()
+        realStand.isCustomNameVisible = isCustomNameVisible
+        realStand.customName = customName
+        for (eqPair in equipment){
+            val bukkitSlot = EquipmentSlot.valueOf(eqPair.key.name.replace("MAIN", ""))
+            realStand.equipment?.setItem(bukkitSlot, eqPair.value)
+        }
+        realStand.headPose = getHeadPose().toEulerAngle()
+        realStand.bodyPose = getBodyPose().toEulerAngle()
+        realStand.leftArmPose = getLeftArmPose().toEulerAngle()
+        realStand.rightArmPose = getRightArmPose().toEulerAngle()
+        realStand.leftLegPose = getLeftLegPose().toEulerAngle()
+        realStand.rightLegPose = getRightLegPose().toEulerAngle()
+
+        remove()
+
+        return realStand
+    }
+
+    companion object {
+
+        /**
+         * Converts Bukkit Armorstand to PacketStand with all it's properties
+         * and removes the former
+         * @return returns the fake entity
+         */
+        @JvmStatic
+        fun ArmorStand.fromRealStand(): PacketStand {
+            val packetStand = PacketStand(this.location)
+            packetStand.setArms(this.hasArms())
+                .setNoBaseplate(!this.hasBasePlate())
+                .setMarker(this.isMarker)
+                .setSmall(this.isSmall)
+                .setInvisible(!this.isVisible)
+                .setCustomNameVisible(this.isCustomNameVisible)
+                .setCustomName(this.customName!!)
+
+            for (equipmentSlot in EquipmentSlot.entries){
+                val equipment = this.equipment?.getItem(equipmentSlot) ?: continue
+                val name = if (equipmentSlot.name == "HAND") "MAINHAND" else name
+                val enumWrapper = EnumWrappers.ItemSlot.valueOf(name)
+                packetStand.setEquipment(enumWrapper, equipment)
+            }
+
+            packetStand.setHeadPose(this.headPose.toRotation())
+            packetStand.setBodyPose(this.bodyPose.toRotation())
+            packetStand.setLeftArmPose(this.leftArmPose.toRotation())
+            packetStand.setRightArmPose(this.rightArmPose.toRotation())
+            packetStand.setLeftLegPose(this.leftLegPose.toRotation())
+            packetStand.setRightlegPose(this.rightLegPose.toRotation())
+
+            this.remove()
+
+            return packetStand
+        }
     }
 }
