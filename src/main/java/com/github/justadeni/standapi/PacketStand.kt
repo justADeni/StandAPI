@@ -1,6 +1,5 @@
 package com.github.justadeni.standapi
 
-import com.comphenix.protocol.wrappers.EnumWrappers
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot
 import com.github.justadeni.standapi.Misc.applyOffset
 import com.github.justadeni.standapi.Misc.sendTo
@@ -254,11 +253,20 @@ class PacketStand(
      * @param item itemstack which will be assigned to the slot
      * @return returns back this instance
      */
-    fun setEquipment(slot: ItemSlot, item: ItemStack): PacketStand {
-        equipment[slot] = item
+    fun setEquipment(slot: EquipmentSlot, item: ItemStack): PacketStand {
+        equipment[Misc.EQtoEW(slot)] = item
         packetBundle[1] = packetGen.equipment(equipment).also { it.sendTo(eligiblePlayers()) }
 
         return this
+    }
+
+    /**
+     * get equipment
+     * @param slot part of equipped stand
+     * @return itemstack in that slot. null if none
+     */
+    fun getEquipment(slot: EquipmentSlot): ItemStack? {
+        return equipment[Misc.EQtoEW(slot)]
     }
 
     private fun updateMetadata(){
@@ -267,15 +275,6 @@ class PacketStand(
             isCustomNameVisible,
             customName,
             rotations).also { it.sendTo(eligiblePlayers()) }
-    }
-
-    /**
-     * get equipment
-     * @param slot part of equipped stand
-     * @return itemstack in that slot. null if none
-     */
-    fun getEquipment(slot: ItemSlot): ItemStack? {
-        return equipment[slot]
     }
 
     /**
@@ -597,9 +596,8 @@ class PacketStand(
         realStand.isVisible = !isInvisible()
         realStand.isCustomNameVisible = isCustomNameVisible
         realStand.customName = customName
-        for (eqPair in equipment){
-            val bukkitSlot = EquipmentSlot.valueOf(eqPair.key.name.replace("MAIN", ""))
-            realStand.equipment?.setItem(bukkitSlot, eqPair.value)
+        for (itemSlotItemPair in equipment){
+            realStand.equipment?.setItem(Misc.EWtoEQ(itemSlotItemPair.key), itemSlotItemPair.value)
         }
         realStand.headPose = getHeadPose().toEulerAngle()
         realStand.bodyPose = getBodyPose().toEulerAngle()
@@ -633,9 +631,7 @@ class PacketStand(
 
             for (equipmentSlot in EquipmentSlot.entries){
                 val equipment = this.equipment?.getItem(equipmentSlot) ?: continue
-                val name = if (equipmentSlot.name == "HAND") "MAINHAND" else name
-                val enumWrapper = EnumWrappers.ItemSlot.valueOf(name)
-                packetStand.setEquipment(enumWrapper, equipment)
+                packetStand.setEquipment(equipmentSlot, equipment)
             }
 
             packetStand.setHeadPose(this.headPose.toRotation())
