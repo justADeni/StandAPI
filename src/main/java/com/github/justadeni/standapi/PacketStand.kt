@@ -281,8 +281,8 @@ class PacketStand(
      * set stand visibility
      * @return returns back this instance
      */
-    fun setInvisible(value: Boolean): PacketStand {
-        isInvisible = if (value) 0x20 else 0x00
+    fun setVisible(value: Boolean): PacketStand {
+        isInvisible = if (value) 0x00 else 0x20
         updateMetadata()
 
         return this
@@ -292,7 +292,7 @@ class PacketStand(
      * get stand visibility
      * @return stand visibility
      */
-    fun isInvisible(): Boolean = isInvisible > 0
+    fun isVisible(): Boolean = isInvisible == 0
 
     /**
      * set stand glowing
@@ -593,7 +593,7 @@ class PacketStand(
         realStand.setBasePlate(!hasNoBaseplate())
         realStand.isMarker = isMarker()
         realStand.isSmall = isSmall()
-        realStand.isVisible = !isInvisible()
+        realStand.isVisible = !isVisible()
         realStand.isCustomNameVisible = isCustomNameVisible
         realStand.customName = customName
         for (itemSlotItemPair in equipment){
@@ -625,7 +625,7 @@ class PacketStand(
                 .setNoBaseplate(!this.hasBasePlate())
                 .setMarker(this.isMarker)
                 .setSmall(this.isSmall)
-                .setInvisible(!this.isVisible)
+                .setVisible(this.isVisible)
                 .setCustomNameVisible(this.isCustomNameVisible)
                 .setCustomName(this.customName!!)
 
