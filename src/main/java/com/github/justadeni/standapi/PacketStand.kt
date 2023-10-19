@@ -390,8 +390,8 @@ class PacketStand(
      * @param value sets no baseplate
      * @return returns back this instance
      */
-    fun setNoBaseplate(value: Boolean): PacketStand {
-        hasNoBaseplate = if (value) 0x08 else 0x00
+    fun setBaseplate(value: Boolean): PacketStand {
+        hasNoBaseplate = if (value) 0x00 else 0x08
         updateMetadata()
 
         return this
@@ -401,7 +401,7 @@ class PacketStand(
      * get no baseplate
      * @return no baseplate
      */
-    fun hasNoBaseplate(): Boolean = hasNoBaseplate > 0
+    fun hasBaseplate(): Boolean = hasNoBaseplate == 0
 
     /**
      * set stand to be marker (non-existent hitbox)
@@ -590,7 +590,7 @@ class PacketStand(
     fun toRealStand(): ArmorStand {
         val realStand = location.world?.spawnEntity(location, EntityType.ARMOR_STAND) as ArmorStand
         realStand.setArms(hasArms())
-        realStand.setBasePlate(!hasNoBaseplate())
+        realStand.setBasePlate(hasBaseplate())
         realStand.isMarker = isMarker()
         realStand.isSmall = isSmall()
         realStand.isVisible = !isVisible()
@@ -622,7 +622,7 @@ class PacketStand(
         fun ArmorStand.fromRealStand(): PacketStand {
             val packetStand = PacketStand(this.location)
             packetStand.setArms(this.hasArms())
-                .setNoBaseplate(!this.hasBasePlate())
+                .setBaseplate(this.hasBasePlate())
                 .setMarker(this.isMarker)
                 .setSmall(this.isSmall)
                 .setVisible(this.isVisible)
