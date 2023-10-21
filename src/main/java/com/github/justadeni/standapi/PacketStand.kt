@@ -72,10 +72,10 @@ class PacketStand(
     internal val rotations = mutableListOf<@Serializable(with = RotationSerializer::class) Rotation>(
         Rotation(0f, 0f, 0f), //head 16
         Rotation(0f, 0f, 0f), //body 17
-        Rotation(-10f, 0f, -10f), //left arm 18
-        Rotation(-15f, 0f, 10f), //right arm 19
-        Rotation(-1f, 0f, -1f), //left leg 20
-        Rotation(1f, 0f, 1f) //right leg 21
+        Rotation(0f, 0f, 0f), //left arm 18
+        Rotation(0f, 0f, 0f), //right arm 19
+        Rotation(0f, 0f, 0f), //left leg 20
+        Rotation(0f, 0f, 0f) //right leg 21
     )
 
     @Transient
@@ -596,9 +596,11 @@ class PacketStand(
         realStand.isVisible = isVisible()
         realStand.isCustomNameVisible = isCustomNameVisible
         realStand.customName = customName
+
         for (itemSlotItemPair in equipment){
             realStand.equipment?.setItem(Misc.EWtoEQ(itemSlotItemPair.key), itemSlotItemPair.value)
         }
+
         realStand.headPose = getHeadPose().toEulerAngle()
         realStand.bodyPose = getBodyPose().toEulerAngle()
         realStand.leftArmPose = getLeftArmPose().toEulerAngle()
@@ -627,7 +629,7 @@ class PacketStand(
                 .setSmall(this.isSmall)
                 .setVisible(this.isVisible)
                 .setCustomNameVisible(this.isCustomNameVisible)
-                .setCustomName(this.customName!!)
+                .setCustomName(this.customName)
 
             for (equipmentSlot in EquipmentSlot.entries){
                 val equipment = this.equipment?.getItem(equipmentSlot) ?: continue

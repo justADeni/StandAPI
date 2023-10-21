@@ -1,7 +1,7 @@
 package com.github.justadeni.standapi.testing
 
-import com.comphenix.protocol.wrappers.EnumWrappers
 import com.github.justadeni.standapi.PacketStand
+import com.github.justadeni.standapi.PacketStand.Companion.fromRealStand
 import com.github.justadeni.standapi.StandAPI
 import com.github.justadeni.standapi.datatype.Offset
 import com.github.justadeni.standapi.datatype.Rotation
@@ -15,6 +15,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
@@ -26,6 +27,7 @@ class Command: SuspendingCommandExecutor {
 
     companion object {
         private var testStand: PacketStand? = null
+        private var realStand: ArmorStand? = null
         private var serializedString: String = ""
     }
 
@@ -69,11 +71,20 @@ class Command: SuspendingCommandExecutor {
                 testStand!!.remove()
                 testStand = null
             }
-            "rotatehead" -> {
+            "headpitch" -> {
                 sender.sendMessage("stand head rotating")
                 StandAPI.plugin().launch {
                     for (i in 0..360){
                         testStand!!.setHeadPose(Rotation(i.toFloat(), 0f, 0f))
+                        delay(1.ticks)
+                    }
+                }
+            }
+            "headyaw" -> {
+                sender.sendMessage("stand head rotating")
+                StandAPI.plugin().launch {
+                    for (i in 0..360){
+                        testStand!!.setHeadPose(Rotation(0f, i.toFloat(), 0f))
                         delay(1.ticks)
                     }
                 }
@@ -100,8 +111,13 @@ class Command: SuspendingCommandExecutor {
             }
             "torealstand" -> {
                 sender.sendMessage("real stand created")
-                testStand!!.toRealStand()
+                realStand = testStand!!.toRealStand()
                 testStand = null
+            }
+            "fromrealstand" -> {
+                sender.sendMessage("packet stand created")
+                testStand = realStand!!.fromRealStand()
+                realStand = null
             }
         }
 

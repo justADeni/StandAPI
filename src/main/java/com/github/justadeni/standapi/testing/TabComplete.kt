@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender
  */
 class TabComplete: SuspendingTabCompleter {
 
-    private val fullList = listOf("spawn", "equipment", "metadata", "invisible", "location", "destroy", "rotatehead", "serialize", "deserialize", "attach", "detach", "torealstand")
+    private val fullList = listOf("spawn", "equipment", "metadata", "invisible", "location", "destroy", "headpitch", "headyaw", "serialize", "deserialize", "attach", "detach", "torealstand", "fromrealstand")
 
     override suspend fun onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array<out String>): List<String> {
 
