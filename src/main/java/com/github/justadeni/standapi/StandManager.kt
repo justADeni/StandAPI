@@ -16,6 +16,7 @@ import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentHashMap
 
 object StandManager {
 
@@ -24,7 +25,7 @@ object StandManager {
     for all existing stands
     first Int is entity Id of the entity they're bound to
     */
-    private val ticking = hashMapOf<Int, MutableList<PacketStand>>()
+    private val ticking = ConcurrentHashMap<Int, MutableList<PacketStand>>()
 
     /*
     for stands that are within detection radius of player
