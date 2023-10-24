@@ -38,12 +38,9 @@ object StandManager {
     @JvmStatic
     fun all(): List<PacketStand> {
         return runBlocking {
-            //val wholeList = mutableListOf<PacketStand>()
             return@runBlocking mutex.withLock {
-                //ticking.values.forEach { wholeList.addAll(it) }
                 ticking.values.flatten()
             }
-            //return@runBlocking wholeList
         }
     }
 

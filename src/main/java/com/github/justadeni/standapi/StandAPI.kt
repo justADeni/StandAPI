@@ -31,10 +31,6 @@ class StandAPI : SuspendingJavaPlugin() {
         internal fun manager(): ProtocolManager {
             return manager!!
         }
-
-        internal fun log(info: String){
-            plugin!!.logger.info(info)
-        }
     }
 
     override suspend fun onLoadAsync() {

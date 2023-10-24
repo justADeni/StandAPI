@@ -9,7 +9,6 @@ import com.github.justadeni.standapi.misc.Util
 import com.github.justadeni.standapi.StandManager
 import com.github.justadeni.standapi.StandAPI.Companion.manager
 import com.github.justadeni.standapi.StandAPI.Companion.plugin
-import com.github.shynixn.mccoroutine.bukkit.launch
 import org.bukkit.Bukkit
 
 /**
@@ -34,7 +33,7 @@ class UseEntityListener {
                     EnumWrappers.EntityUseAction.INTERACT_AT -> Action.RIGHT_CLICK
                 }
 
-                plugin().launch { Bukkit.getPluginManager().callEvent(PacketStandEvent(player, id, stand, action)) }
+                /*plugin().launch() {*/ Bukkit.getPluginManager().callEvent(PacketStandEvent(player, id, stand, action)) //}
             }
         })
     }

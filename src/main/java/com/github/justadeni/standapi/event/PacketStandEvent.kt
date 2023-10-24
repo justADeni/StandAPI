@@ -12,7 +12,7 @@ import org.bukkit.event.HandlerList
  * @param packetStand stand that was clicked
  * @param action which action player did
  */
-class PacketStandEvent(val player: Player, val id: Int, val packetStand: PacketStand?, val action: Action) : Event() {
+class PacketStandEvent(val player: Player, val id: Int, val packetStand: PacketStand?, val action: Action) : Event(true) {
     override fun getHandlers(): HandlerList {
         return handlerList
     }
