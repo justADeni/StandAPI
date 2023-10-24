@@ -40,12 +40,6 @@ class StandAPI : SuspendingJavaPlugin() {
         internal fun log(info: String){
             plugin!!.logger.info(info)
         }
-
-        private val pTrackingRanges = hashMapOf<UUID, Int>()
-
-        internal fun getPTrackingRange2(worlduuid: UUID): Int {
-            return pTrackingRanges[worlduuid] ?: 2304 //48
-        }
     }
 
     override suspend fun onLoadAsync() {
@@ -73,9 +67,7 @@ class StandAPI : SuspendingJavaPlugin() {
         Saver.loadAll()
         Misc.resetId()
         launch { StandManager.startTicking() }
-        for (world in Bukkit.getWorlds()){
-            pTrackingRanges[world.uid] = SpigotWorldConfig(world.name).playerTrackingRange.squared()
-        }
+        Misc.initilazeTrackingRanges()
         Saver.tickingSaving()
         Metrics(this, 19953)
     }

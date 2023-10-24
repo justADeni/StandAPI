@@ -2,13 +2,18 @@ package com.github.justadeni.standapi
 
 import com.comphenix.protocol.events.PacketContainer
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot
+import com.github.justadeni.standapi.Misc.squared
 import com.github.justadeni.standapi.datatype.Offset
 import com.github.shynixn.mccoroutine.bukkit.launch
 import kotlinx.coroutines.future.await
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
+import org.spigotmc.SpigotWorldConfig
+import java.util.*
+import kotlin.collections.HashMap
 import kotlin.math.round
 
 /**
@@ -21,6 +26,18 @@ object Misc {
     private val manager = StandAPI.manager()
 
     internal fun currentID() = id
+
+    private val pTrackingRanges = hashMapOf<UUID, Int>()
+
+    internal fun getPTrackingRange2(worlduuid: UUID): Int {
+        return pTrackingRanges[worlduuid] ?: 2304 //48
+    }
+
+    internal fun initilazeTrackingRanges(){
+        for (world in Bukkit.getWorlds()){
+            pTrackingRanges[world.uid] = SpigotWorldConfig(world.name).playerTrackingRange.squared()
+        }
+    }
 
     internal suspend fun resetId(){
         val stands = StandManager.allAsync().await()
@@ -81,7 +98,7 @@ object Misc {
     internal fun Player.isAnyoneNearby(): Boolean {
         return this@isAnyoneNearby.world.players
             .filterNot { it == this@isAnyoneNearby }
-            .any { it.location.distanceSquared(this@isAnyoneNearby.location) < StandAPI.getPTrackingRange2(this.world.uid) }
+            .any { it.location.distanceSquared(this@isAnyoneNearby.location) < getPTrackingRange2(this.world.uid) }
     }
 
     internal fun getPlayerById(id: Int, world: World): Player? {
