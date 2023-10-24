@@ -8,6 +8,7 @@ import com.github.justadeni.standapi.datatype.Rotation
 import com.github.shynixn.mccoroutine.bukkit.SuspendingCommandExecutor
 import com.github.shynixn.mccoroutine.bukkit.launch
 import com.github.shynixn.mccoroutine.bukkit.ticks
+import com.zorbeytorunoglu.kLib.cuboid.Cuboid
 import kotlinx.coroutines.delay
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -118,6 +119,15 @@ class Command: SuspendingCommandExecutor {
                 sender.sendMessage("packet stand created")
                 testStand = realStand!!.fromRealStand()
                 realStand = null
+            }
+            "stresstest" -> {
+                val cuboid = Cuboid(sender.location.add(-100.0,-100.0,-100.0), sender.location.add(100.0,100.0,100.0))
+                for (i in 0..100_000){
+                    delay(5)
+                    StandAPI.plugin().launch() {
+                        PacketStand(cuboid.randomLocation)
+                    }
+                }
             }
         }
 
