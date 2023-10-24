@@ -5,7 +5,7 @@ package com.github.justadeni.standapi.misc
  */
 internal class Counter(private val from: Int, private val to: Int) {
 
-    private var i = from;
+    private var i = from
 
     internal fun reached(): Boolean {
         i++

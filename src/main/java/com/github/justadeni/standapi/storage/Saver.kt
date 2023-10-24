@@ -30,7 +30,7 @@ object Saver {
     }
 
     internal fun saveAll() {
-        val groupedByPlugin = StandManager.all().join().groupBy { it.pluginName }.toMutableMap()
+        val groupedByPlugin = StandManager.all().groupBy { it.pluginName }.toMutableMap()
         groupedByPlugin.remove("None")
         groupedByPlugin.keys.forEach {
             val file = File(folder.path + "/$it.yml").also { it.createNewFile() }

@@ -25,7 +25,7 @@ class UseEntityListener {
                 if (id < 47_483_647 || id > Util.currentID())
                     return
 
-                val stand = StandManager.byId(id).join() ?: return
+                val stand = StandManager.byId(id) ?: return
 
                 val action = when (packet.enumEntityUseActions.read(0).action){
                     EnumWrappers.EntityUseAction.ATTACK -> Action.LEFT_CLICK

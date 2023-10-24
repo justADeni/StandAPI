@@ -25,7 +25,11 @@ class PlayerRotListener {
                     return
 
                 for (stand in list){
-                    stand.setHeadPose(Rotation(player.location.pitch, player.location.yaw, 0f))
+
+                    val pitch = if (stand.isAttachedPitch()) player.location.pitch else stand.getHeadPose().pitch
+                    val yaw = if (stand.isAttachedYaw()) player.location.yaw else stand.getHeadPose().yaw
+
+                    stand.setHeadPose(Rotation(pitch, yaw, 0f))
                 }
             }
         })

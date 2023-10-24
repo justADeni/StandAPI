@@ -88,34 +88,43 @@ val eulerAngle = rotation.toEulerAngle()
 Rotation rotation = Rotation.toRotation(eulerAngle);
 EulerAngle eulerAngle = Rotation.toEulerAngle(rotation);
 ```
+to remove PacketStand, simply
+```kotlin
+packetStand.remove()
+```
+alternatively, you can set the PacketStand to be removed some time later or even execute a task after it is removed
+```kotlin
+//removes the stand after 20 ticks
+packetStand.remove(20)
+
+//removes the stand after 20 ticks and prints "Stand removed" to console
+packetStand.remove(20, () -> {
+    System.out.println("Stand removed")
+})
+```
+
+There are also methods to convert from and to a real Armorstand. This removes the previous stand.
+```kotlin
+//converts it to real stand copying all it's properties
+val armorStand = packetStand.toRealStand()
+
+//converts it to packet stand copying all it's properties
+val packetStand = armorStand.fromRealStand()
+```
+
 ### StandManager
 #### Here are some useful methods to retrieve PacketStands
-
-They return `CompletableFuture<T>`
 
 ```kotlin
 StandManager.all()
 StandManager.inWorld(world)
 StandManager.ofPlugin(pluginName)
 StandManager.byId(standId)
-```
-Here is how you get the `PacketStand` or `List<PacketStand>` out:
-```java
-//java
-List<PacketStand> list = StandManager.all().join();
-```
-```kotlin
-//kotlin, inside suspension function
-val list = StandManager.all().await()
-```
-for more information check [java.util.concurrent.Future](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html)
-#### Other methods
-```kotlin
 StandManager.attachedTo(entityId)
 ```
 
 #### PacketStandEvent
-custom *async* event fired when player right or left clicks a PacketStand    
+custom **async** event fired when player right or left clicks a PacketStand    
 it is registered and used as any other event in spigot
 ```kotlin
 //in main class onEnable
@@ -190,6 +199,6 @@ dependencies {
 **StandAPI also depends on [kLib](https://github.com/zorbeytorunoglu/kLib) for kotlin runtime and [ProtocolLib](https://github.com/dmulloy2/ProtocolLib/) for version-independent packet manipulation.  Do not forget to also add those to your project**
 
 # Showcase
-What you're seeing here is cca 7_000 PacketStands (my minecraft client crashed soon after).
-However the server handles at least 100_000 PacketStands (but probably more) with no TPS drops
+What you're seeing here is cca 7000 PacketStands (my minecraft client crashed soon after).
+However the server handles *at least* 100000 PacketStands with no TPS drops whatsoever
 ![stresstest](https://raw.githubusercontent.com/justADeni/StandAPI/master/src/img/stresstest.png)
