@@ -5,6 +5,7 @@ import com.github.justadeni.standapi.PacketStand.Companion.fromRealStand
 import com.github.justadeni.standapi.StandAPI
 import com.github.justadeni.standapi.datatype.Offset
 import com.github.justadeni.standapi.datatype.Rotation
+import com.github.justadeni.standapi.misc.Logger
 import com.github.shynixn.mccoroutine.bukkit.SuspendingCommandExecutor
 import com.github.shynixn.mccoroutine.bukkit.launch
 import com.github.shynixn.mccoroutine.bukkit.ticks
@@ -121,11 +122,15 @@ class Command: SuspendingCommandExecutor {
                 realStand = null
             }
             "stresstest" -> {
-                val cuboid = Cuboid(sender.location.add(-100.0,-100.0,-100.0), sender.location.add(100.0,100.0,100.0))
+                val cuboid = Cuboid(sender.location.add(-50.0,-50.0,-50.0), sender.location.add(50.0,50.0,50.0))
                 for (i in 0..100_000){
                     delay(5)
                     StandAPI.plugin().launch() {
                         PacketStand(cuboid.randomLocation)
+                            .setGlowingEffect(true)
+                            .setEquipment(EquipmentSlot.HEAD, ItemStack(Material.LANTERN))
+
+                        Logger.log("stand spawned: $i")
                     }
                 }
             }

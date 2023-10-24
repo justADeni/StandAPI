@@ -112,10 +112,10 @@ class PacketStand(
         }
     }
 
-    internal fun eligiblePlayers(): List<Player> = location.world!!.players.asSequence()
-        .filter { it.location.distanceSquared(location) <= 192.squared() }
-        .filterNot { excludedPlayers.contains(it.uniqueId) }
-        .toList()
+    internal fun eligiblePlayers(): List<Player> = location.world?.players?.asSequence()
+            ?.filter { it.location.distanceSquared(location) <= 192.squared() }
+            ?.filterNot { excludedPlayers.contains(it.uniqueId) }
+            ?.toList() ?: emptyList()
 
     /**
      * used to make stand invisible to any number of chosen players
