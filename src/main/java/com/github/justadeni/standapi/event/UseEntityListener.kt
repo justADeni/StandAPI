@@ -33,7 +33,7 @@ class UseEntityListener {
                     EnumWrappers.EntityUseAction.INTERACT_AT -> Action.RIGHT_CLICK
                 }
 
-                /*plugin().launch() {*/ Bukkit.getPluginManager().callEvent(PacketStandEvent(player, id, stand, action)) //}
+                Bukkit.getPluginManager().callEvent(PacketStandEvent(player, id, stand, action))
             }
         })
     }
