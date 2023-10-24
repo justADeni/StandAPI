@@ -12,6 +12,10 @@ import com.github.justadeni.standapi.misc.PacketGenerator
 import com.github.justadeni.standapi.misc.Util
 import com.github.justadeni.standapi.serialization.*
 import com.github.shynixn.mccoroutine.bukkit.launch
+import com.github.shynixn.mccoroutine.bukkit.minecraftDispatcher
+import com.zorbeytorunoglu.kLib.task.Scopes
+import kotlinx.coroutines.future.future
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import org.bukkit.Bukkit
@@ -590,7 +594,9 @@ class PacketStand(
      * @return returns the real entity
      */
     fun toRealStand(): ArmorStand {
-        val realStand = location.world?.spawnEntity(location, EntityType.ARMOR_STAND) as ArmorStand
+        val realStand = runBlocking(StandAPI.plugin().minecraftDispatcher) {
+            location.world?.spawnEntity(location, EntityType.ARMOR_STAND) as ArmorStand
+        }
         realStand.setArms(hasArms())
         realStand.setBasePlate(hasBaseplate())
         realStand.isMarker = isMarker()
@@ -599,7 +605,7 @@ class PacketStand(
         realStand.isCustomNameVisible = isCustomNameVisible
         realStand.customName = customName
 
-        for (itemSlotItemPair in equipment){
+        for (itemSlotItemPair in equipment) {
             realStand.equipment?.setItem(Util.EWtoEQ(itemSlotItemPair.key), itemSlotItemPair.value)
         }
 
@@ -645,7 +651,9 @@ class PacketStand(
             packetStand.setLeftLegPose(this.leftLegPose.toRotation())
             packetStand.setRightlegPose(this.rightLegPose.toRotation())
 
-            this.remove()
+            StandAPI.plugin().launch(StandAPI.plugin().minecraftDispatcher) {
+                this@fromRealStand.remove()
+            }
 
             return packetStand
         }
