@@ -3,6 +3,9 @@ package com.github.justadeni.standapi.misc
 import com.github.justadeni.standapi.StandAPI
 import org.bukkit.ChatColor
 
+/**
+ * @suppress
+ */
 object Logger {
 
     private val logger = StandAPI.plugin().logger

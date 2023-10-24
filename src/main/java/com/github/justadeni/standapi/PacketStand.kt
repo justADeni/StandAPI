@@ -8,6 +8,7 @@ import com.github.justadeni.standapi.datatype.Offset
 import com.github.justadeni.standapi.datatype.Rotation
 import com.github.justadeni.standapi.datatype.Rotation.Companion.toEulerAngle
 import com.github.justadeni.standapi.datatype.Rotation.Companion.toRotation
+import com.github.justadeni.standapi.misc.Counter
 import com.github.justadeni.standapi.misc.PacketGenerator
 import com.github.justadeni.standapi.misc.Task
 import com.github.justadeni.standapi.misc.Util
@@ -16,9 +17,7 @@ import com.github.shynixn.mccoroutine.bukkit.asyncDispatcher
 import com.github.shynixn.mccoroutine.bukkit.launch
 import com.github.shynixn.mccoroutine.bukkit.minecraftDispatcher
 import com.github.shynixn.mccoroutine.bukkit.ticks
-import com.zorbeytorunoglu.kLib.task.Scopes
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.future.future
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -61,6 +60,9 @@ class PacketStand(
 
     @Transient
     internal val packetGen = PacketGenerator(id)
+
+    @Transient
+    private val counter = Counter(0, 10)
 
     private var attachedTo: Pair<@Serializable(with = UUIDSerializer::class) UUID, @Serializable(with = OffsetSerializer::class) Offset>? = null
     private var attachedPitch = true
@@ -448,7 +450,7 @@ class PacketStand(
             location = loc
             packetBundle.sendTo(eligiblePlayers())
 
-        } else /*if (loc.distanceSquared(location) > 64)*/{
+        } else if (loc.distanceSquared(location) > 64){
 
             for (player in eligiblePlayers())
                 if (player.location.distanceSquared(location) > 192.squared() )
@@ -456,9 +458,13 @@ class PacketStand(
                 else
                     packetGen.teleport(loc).sendTo(eligiblePlayers())
 
-        } /*else {
-            packetGen.move(location, loc).sendTo(eligiblePlayers())
-        } */
+        } else {
+            //Uses teleport once in a while to guarantee precise location without sending too many big packets too often
+            if (counter.reached())
+                packetGen.teleport(loc).sendTo(eligiblePlayers())
+            else
+                packetGen.move(location, loc).sendTo(eligiblePlayers())
+        }
 
         location = loc
 

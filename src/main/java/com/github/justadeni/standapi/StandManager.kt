@@ -31,28 +31,16 @@ object StandManager {
     for stands that are within detection radius of player
     and have received packets already
     */
-    private val included = hashMapOf<Player, MutableList<PacketStand>>()
+    private val included = ConcurrentHashMap<Player, MutableList<PacketStand>>()
 
     /**
-     * returns list of all stands on the server
-     */
-    @JvmStatic
-    fun all(): List<PacketStand> {
-        return runBlocking {
-            return@runBlocking mutex.withLock {
-                ticking.values.flatten()
-            }
-        }
-    }
-
-    /**
-     * returns list of all stands on the server as CompletableFuture, highly preferred
-     * use .get() in Java or .await() in kotlin suspending function to get result
+     * returns list of all stands on the server as Future
+     * use .join() in Java or .await() in kotlin suspending function to get result
      * @see https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html for more information
      */
     @JvmStatic
-    fun allAsync(): CompletableFuture<List<PacketStand>> {
-        return Scopes.supervisorScope.future {
+    fun all(): CompletableFuture<List<PacketStand>> {
+        return Scopes.supervisorScope.future(StandAPI.plugin().asyncDispatcher) {
             return@future mutex.withLock {
                 ticking.values.flatten()
             }
@@ -60,42 +48,35 @@ object StandManager {
     }
 
     /**
-     * returns list of all stands on the server with specified plugin name
+     * returns list of all stands on the server with specified plugin name as Future
      * @param pluginName name of plugin at PacketStand instantiation
      */
     @JvmStatic
-    fun ofPlugin(pluginName: String): List<PacketStand> {
-        return all().groupBy { it.pluginName }[pluginName] ?: emptyList()
-    }
-
-    /**
-     * returns list of all stands on the server with specified plugin name as CompletableFuture, highly preferred
-     * @param pluginName name of plugin at PacketStand instantiation
-     */
-    @JvmStatic
-    fun ofPluginAsync(pluginName: String): CompletableFuture<List<PacketStand>> {
+    fun ofPlugin(pluginName: String): CompletableFuture<List<PacketStand>> {
         return Scopes.supervisorScope.future {
-            return@future allAsync().await().groupBy { it.pluginName }[pluginName] ?: emptyList()
+            return@future all().await().groupBy { it.pluginName }[pluginName] ?: emptyList()
         }
     }
 
     /**
-     * returns list of all stands in specified world
+     * returns list of all stands in specified world as Future
      * @param world in which stands will be retrieved
      */
     @JvmStatic
-    fun inWorld(world: World): List<PacketStand> {
-        return all().filter { it.getLocation().world == world }
+    fun inWorld(world: World): CompletableFuture<List<PacketStand>> {
+        return Scopes.supervisorScope.future {
+            return@future all().await().filter { it.getLocation().world == world }
+        }
     }
 
     /**
-     * returns list of all stands in specified world as CompletableFuture, highly preferred
-     * @param world in which stands will be retrieved
+     * returns stand with that id as Future or null if not found
+     * @param standId of the stand
      */
     @JvmStatic
-    fun inWorldAsync(world: World): CompletableFuture<List<PacketStand>> {
+    fun byId(standId: Int): CompletableFuture<PacketStand?> {
         return Scopes.supervisorScope.future {
-            return@future allAsync().await().filter { it.getLocation().world == world }
+            all().await().firstOrNull { it.id == standId }
         }
     }
 
@@ -107,19 +88,6 @@ object StandManager {
     @JvmStatic
     fun attachedTo(entityId: Int): List<PacketStand>? {
         return ticking[entityId]?.toList()
-    }
-
-    /**
-     * returns stand with that id or null if not found
-     * @param standId of the stand
-     */
-    @JvmStatic
-    fun byId(standId: Int): PacketStand? {
-        for (stand in allAsync().get())
-            if (stand.id == standId)
-                return stand
-
-        return null
     }
 
     internal suspend fun add(stand: PacketStand){
@@ -167,7 +135,7 @@ object StandManager {
         while (true) {
             delay(20.ticks)
 
-            val allStands = allAsync().await()
+            val allStands = all().await()
 
             for (player in Bukkit.getOnlinePlayers()) {
 

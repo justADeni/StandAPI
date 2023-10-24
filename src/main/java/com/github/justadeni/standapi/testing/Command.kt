@@ -123,12 +123,12 @@ class Command: SuspendingCommandExecutor {
             }
             "stresstest" -> {
                 val cuboid = Cuboid(sender.location.add(-50.0,-50.0,-50.0), sender.location.add(50.0,50.0,50.0))
-                for (i in 0..100_000){
+                for (i in 0..10_000){
                     delay(5)
                     StandAPI.plugin().launch() {
                         PacketStand(cuboid.randomLocation)
                             .setGlowingEffect(true)
-                            .setEquipment(EquipmentSlot.HEAD, ItemStack(Material.LANTERN))
+                            .setEquipment(EquipmentSlot.HEAD, ItemStack(Material.JACK_O_LANTERN))
 
                         Logger.log("stand spawned: $i")
                     }

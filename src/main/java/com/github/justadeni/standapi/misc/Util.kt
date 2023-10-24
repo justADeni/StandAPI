@@ -14,6 +14,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
 import org.spigotmc.SpigotWorldConfig
 import java.util.*
+import java.util.concurrent.ThreadLocalRandom
 import kotlin.collections.HashMap
 import kotlin.math.round
 
@@ -41,7 +42,7 @@ object Util {
     }
 
     internal suspend fun resetId(){
-        val stands = StandManager.allAsync().await()
+        val stands = StandManager.all().await()
         if (stands.isEmpty())
             return
 
