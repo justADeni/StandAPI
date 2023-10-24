@@ -6,7 +6,6 @@ import com.github.justadeni.standapi.StandAPI
 import com.github.justadeni.standapi.StandManager
 import com.github.justadeni.standapi.datatype.Offset
 import com.github.shynixn.mccoroutine.bukkit.launch
-import kotlinx.coroutines.future.await
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World

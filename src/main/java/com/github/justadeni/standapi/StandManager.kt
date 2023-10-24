@@ -89,7 +89,7 @@ object StandManager {
     }
 
     //only use when you're 100% sure
-    private suspend fun addWithId(stand: PacketStand, id: Int) {
+    private fun addWithId(stand: PacketStand, id: Int) {
         if (ticking.containsKey(id)) {
             if (!ticking[id]!!.contains(stand)) {
                 ticking[id]!!.add(stand)
@@ -99,7 +99,7 @@ object StandManager {
         }
     }
 
-    internal suspend fun remove(stand: PacketStand) {
+    internal fun remove(stand: PacketStand) {
         val mapIt = ticking.entries.iterator()
         while (mapIt.hasNext()){
             val pair = mapIt.next()
