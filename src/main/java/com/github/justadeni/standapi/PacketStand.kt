@@ -1,13 +1,15 @@
 package com.github.justadeni.standapi
 
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot
-import com.github.justadeni.standapi.Misc.applyOffset
-import com.github.justadeni.standapi.Misc.sendTo
-import com.github.justadeni.standapi.Misc.squared
+import com.github.justadeni.standapi.misc.Util.applyOffset
+import com.github.justadeni.standapi.misc.Util.sendTo
+import com.github.justadeni.standapi.misc.Util.squared
 import com.github.justadeni.standapi.datatype.Offset
 import com.github.justadeni.standapi.datatype.Rotation
 import com.github.justadeni.standapi.datatype.Rotation.Companion.toEulerAngle
 import com.github.justadeni.standapi.datatype.Rotation.Companion.toRotation
+import com.github.justadeni.standapi.misc.PacketGenerator
+import com.github.justadeni.standapi.misc.Util
 import com.github.justadeni.standapi.serialization.*
 import com.github.shynixn.mccoroutine.bukkit.launch
 import kotlinx.serialization.Serializable
@@ -37,7 +39,7 @@ class PacketStand(
     /**
      * entityId of the stand
      */
-    val id = Misc.getID()
+    val id = Util.getID()
 
     /**
      * uniqueId of the stand
@@ -254,7 +256,7 @@ class PacketStand(
      * @return returns back this instance
      */
     fun setEquipment(slot: EquipmentSlot, item: ItemStack): PacketStand {
-        equipment[Misc.EQtoEW(slot)] = item
+        equipment[Util.EQtoEW(slot)] = item
         packetBundle[1] = packetGen.equipment(equipment).also { it.sendTo(eligiblePlayers()) }
 
         return this
@@ -266,7 +268,7 @@ class PacketStand(
      * @return itemstack in that slot. null if none
      */
     fun getEquipment(slot: EquipmentSlot): ItemStack? {
-        return equipment[Misc.EQtoEW(slot)]
+        return equipment[Util.EQtoEW(slot)]
     }
 
     private fun updateMetadata(){
@@ -598,7 +600,7 @@ class PacketStand(
         realStand.customName = customName
 
         for (itemSlotItemPair in equipment){
-            realStand.equipment?.setItem(Misc.EWtoEQ(itemSlotItemPair.key), itemSlotItemPair.value)
+            realStand.equipment?.setItem(Util.EWtoEQ(itemSlotItemPair.key), itemSlotItemPair.value)
         }
 
         realStand.headPose = getHeadPose().toEulerAngle()

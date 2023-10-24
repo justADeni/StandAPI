@@ -5,7 +5,7 @@ import com.comphenix.protocol.events.ListenerPriority
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
 import com.comphenix.protocol.wrappers.EnumWrappers
-import com.github.justadeni.standapi.Misc
+import com.github.justadeni.standapi.misc.Util
 import com.github.justadeni.standapi.StandManager
 import com.github.justadeni.standapi.StandAPI.Companion.manager
 import com.github.justadeni.standapi.StandAPI.Companion.plugin
@@ -23,7 +23,7 @@ class UseEntityListener {
                 val packet = event.packet
                 val id = packet.integers.read(0)
 
-                if (id < 47_483_647 || id > Misc.currentID())
+                if (id < 47_483_647 || id > Util.currentID())
                     return
 
                 val stand = StandManager.byId(id) ?: return

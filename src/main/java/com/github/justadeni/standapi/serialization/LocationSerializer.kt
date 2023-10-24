@@ -1,6 +1,6 @@
 package com.github.justadeni.standapi.serialization
 
-import com.github.justadeni.standapi.Misc.round
+import com.github.justadeni.standapi.misc.Util.round
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor

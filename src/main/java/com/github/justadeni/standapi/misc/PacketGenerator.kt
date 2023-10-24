@@ -1,4 +1,4 @@
-package com.github.justadeni.standapi
+package com.github.justadeni.standapi.misc
 
 import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.events.PacketContainer

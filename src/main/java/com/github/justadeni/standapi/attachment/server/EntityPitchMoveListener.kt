@@ -4,9 +4,9 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.events.ListenerPriority
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
-import com.github.justadeni.standapi.Misc
-import com.github.justadeni.standapi.Misc.applyOffset
-import com.github.justadeni.standapi.Misc.sendTo
+import com.github.justadeni.standapi.misc.Util
+import com.github.justadeni.standapi.misc.Util.applyOffset
+import com.github.justadeni.standapi.misc.Util.sendTo
 import com.github.justadeni.standapi.StandManager
 import com.github.justadeni.standapi.StandAPI
 import com.github.justadeni.standapi.datatype.Rotation
@@ -24,7 +24,7 @@ class EntityPitchMoveListener {
 
                 val list = StandManager.attachedTo(entityId) ?: return
 
-                val attachedToPlayer = Misc.getPlayerById(entityId, player.world)
+                val attachedToPlayer = Util.getPlayerById(entityId, player.world)
 
                 for (stand in list) {
 

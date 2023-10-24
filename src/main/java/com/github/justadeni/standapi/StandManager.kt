@@ -1,8 +1,8 @@
 package com.github.justadeni.standapi
 
-import com.github.justadeni.standapi.Misc.applyOffset
-import com.github.justadeni.standapi.Misc.sendTo
-import com.github.justadeni.standapi.Misc.squared
+import com.github.justadeni.standapi.misc.Util.applyOffset
+import com.github.justadeni.standapi.misc.Util.sendTo
+import com.github.justadeni.standapi.misc.Util.squared
 import com.github.shynixn.mccoroutine.bukkit.asyncDispatcher
 import com.github.shynixn.mccoroutine.bukkit.minecraftDispatcher
 import com.github.shynixn.mccoroutine.bukkit.ticks

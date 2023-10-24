@@ -4,7 +4,7 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.events.ListenerPriority
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
-import com.github.justadeni.standapi.Misc.applyOffset
+import com.github.justadeni.standapi.misc.Util.applyOffset
 import com.github.justadeni.standapi.StandManager
 import com.github.justadeni.standapi.StandAPI
 import org.bukkit.Location

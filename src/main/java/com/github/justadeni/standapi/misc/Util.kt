@@ -1,8 +1,9 @@
-package com.github.justadeni.standapi
+package com.github.justadeni.standapi.misc
 
 import com.comphenix.protocol.events.PacketContainer
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot
-import com.github.justadeni.standapi.Misc.squared
+import com.github.justadeni.standapi.StandAPI
+import com.github.justadeni.standapi.StandManager
 import com.github.justadeni.standapi.datatype.Offset
 import com.github.shynixn.mccoroutine.bukkit.launch
 import kotlinx.coroutines.future.await
@@ -19,7 +20,7 @@ import kotlin.math.round
 /**
  * @suppress
  */
-object Misc {
+object Util {
 
     private var id = 47_483_647
 
