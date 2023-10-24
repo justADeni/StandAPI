@@ -19,6 +19,7 @@ class LocationSerializer() : KSerializer<Location> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("com.github.justadeni.standapi.serialization.LocationSerializer", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: Location) {
+        value.world ?: return
         encoder.encodeString("${value.world!!.uid},${value.x.round(3)},${value.y.round(3)},${value.z.round(3)}")
     }
 
