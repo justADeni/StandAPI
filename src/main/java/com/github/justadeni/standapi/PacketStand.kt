@@ -601,7 +601,7 @@ class PacketStand(
      * removes the stand after specified number of ticks
      * remember to remove it from your lists/maps/sets if it was there
      */
-    fun removeAfter(ticks: Int){
+    fun remove(ticks: Int){
         StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher) {
             delay(ticks.ticks)
             remove()
@@ -612,10 +612,11 @@ class PacketStand(
      * removes the stand after specified number of ticks and executes specified task (use lambda syntax)
      * remember to remove it from your lists/maps/sets if it was there
      */
-    fun removeAfterAndExecute(ticks: Int, task: Task){
+    fun removeAndExecute(ticks: Int, task: Task){
         StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher) {
             delay(ticks.ticks)
             remove()
+            task.execute()
         }
     }
 
