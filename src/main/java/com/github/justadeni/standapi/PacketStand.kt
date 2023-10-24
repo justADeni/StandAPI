@@ -9,11 +9,15 @@ import com.github.justadeni.standapi.datatype.Rotation
 import com.github.justadeni.standapi.datatype.Rotation.Companion.toEulerAngle
 import com.github.justadeni.standapi.datatype.Rotation.Companion.toRotation
 import com.github.justadeni.standapi.misc.PacketGenerator
+import com.github.justadeni.standapi.misc.Task
 import com.github.justadeni.standapi.misc.Util
 import com.github.justadeni.standapi.serialization.*
+import com.github.shynixn.mccoroutine.bukkit.asyncDispatcher
 import com.github.shynixn.mccoroutine.bukkit.launch
 import com.github.shynixn.mccoroutine.bukkit.minecraftDispatcher
+import com.github.shynixn.mccoroutine.bukkit.ticks
 import com.zorbeytorunoglu.kLib.task.Scopes
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.future.future
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
@@ -35,10 +39,11 @@ import java.util.*
 @Serializable
 class PacketStand(
     @Serializable(with = LocationSerializer::class)
-    private var location: Location,
+    private var location: Location) {
 
-    @Transient
-    internal var pluginName: String = "None") {
+    constructor(location: Location, pluginName: String) : this(location) {
+        this.pluginName = pluginName
+    }
 
     /**
      * entityId of the stand
@@ -50,6 +55,9 @@ class PacketStand(
      */
     @Serializable(with = UUIDSerializer::class)
     val uuid: UUID = UUID.randomUUID()
+
+    @Transient
+    internal var pluginName: String = "None"
 
     @Transient
     internal val packetGen = PacketGenerator(id)
@@ -579,13 +587,36 @@ class PacketStand(
     fun getRightLegPose() = rotations[5]
 
     /**
-     * removes the stand. dereference this instance to get it picked up by GC
+     * removes the stand
+     * remember to remove it from your lists/maps/sets if it was there
      */
     fun remove(){
-        StandAPI.plugin().launch {
+        StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher) {
             StandManager.remove(this@PacketStand)
         }
         destroyPacket.sendTo(location.world!!.players)
+    }
+
+    /**
+     * removes the stand after specified number of ticks
+     * remember to remove it from your lists/maps/sets if it was there
+     */
+    fun removeAfter(ticks: Int){
+        StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher) {
+            delay(ticks.ticks)
+            remove()
+        }
+    }
+
+    /**
+     * removes the stand after specified number of ticks and executes specified task (use lambda syntax)
+     * remember to remove it from your lists/maps/sets if it was there
+     */
+    fun removeAfterAndExecute(ticks: Int, task: Task){
+        StandAPI.plugin().launch(StandAPI.plugin().asyncDispatcher) {
+            delay(ticks.ticks)
+            remove()
+        }
     }
 
     /**
