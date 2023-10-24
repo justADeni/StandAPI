@@ -21,7 +21,7 @@ class EntityMoveListener {
                 val packet = event.packet
                 val entityId = packet.integers.read(0)
 
-                val list = StandManager.findAttachedTo(entityId) ?: return
+                val list = StandManager.attachedTo(entityId) ?: return
 
                 val attachedToPlayer = Misc.getPlayerById(entityId, player.world)
 

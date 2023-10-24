@@ -4,17 +4,18 @@ import com.github.justadeni.standapi.Misc.applyOffset
 import com.github.justadeni.standapi.Misc.sendTo
 import com.github.justadeni.standapi.Misc.squared
 import com.github.shynixn.mccoroutine.bukkit.asyncDispatcher
-import com.github.shynixn.mccoroutine.bukkit.launch
 import com.github.shynixn.mccoroutine.bukkit.minecraftDispatcher
 import com.github.shynixn.mccoroutine.bukkit.ticks
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
+import com.zorbeytorunoglu.kLib.task.Scopes
+import kotlinx.coroutines.*
+import kotlinx.coroutines.future.await
+import kotlinx.coroutines.future.future
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.entity.Player
+import java.util.concurrent.CompletableFuture
 
 object StandManager {
 
@@ -33,25 +34,31 @@ object StandManager {
 
     /**
      * returns list of all stands on the server
-     * use with care if other plugin uses StandAPI on the same server
      */
     @JvmStatic
-    fun getAllStands(): List<PacketStand> {
+    fun all(): List<PacketStand> {
         return runBlocking {
-            val wholeList = mutableListOf<PacketStand>()
-            mutex.withLock {
-                ticking.values.forEach { wholeList.addAll(it) }
+            //val wholeList = mutableListOf<PacketStand>()
+            return@runBlocking mutex.withLock {
+                //ticking.values.forEach { wholeList.addAll(it) }
+                ticking.values.flatten()
             }
-            return@runBlocking wholeList
+            //return@runBlocking wholeList
         }
     }
 
-    internal suspend fun getAllStandsSuspend(): List<PacketStand> {
-        val wholeList = mutableListOf<PacketStand>()
-        mutex.withLock {
-            ticking.values.forEach { wholeList.addAll(it) }
+    /**
+     * returns list of all stands on the server as CompletableFuture, highly preferred
+     * use .get() in Java or .await() in kotlin suspending function to get result
+     * @see https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html for more information
+     */
+    @JvmStatic
+    fun allAsync(): CompletableFuture<List<PacketStand>> {
+        return Scopes.supervisorScope.future {
+            return@future mutex.withLock {
+                ticking.values.flatten()
+            }
         }
-        return wholeList
     }
 
     /**
@@ -59,18 +66,39 @@ object StandManager {
      * @param pluginName name of plugin at PacketStand instantiation
      */
     @JvmStatic
-    fun getStandsOfPlugin(pluginName: String): List<PacketStand> {
-        return getAllStands().groupBy { it.pluginName }[pluginName] ?: emptyList()
+    fun ofPlugin(pluginName: String): List<PacketStand> {
+        return all().groupBy { it.pluginName }[pluginName] ?: emptyList()
+    }
+
+    /**
+     * returns list of all stands on the server with specified plugin name as CompletableFuture, highly preferred
+     * @param pluginName name of plugin at PacketStand instantiation
+     */
+    @JvmStatic
+    fun ofPluginAsync(pluginName: String): CompletableFuture<List<PacketStand>> {
+        return Scopes.supervisorScope.future {
+            return@future allAsync().await().groupBy { it.pluginName }[pluginName] ?: emptyList()
+        }
     }
 
     /**
      * returns list of all stands in specified world
      * @param world in which stands will be retrieved
-     * use with care if other plugin uses StandAPI on the same server
      */
     @JvmStatic
-    fun getStandsInWorld(world: World): List<PacketStand> {
-        return getAllStands().filter { it.getLocation().world == world }
+    fun inWorld(world: World): List<PacketStand> {
+        return all().filter { it.getLocation().world == world }
+    }
+
+    /**
+     * returns list of all stands in specified world as CompletableFuture, highly preferred
+     * @param world in which stands will be retrieved
+     */
+    @JvmStatic
+    fun inWorldAsync(world: World): CompletableFuture<List<PacketStand>> {
+        return Scopes.supervisorScope.future {
+            return@future allAsync().await().filter { it.getLocation().world == world }
+        }
     }
 
     /**
@@ -79,27 +107,19 @@ object StandManager {
      * @param entityId of entity with attached stands
      */
     @JvmStatic
-    fun findAttachedTo(entityId: Int): List<PacketStand>? {
-        //if (ticking.containsKey(entityId))
-        return ticking[entityId]
-
-        //return emptyList()
+    fun attachedTo(entityId: Int): List<PacketStand>? {
+        return ticking[entityId]?.toList()
     }
 
-    internal fun findByStandId(standId: Int): PacketStand? {
-        for (list in ticking.values)
-            for (stand in list)
-                if (stand.id == standId)
-                    return stand
-
-        return null
-    }
-
-    internal suspend fun findByStandIdSuspend(standId: Int): PacketStand? = mutex.withLock {
-        for (list in ticking.values)
-            for (stand in list)
-                if (stand.id == standId)
-                    return stand
+    /**
+     * returns stand with that id or null if not found
+     * @param standId of the stand
+     */
+    @JvmStatic
+    fun byId(standId: Int): PacketStand? {
+        for (stand in allAsync().get())
+            if (stand.id == standId)
+                return stand
 
         return null
     }
@@ -149,7 +169,7 @@ object StandManager {
         while (true) {
             delay(20.ticks)
 
-            val allStands = getAllStandsSuspend()
+            val allStands = allAsync().await()
 
             for (player in Bukkit.getOnlinePlayers()) {
 

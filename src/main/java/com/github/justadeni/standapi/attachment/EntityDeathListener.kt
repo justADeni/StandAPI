@@ -16,7 +16,7 @@ class EntityDeathListener: Listener {
         if (e.entityType == EntityType.PLAYER)
             return
 
-        val list = StandManager.findAttachedTo(e.entity.entityId) ?: return
+        val list = StandManager.attachedTo(e.entity.entityId) ?: return
 
         for (stand in list){
             stand.detachFrom()

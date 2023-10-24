@@ -20,7 +20,7 @@ class TeleportListener {
                 val packet = event.packet
                 val entityId = packet.integers.read(0)
 
-                val list = StandManager.findAttachedTo(entityId) ?: return
+                val list = StandManager.attachedTo(entityId) ?: return
 
                 val loc = Location(player.world, packet.doubles.read(0), packet.doubles.read(1), packet.doubles.read(2))
                 for (stand in list){

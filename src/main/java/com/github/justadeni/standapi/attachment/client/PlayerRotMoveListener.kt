@@ -51,7 +51,7 @@ class PlayerRotMoveListener {
                 //val packet = event.packet
                 val entityId = player.entityId
 
-                val list = StandManager.findAttachedTo(entityId) ?: return
+                val list = StandManager.attachedTo(entityId) ?: return
 
                 if (player.isAnyoneNearby())
                     return

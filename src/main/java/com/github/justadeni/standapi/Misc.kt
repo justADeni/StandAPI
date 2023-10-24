@@ -4,6 +4,7 @@ import com.comphenix.protocol.events.PacketContainer
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot
 import com.github.justadeni.standapi.datatype.Offset
 import com.github.shynixn.mccoroutine.bukkit.launch
+import kotlinx.coroutines.future.await
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -22,7 +23,7 @@ object Misc {
     internal fun currentID() = id
 
     internal suspend fun resetId(){
-        val stands = StandManager.getAllStandsSuspend()
+        val stands = StandManager.allAsync().await()
         if (stands.isEmpty())
             return
 

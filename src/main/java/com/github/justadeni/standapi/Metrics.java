@@ -48,6 +48,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * @supress
+ */
 public class Metrics {
 
     private final Plugin plugin;
