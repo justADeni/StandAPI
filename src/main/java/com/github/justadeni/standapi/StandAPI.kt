@@ -23,8 +23,6 @@ class StandAPI : SuspendingJavaPlugin() {
 
     companion object {
 
-        internal val debug = true
-
         private var plugin: JavaPlugin? = null
 
         private var manager: ProtocolManager? = null
@@ -46,10 +44,8 @@ class StandAPI : SuspendingJavaPlugin() {
     override suspend fun onEnableAsync() {
 
         //only for testing
-        if (debug) {
-            getCommand("standapi")!!.setSuspendingExecutor(Command())
-            getCommand("standapi")!!.setSuspendingTabCompleter(TabComplete())
-        }
+        //getCommand("standapi")!!.setSuspendingExecutor(Command())
+        //getCommand("standapi")!!.setSuspendingTabCompleter(TabComplete())
 
         server.pluginManager.registerSuspendingEvents(EntityDeathListener(), this)
         server.pluginManager.registerSuspendingEvents(PlayerLeaveListener(), this)

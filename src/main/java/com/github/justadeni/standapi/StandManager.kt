@@ -1,6 +1,5 @@
 package com.github.justadeni.standapi
 
-import com.github.justadeni.standapi.misc.Logger
 import com.github.justadeni.standapi.misc.Util.applyOffset
 import com.github.justadeni.standapi.misc.Util.sendTo
 import com.github.justadeni.standapi.misc.Util.squared
@@ -121,12 +120,6 @@ object StandManager {
 
     internal suspend fun startTicking() = withContext(StandAPI.plugin().asyncDispatcher){
         while (true) {
-
-            Logger.debug("-                ")
-            Logger.debug("ticking: $ticking")
-            Logger.debug("                  ")
-            Logger.debug("included: $included")
-            Logger.debug("--                    ")
 
             delay(20.ticks)
 
