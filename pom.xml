@@ -16,7 +16,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.version>1.9.0</kotlin.version>
         <serialization.version>1.6.0</serialization.version>
-        <mcversion>1.19.4-R0.1-SNAPSHOT</mcversion>
     </properties>
 
     <build>
@@ -159,12 +158,6 @@
             <version>${kotlin.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!--dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-test</artifactId>
-            <version>${kotlin.version}</version>
-            <scope>test</scope>
-        </dependency-->
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
@@ -197,7 +190,6 @@
             <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-serialization-json-jvm</artifactId>
             <version>1.6.0</version>
-            <!--scope>compile</scope-->
         </dependency>
         <dependency>
             <groupId>com.github.zorbeytorunoglu</groupId>

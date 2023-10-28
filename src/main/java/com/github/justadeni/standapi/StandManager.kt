@@ -72,7 +72,7 @@ object StandManager {
         return ticking[entityId]?.toList()
     }
 
-    internal suspend fun add(stand: PacketStand){
+    internal fun add(stand: PacketStand){
         if (stand.getAttached() == null){
             addWithId(stand, -2)
             return
@@ -100,15 +100,16 @@ object StandManager {
     }
 
     internal fun remove(stand: PacketStand) {
-        val mapIt = ticking.entries.iterator()
-        while (mapIt.hasNext()){
-            val pair = mapIt.next()
-            if (!pair.value.contains(stand))
+        for (entry in ticking.entries.toList()){
+            if (!entry.value.contains(stand))
                 continue
 
-            pair.value.remove(stand)
-            if (pair.value.isEmpty())
-                mapIt.remove()
+            if (!entry.value.remove(stand))
+                continue
+
+            if (entry.value.isEmpty())
+                ticking.remove(entry.key)
+
             break
         }
     }
@@ -120,7 +121,7 @@ object StandManager {
             for (player in Bukkit.getOnlinePlayers().toList()) {
 
                 if (!included.containsKey(player))
-                    included[player] = Collections.synchronizedList(mutableListOf())
+                    included[player] = mutableListOf()
 
                 val wereInside = included[player]!!
 
@@ -135,7 +136,7 @@ object StandManager {
                     it.packetBundle.sendTo(player)
                 }
 
-                included[player] = Collections.synchronizedList(areInside.toMutableList())
+                included[player] = areInside.toMutableList()
 
                 val wentOutside = wereInside - areInside.toSet()
                 wentOutside.forEach {
