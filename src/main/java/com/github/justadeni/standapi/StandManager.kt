@@ -153,9 +153,7 @@ object StandManager {
                 val stand = listIt.next()
 
                 stand.getAttached() ?: continue
-                val pE =
-                    withContext(StandAPI.plugin().minecraftDispatcher) { Bukkit.getEntity(stand.getAttached()!!.first) }
-                        ?: continue
+                val pE = withContext(StandAPI.plugin().minecraftDispatcher) { Bukkit.getEntity(stand.getAttached()!!.first) } ?: continue
 
                 listIt.remove()
 
