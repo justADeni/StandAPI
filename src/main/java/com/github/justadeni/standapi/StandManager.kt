@@ -9,7 +9,6 @@ import com.github.shynixn.mccoroutine.bukkit.minecraftDispatcher
 import com.github.shynixn.mccoroutine.bukkit.ticks
 import kotlinx.coroutines.*
 import org.bukkit.Bukkit
-import org.bukkit.OfflinePlayer
 import org.bukkit.World
 import org.bukkit.entity.Player
 import java.util.Collections
@@ -161,20 +160,11 @@ object StandManager {
             if (!ticking.containsKey(-1))
                 continue
 
-            //val taskQueue = mutableListOf<() -> Unit>()
 
             val listIt = ticking[-1]!!.iterator()
             while (listIt.hasNext()) {
                 val stand = listIt.next()
-                /*
-                if (stand.getAttached() == null){
-                    taskQueue.add {
-                        remove(stand)
-                        addWithId(stand, -2)
-                    }
-                    continue
-                }
-                */
+
                 stand.getAttached() ?: continue
                 val entity = withContext(StandAPI.plugin().minecraftDispatcher) { Bukkit.getEntity(stand.getAttached()!!.first) } ?: continue
 
@@ -183,10 +173,6 @@ object StandManager {
                 addWithId(stand, entity.entityId)
                 stand.setLocation(entity.location.applyOffset(stand.getAttached()?.second))
             }
-            /*
-            for (task in taskQueue)
-                task.invoke()
-            */
         }
     }
 

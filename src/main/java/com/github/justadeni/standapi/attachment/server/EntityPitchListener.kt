@@ -23,24 +23,8 @@ class EntityPitchListener {
 
                 val list = StandManager.attachedTo(entityId) ?: return
 
-                //val attachedToPlayer = Misc.getPlayerById(entityId, player.world)
-
                 for (stand in list) {
-                    /*
-                    val cloned = packet.shallowClone()
 
-                    if (stand.isAttachedPitch())
-                        stand.rotations[0] = (Rotation(cloned.bytes.read(1) * 360.0F / 256.0F, stand.getHeadPose().yaw, stand.getHeadPose().roll))
-                    else
-                        cloned.bytes.write(1, (stand.getHeadPose().pitch * 256.0F / 360.0F).toInt().toByte())
-
-                    cloned.bytes.write(0, (stand.getBodyPose().yaw * 256.0F / 360.0F).toInt().toByte())
-                    cloned.integers.write(0, stand.id)
-                    cloned.sendTo(player)
-
-                    if (attachedToPlayer != null)
-                        cloned.sendTo(attachedToPlayer)
-                    */
                     if (stand.isAttachedPitch())
                         stand.setHeadPose(Rotation(packet.bytes.read(1) * 360.0F / 256.0F, stand.getHeadPose().yaw, stand.getHeadPose().roll))
                 }

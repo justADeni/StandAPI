@@ -15,6 +15,7 @@ import com.github.justadeni.standapi.datatype.Rotation
  * @suppress
  */
 class EntityPitchMoveListener {
+
     init {
         StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.LOW, PacketType.Play.Server.REL_ENTITY_MOVE_LOOK) {
             override fun onPacketSending(event: PacketEvent) {
@@ -28,16 +29,9 @@ class EntityPitchMoveListener {
 
                 for (stand in list) {
 
-                    val cloned = packet.shallowClone()
-
                     stand.setLocationNoUpdate(player.location.applyOffset(stand.getAttached()?.second))
-                    /*
-                    if (stand.isAttachedPitch())
-                        stand.rotations[0] = (Rotation(cloned.bytes.read(1) * 360.0F / 256.0F, stand.getHeadPose().yaw ,stand.getHeadPose().roll))
-                    else
-                        cloned.bytes.write(1, (stand.getHeadPose().pitch * 256.0F / 360.0F).toInt().toByte())
 
-                    */
+                    val cloned = packet.shallowClone()
                     cloned.bytes.write(0, (stand.getBodyPose().yaw * 256.0F / 360.0F).toInt().toByte())
                     cloned.integers.write(0, stand.id)
                     cloned.sendTo(player)

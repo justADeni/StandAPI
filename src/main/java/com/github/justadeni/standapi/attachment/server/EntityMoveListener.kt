@@ -14,6 +14,7 @@ import com.github.justadeni.standapi.StandAPI
  * @suppress
  */
 class EntityMoveListener {
+
     init {
         StandAPI.manager().addPacketListener(object : PacketAdapter(StandAPI.plugin(), ListenerPriority.LOW, PacketType.Play.Server.REL_ENTITY_MOVE) {
             override fun onPacketSending(event: PacketEvent) {
@@ -26,8 +27,10 @@ class EntityMoveListener {
                 val attachedToPlayer = Util.getPlayerById(entityId, player.world)
 
                 for (stand in list) {
-                    val cloned = packet.shallowClone()
+
                     stand.setLocationNoUpdate(player.location.applyOffset(stand.getAttached()?.second))
+
+                    val cloned = packet.shallowClone()
                     cloned.integers.write(0, stand.id)
                     cloned.sendTo(player)
 
