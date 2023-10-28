@@ -1,5 +1,6 @@
 package com.github.justadeni.standapi
 
+import com.github.justadeni.standapi.misc.Logger
 import com.github.justadeni.standapi.misc.Util.applyOffset
 import com.github.justadeni.standapi.misc.Util.sendTo
 import com.github.justadeni.standapi.misc.Util.squared
@@ -8,6 +9,7 @@ import com.github.shynixn.mccoroutine.bukkit.minecraftDispatcher
 import com.github.shynixn.mccoroutine.bukkit.ticks
 import kotlinx.coroutines.*
 import org.bukkit.Bukkit
+import org.bukkit.OfflinePlayer
 import org.bukkit.World
 import org.bukkit.entity.Player
 import java.util.Collections
@@ -89,7 +91,7 @@ object StandManager {
     }
 
     //only use when you're 100% sure
-    private fun addWithId(stand: PacketStand, id: Int) {
+    internal fun addWithId(stand: PacketStand, id: Int) {
         if (ticking.containsKey(id)) {
             if (!ticking[id]!!.contains(stand)) {
                 ticking[id]!!.add(stand)
@@ -114,8 +116,19 @@ object StandManager {
         }
     }
 
+    internal fun removeOfflineIncluded(player: Player){
+        included.remove(player)
+    }
+
     internal suspend fun startTicking() = withContext(StandAPI.plugin().asyncDispatcher){
         while (true) {
+
+            Logger.debug("-                ")
+            Logger.debug("ticking: $ticking")
+            Logger.debug("                  ")
+            Logger.debug("included: $included")
+            Logger.debug("--                    ")
+
             delay(20.ticks)
 
             for (player in Bukkit.getOnlinePlayers().toList()) {
@@ -148,19 +161,32 @@ object StandManager {
             if (!ticking.containsKey(-1))
                 continue
 
+            //val taskQueue = mutableListOf<() -> Unit>()
+
             val listIt = ticking[-1]!!.iterator()
             while (listIt.hasNext()) {
                 val stand = listIt.next()
-
+                /*
+                if (stand.getAttached() == null){
+                    taskQueue.add {
+                        remove(stand)
+                        addWithId(stand, -2)
+                    }
+                    continue
+                }
+                */
                 stand.getAttached() ?: continue
-                val pE = withContext(StandAPI.plugin().minecraftDispatcher) { Bukkit.getEntity(stand.getAttached()!!.first) } ?: continue
+                val entity = withContext(StandAPI.plugin().minecraftDispatcher) { Bukkit.getEntity(stand.getAttached()!!.first) } ?: continue
 
                 listIt.remove()
 
-                addWithId(stand, pE.entityId)
-                stand.setLocation(pE.location.applyOffset(stand.getAttached()?.second))
+                addWithId(stand, entity.entityId)
+                stand.setLocation(entity.location.applyOffset(stand.getAttached()?.second))
             }
-
+            /*
+            for (task in taskQueue)
+                task.invoke()
+            */
         }
     }
 

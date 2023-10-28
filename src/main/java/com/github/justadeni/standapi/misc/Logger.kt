@@ -17,4 +17,9 @@ object Logger {
     internal fun log(msg: String){
         logger.info(ChatColor.translateAlternateColorCodes('&', msg))
     }
+
+    internal fun debug(msg: String){
+        if (StandAPI.debug)
+            log(msg)
+    }
 }

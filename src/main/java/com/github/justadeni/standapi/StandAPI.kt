@@ -3,6 +3,7 @@ package com.github.justadeni.standapi
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.ProtocolManager
 import com.github.justadeni.standapi.attachment.EntityDeathListener
+import com.github.justadeni.standapi.attachment.PlayerLeaveListener
 import com.github.justadeni.standapi.attachment.client.PlayerMoveListener
 import com.github.justadeni.standapi.attachment.client.PlayerRotListener
 import com.github.justadeni.standapi.attachment.client.PlayerRotMoveListener
@@ -21,6 +22,8 @@ import org.bukkit.plugin.java.JavaPlugin
 class StandAPI : SuspendingJavaPlugin() {
 
     companion object {
+
+        internal val debug = true
 
         private var plugin: JavaPlugin? = null
 
@@ -43,10 +46,13 @@ class StandAPI : SuspendingJavaPlugin() {
     override suspend fun onEnableAsync() {
 
         //only for testing
-        //getCommand("standapi")!!.setSuspendingExecutor(Command())
-        //getCommand("standapi")!!.setSuspendingTabCompleter(TabComplete())
+        if (debug) {
+            getCommand("standapi")!!.setSuspendingExecutor(Command())
+            getCommand("standapi")!!.setSuspendingTabCompleter(TabComplete())
+        }
 
         server.pluginManager.registerSuspendingEvents(EntityDeathListener(), this)
+        server.pluginManager.registerSuspendingEvents(PlayerLeaveListener(), this)
         UseEntityListener()
         EntityMoveListener()
         EntityPitchListener()
