@@ -1,12 +1,13 @@
 package com.github.justadeni.standapi.attachment
 
-import com.github.justadeni.standapi.StandAPI
 import com.github.justadeni.standapi.StandManager
-import com.github.shynixn.mccoroutine.bukkit.launch
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerQuitEvent
 
+/**
+ * @suppress
+ */
 class PlayerLeaveListener: Listener {
 
     @EventHandler

@@ -14,10 +14,15 @@ import org.bukkit.event.HandlerList
  */
 class PacketStandEvent(val player: Player, val id: Int, val packetStand: PacketStand?, val action: Action) : Event(true) {
     override fun getHandlers(): HandlerList {
-        return handlerList
+        return HANDLERS
     }
 
     companion object {
-        val handlerList = HandlerList()
+        private val HANDLERS = HandlerList()
+
+        @JvmStatic
+        fun getHandlerList(): HandlerList {
+            return HANDLERS
+        }
     }
 }
