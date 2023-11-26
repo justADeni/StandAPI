@@ -56,7 +56,10 @@ class PacketStand(
     val uuid: UUID = UUID.randomUUID()
 
     @Transient
-    internal var pluginName: String = "None"
+    var pluginName: String = "None"
+        internal set(value) {
+            field = value
+        }
 
     @Transient
     internal val packetGen = PacketGenerator(id)
