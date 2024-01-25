@@ -92,7 +92,7 @@ to remove PacketStand, simply
 ```kotlin
 packetStand.remove()
 ```
-alternatively, you can set the PacketStand to be removed some time later or even execute a task after it is removed
+alternatively, you can set the PacketStand to be removed some time later or even execute an async task after it is removed
 ```kotlin
 //removes the stand after 20 ticks
 packetStand.remove(20)
